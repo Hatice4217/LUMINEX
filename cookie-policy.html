@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINEX - Çerez Politikası</title>
+    <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="css/kvkk-page.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <style>
+        body { overflow: hidden !important; }
+        .cookie-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+        .cookie-table th, .cookie-table td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+        }
+        .cookie-table th { background: rgba(120, 199, 199, 0.1); color: var(--accent-color); }
+    </style>
+</head>
+<body class="theme-light">
+    <div class="background-animation"></div>
+    
+    <nav class="navbar scrolled">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-logo">
+                <img src="clean-logo.png" alt="Luminex Logo">
+                <span>LUMINEX</span>
+            </a>
+            <div class="nav-right-actions">
+                <button id="landingThemeToggle" class="theme-toggle-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <a href="index.html" class="btn btn-secondary" data-lang="backToHome">Ana Sayfaya Dön</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="legal-page-container">
+        <div class="container">
+            <div class="legal-card">
+                <div class="legal-header">
+                    <i class="fas fa-cookie-bite"></i>
+                    <h1 data-lang="cookiePolicyTitle">Çerez Politikası</h1>
+                </div>
+                
+                <div class="legal-tabs-wrapper">
+                    <aside class="legal-tabs-nav">
+                        <button class="tab-btn active" onclick="openTab(event, 'what-is-cookie')">
+                            <i class="fas fa-question-circle"></i> Çerezlerin Rolü
+                        </button>
+                        <button class="tab-btn" onclick="openTab(event, 'cookie-categories')">
+                            <i class="fas fa-list-ul"></i> Çerez Kategorileri
+                        </button>
+                        <button class="tab-btn" onclick="openTab(event, 'data-usage')">
+                            <i class="fas fa-database"></i> Veri Saklama
+                        </button>
+                        <button class="tab-btn" onclick="openTab(event, 'control-panel')">
+                            <i class="fas fa-sliders-h"></i> Kontrol ve İptal
+                        </button>
+                    </aside>
+
+                    <div class="legal-content">
+                        <div id="what-is-cookie" class="legal-content-pane active">
+                            <h2>Dijital Hafızanız: Çerezler</h2>
+                            <p>Çerezler, LUMINEX platformunu ziyaret ettiğinizde tarayıcınız aracılığıyla cihazınıza bırakılan küçük veri birimleridir. Bunlar, platformun sizi hatırlamasını sağlayan "dijital birer kimlik kartı" işlevi görür.</p>
+                            <p>Biz çerezleri; sitemizi sizin için daha güvenli hale getirmek, dil tercihlerinizi saklamak ve randevu alma süreçlerinizi hızlandırmak için kullanıyoruz. Çerezler sayesinde sistem, platformu her açtığınızda Aydınlık mı yoksa Karanlık modda mı kalmak istediğinizi hatırlar.</p>
+                        </div>
+
+                        <div id="cookie-categories" class="legal-content-pane">
+                            <h2>Çerez Çeşitleri ve İşlevleri</h2>
+                            <p>Platformumuzda kullanılan çerezleri şu sınıflara ayırıyoruz:</p>
+                            <table class="cookie-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tür</th>
+                                        <th>Amacı</th>
+                                        <th>Süre</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Zorunlu</strong></td>
+                                        <td>Oturum yönetimi ve temel güvenlik için şarttır.</td>
+                                        <td>Oturum Süresince</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Fonksiyonel</strong></td>
+                                        <td>Dil ve tema tercihlerini hatırlar.</td>
+                                        <td>1 Yıl</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Analitik</strong></td>
+                                        <td>Hangi sayfaların tıklandığını anonim olarak ölçer.</td>
+                                        <td>2 Yıl</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p>Zorunlu çerezler dışındaki tüm çerezlerin kullanımı sizin onayınıza bağlıdır.</p>
+                        </div>
+
+                        <div id="data-usage" class="legal-content-pane">
+                            <h2>Çerezler Aracılığıyla Toplanan Bilgiler</h2>
+                            <p>Çerezler üzerinden asla doğrudan kimlik bilgilerinize (T.C. No, Ad-Soyad vb.) erişmiyoruz. Sadece şu teknik verileri işliyoruz:</p>
+                            <ul>
+                                <li>Cihaz tipi ve işletim sistemi bilgisi,</li>
+                                <li>Tarayıcı türü ve sürümü,</li>
+                                <li>Platform içindeki hareketleriniz (Hangi butona ne zaman tıklandı?),</li>
+                                <li>Hata raporları ve sayfa yüklenme süreleri.</li>
+                            </ul>
+                            <p>Bu bilgiler, platformun teknik sağlığını korumak için elzemdir.</p>
+                        </div>
+
+                        <div id="control-panel" class="legal-content-pane">
+                            <h2>Tercihlerinizi Yönetin</h2>
+                            <p>Çerezlerin tarayıcınızda saklanmasını istemiyorsanız, bunu dilediğiniz an değiştirebilirsiniz. Her tarayıcının çerez yönetim menüsü farklılık gösterir:</p>
+                            <ul>
+                                <li><strong>Chrome:</strong> Ayarlar > Gizlilik ve Güvenlik > Çerezler</li>
+                                <li><strong>Safari:</strong> Tercihler > Gizlilik > Çerezleri Engelle</li>
+                                <li><strong>Firefox:</strong> Seçenekler > Gizlilik ve Güvenlik > Geçmiş</li>
+                            </ul>
+                            <p><strong>Önemli:</strong> Çerezleri tamamen devre dışı bırakmak, LUMINEX randevu sisteminin stabil çalışmasını engelleyebilir.</p>
+                            <div class="legal-footer">
+                                <p>&copy; 2025 LUMINEX Sağlık Teknolojileri A.Ş.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstTab = document.querySelector('.tab-btn');
+            if (firstTab) {
+                const tabName = firstTab.getAttribute('onclick').match(/'([^']+)'/)[1];
+                openTab({ currentTarget: firstTab }, tabName);
+            }
+        });
+
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("legal-content-pane");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).classList.add("active");
+            if (evt && evt.currentTarget) {
+                evt.currentTarget.classList.add("active");
+            }
+        }
+    </script>
+    <script src="js/language-manager.js"></script>
+    <script type="module" src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINEX - Değerlendirmelerim</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+<script>
+      try {
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+          document.documentElement.classList.add('sidebar-is-collapsed');
+        }
+      } catch (e) {}
+    </script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="logo">
+                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" style="display: flex; align-items: center; gap: 2px; margin-left: -30px;">
+                    <div style="
+                        width: 60px; 
+                        height: 60px; 
+                        background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); 
+                        -webkit-mask: url(clean-logo.png) no-repeat center / contain; 
+                        mask: url(clean-logo.png) no-repeat center / contain;
+                        display: inline-block;">
+                    </div>
+                    <span style="font-family: 'Exo 2', sans-serif; font-size: 2.5rem; font-weight: 700; color: #001F6B; letter-spacing: 1px; display: flex; align-items: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">LUMINEX</span>
+                </a>
+            </div>
+            <div class="user-info">
+                <span id="welcomeMessage"></span>
+                <div class="icons">
+                    <i id="themeToggleButton" class="fas fa-moon"></i>
+                    <i class="fas fa-bell"></i>
+                    <i class="fas fa-cog"></i>
+                    <i id="logoutButton" class="fas fa-sign-out-alt"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <!-- Side Menu -->
+            <aside class="side-menu">
+                <ul id="dynamicSideMenu">
+                    <!-- Populated by header-manager.js -->
+                </ul>
+                <div class="sidebar-toggle-wrapper">
+                    <button class="sidebar-toggle-button">
+                        <i class="fas fa-chevron-left"></i>
+                        <span>Menüyü Daralt</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Doctor Reviews Content -->
+            <main class="dashboard-content">
+                <h1>Hasta Değerlendirmeleri</h1>
+                
+                <div class="card">
+                    <div id="reviews-summary" class="reviews-summary">
+                        <!-- Summary will be loaded here by JS -->
+                    </div>
+                </div>
+
+                <!-- Filter Section -->
+                <div class="card filter-card">
+                    <div class="filter-card-header">
+                        <h3><i class="fas fa-filter"></i> Yorumları Filtrele</h3>
+                        <button id="toggle-filter-body" class="btn-icon"><i class="fas fa-chevron-down"></i></button>
+                    </div>
+                    <div id="filter-card-body" class="filter-card-body collapsed">
+                        <div class="filter-form-compact" style="grid-template-columns: 1fr 1fr;">
+                            <div class="form-group">
+                                <label for="filter-rating">Puan (Yıldız)</label>
+                                <div class="custom-select-wrapper">
+                                    <input type="text" id="filter-rating" class="form-control" placeholder="Tümü" readonly>
+                                    <div class="custom-options-panel" id="ratingPanel"></div>
+                                </div>
+                            </div>
+                            <div class="form-actions-compact">
+                                <button id="applyFilters" class="btn btn-primary">Filtrele</button>
+                                <button id="clearFilters" class="btn btn-outline-secondary">Temizle</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div id="reviews-list" class="reviews-list-container">
+                        <!-- Reviews will be loaded here -->
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="js/language-manager.js"></script>
+    <script type="module" src="js/user-session.js"></script>
+    <script type="module" src="js/utils/header-manager.js"></script>
+    <script type="module" src="js/doctor-reviews.js"></script>
+</body>
+</html>
+
+

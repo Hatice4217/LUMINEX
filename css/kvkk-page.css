@@ -1,0 +1,189 @@
+.legal-page-container {
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Dış kaydırmayı tamamen öldür */
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.legal-card {
+    background: var(--container-bg);
+    backdrop-filter: blur(25px);
+    border: 1px solid var(--border-color);
+    border-radius: 30px;
+    padding: 40px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 1200px;
+    height: 80vh; /* Sabit yükseklik */
+    display: flex;
+    flex-direction: column;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+}
+
+.legal-tabs-wrapper {
+    display: flex;
+    gap: 30px;
+    flex: 1;
+    min-height: 0; /* İçerik taşmasını engellemek için kritik */
+}
+
+.legal-tabs-nav {
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 15px;
+}
+
+.tab-btn {
+    padding: 16px 20px;
+    border: none;
+    background: transparent; /* Şeffaf yap */
+    color: var(--text-color);
+    border-radius: 15px;
+    cursor: pointer;
+    text-align: left;
+    font-weight: 500;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    position: relative;
+    opacity: 0.7;
+}
+
+.tab-btn i {
+    font-size: 1.2rem;
+    color: var(--accent-color);
+    width: 24px;
+    text-align: center;
+}
+
+.tab-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    opacity: 1;
+    transform: translateX(8px);
+}
+
+body.theme-light .tab-btn:hover {
+    background: rgba(0, 31, 107, 0.05);
+}
+
+.tab-btn.active {
+    background: rgba(120, 199, 199, 0.15); /* Hafif parıltı */
+    color: var(--accent-color);
+    opacity: 1;
+    font-weight: 700;
+}
+
+/* Seçili öğe yanındaki sihirli çizgi */
+.tab-btn.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 4px;
+    background: var(--accent-color);
+    border-radius: 10px;
+    box-shadow: 0 0 10px var(--accent-color);
+}
+
+body.theme-light .tab-btn.active {
+    background: rgba(0, 31, 107, 0.08);
+    color: var(--primary-color);
+}
+
+body.theme-light .tab-btn.active::before {
+    background: var(--primary-color);
+    box-shadow: 0 0 10px rgba(0, 31, 107, 0.3);
+}
+
+.legal-content {
+    flex: 1;
+    min-height: 0; /* İçerik taşmasını engellemek için kritik */
+    display: flex;
+    flex-direction: column;
+}
+
+.legal-content-pane {
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 25px;
+    display: none;
+    animation: fadeIn 0.5s ease;
+    font-size: 1.15rem; /* Yazıları büyüt */
+    line-height: 1.8; /* Satır arasını aç */
+    color: var(--text-color);
+}
+
+.legal-content-pane h2 {
+    font-size: 1.8rem; /* Başlıkları büyüt */
+    margin-bottom: 25px;
+    color: var(--accent-color);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.legal-content-pane.active {
+    display: block; /* Aktif olanı görünür yap */
+}
+
+.legal-content-pane p {
+    margin-bottom: 20px;
+    opacity: 0.9;
+}
+
+body.theme-light .legal-content-pane {
+    color: #333;
+}
+
+body.theme-light .legal-content-pane h2 {
+    color: var(--primary-color);
+}
+
+.legal-header {
+    text-align: left;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.legal-header i {
+    font-size: 2.5rem;
+    color: var(--accent-color);
+    margin-bottom: 0;
+}
+
+.legal-header h1 {
+    font-size: 2rem;
+    margin: 0;
+}
+
+@media (max-width: 992px) {
+    .legal-tabs-wrapper {
+        flex-direction: column;
+    }
+    .legal-tabs-nav {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 15px;
+        padding-right: 0;
+    }
+    .tab-btn {
+        white-space: nowrap;
+    }
+}

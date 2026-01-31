@@ -1,0 +1,3 @@
+fix: Update Formspree ID in contact form
+
+Updated the Formspree action URL in `index.html` with the user-provided Form ID `xwvvqydl`. This makes the contact form fully functional for email submissions.

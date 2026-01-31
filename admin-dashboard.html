@@ -1,0 +1,353 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINEX - Mustafa Şarlak Paneli</title>
+    <link rel="stylesheet" href="css/style.css?v=3">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/skeleton.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Local Premium Styles for Admin Dashboard */
+        .admin-header-gradient {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: white;
+            padding: 30px;
+            border-radius: var(--border-radius-lg);
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(26, 35, 126, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-header-content h1 { color: white; font-size: 2rem; margin-bottom: 5px; text-shadow: none; }
+        .admin-header-content p { opacity: 0.8; font-size: 1rem; }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        .premium-stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .premium-stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        .stat-icon-bg {
+            position: absolute;
+            top: -10px; right: -10px;
+            font-size: 5rem;
+            opacity: 0.05;
+            transform: rotate(15deg);
+        }
+        .stat-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .stat-icon {
+            width: 50px; height: 50px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+        }
+        .stat-value { font-size: 2rem; font-weight: 700; color: var(--text-color); display: block; }
+        .stat-label { font-size: 0.9rem; color: var(--text-light); font-weight: 500; }
+        .stat-trend { font-size: 0.8rem; margin-top: 10px; display: flex; align-items: center; gap: 5px; }
+        .trend-up { color: #2e7d32; }
+        .trend-down { color: #c62828; }
+
+        .admin-main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .admin-main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            height: 100%;
+        }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .quick-action-btn {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px;
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        .quick-action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(54, 103, 168, 0.2);
+        }
+        .quick-action-btn i { font-size: 1.8rem; margin-bottom: 10px; }
+        .quick-action-btn span { font-weight: 500; font-size: 0.9rem; }
+
+        .system-status-list { list-style: none; padding: 0; }
+        .system-status-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .status-indicator {
+            width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 10px;
+        }
+        .status-ok { background: #2e7d32; box-shadow: 0 0 0 3px #e8f5e9; }
+        .status-warn { background: #f57c00; box-shadow: 0 0 0 3px #fff3e0; }
+
+        /* DARK MODE LOCAL OVERRIDES */
+        body.theme-dark .premium-stat-card,
+        body.theme-dark .chart-card,
+        body.theme-dark .quick-action-btn {
+            background-color: #1e293b !important;
+            border: 1px solid #334155 !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
+        }
+        body.theme-dark .stat-value,
+        body.theme-dark .chart-header h3,
+        body.theme-dark .quick-action-btn span {
+            color: #ffffff !important;
+            text-shadow: none !important;
+        }
+        body.theme-dark .stat-label {
+            color: #cbd5e1 !important;
+        }
+    </style>
+<script>
+      try {
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+          document.documentElement.classList.add('sidebar-is-collapsed');
+        }
+      } catch (e) {}
+    </script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="logo">
+                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" style="display: flex; align-items: center; gap: 5px; margin-left: -10px;">
+                    <div style="
+                        width: 80px; 
+                        height: 80px; 
+                        background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); 
+                        -webkit-mask: url(clean-logo.png) no-repeat center / contain; 
+                        mask: url(clean-logo.png) no-repeat center / contain;
+                        display: inline-block;">
+                    </div>
+                    <div style="display: flex; align-items: baseline; gap: 8px;">
+                        <span style="font-family: 'Exo 2', sans-serif; font-size: 2.2rem; font-weight: 700; color: #001F6B; letter-spacing: 1px; line-height: 1;">LUMINEX</span>
+                        <span style="font-family: 'Exo 2', sans-serif; font-size: 2.2rem; font-weight: 700; color: #001F6B; letter-spacing: 1px; line-height: 1;">SAĞLIK KURULUŞU</span>
+                    </div>
+                </a>
+            </div>
+            <div class="user-info">
+                <div id="liveClock" style="font-family: 'Exo 2', sans-serif; font-weight: 600; font-size: 1.1rem; color: var(--text-color); margin-right: 20px; padding-right: 20px; border-right: 1px solid #eee; display: flex; align-items: center; gap: 8px;">
+                    <i class="far fa-clock" style="color: var(--primary-color);"></i> <span>00:00:00</span>
+                </div>
+                <span id="welcomeMessage"></span>
+                <div class="icons">
+                    <i id="themeToggleButton" class="fas fa-moon"></i>
+                    <i class="fas fa-bell"></i>
+                    <i class="fas fa-cog"></i>
+                    <i id="logoutButton" class="fas fa-sign-out-alt"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <!-- Side Menu -->
+            <aside class="side-menu">
+                <ul id="dynamicSideMenu">
+                    <!-- Populated by header-manager.js -->
+                </ul>
+                <div class="sidebar-toggle-wrapper">
+                    <button class="sidebar-toggle-button">
+                        <i class="fas fa-chevron-left"></i>
+                        <span>Menüyü Daralt</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Admin Dashboard Content -->
+            <main class="dashboard-content">
+                <div id="admin-dashboard-content-wrapper">
+                    <!-- Gradient Welcome Header -->
+                    <div class="admin-header-gradient">
+                        <div class="admin-header-content">
+                            <h1 id="adminWelcomeName">Mustafa Şarlak Paneli</h1>
+                            <p id="adminDateDisplay">Yükleniyor...</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 10px; backdrop-filter: blur(5px);">
+                            <i class="fas fa-shield-alt" style="margin-right: 8px;"></i> Güvenli Oturum
+                        </div>
+                    </div>
+
+                    <!-- Premium Stat Cards -->
+                    <div class="stat-grid">
+                        <!-- Card 1: Users -->
+                        <div class="premium-stat-card">
+                            <i class="fas fa-users stat-icon-bg"></i>
+                            <div class="stat-top">
+                                <div class="stat-icon" style="background: #e3f2fd; color: #1565c0;">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <span class="badge badge-success">+12%</span>
+                            </div>
+                            <span class="stat-value" id="totalUsersCount">0</span>
+                            <span class="stat-label">Toplam Kullanıcı</span>
+                            <div class="stat-trend trend-up">
+                                <i class="fas fa-arrow-up"></i> <span>Geçen haftaya göre</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Doctors -->
+                        <div class="premium-stat-card">
+                            <i class="fas fa-user-md stat-icon-bg"></i>
+                            <div class="stat-top">
+                                <div class="stat-icon" style="background: #e8f5e9; color: #2e7d32;">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                                <span class="badge badge-success">+5%</span>
+                            </div>
+                            <span class="stat-value" id="totalDoctorsCount">0</span>
+                            <span class="stat-label">Aktif Doktor</span>
+                            <div class="stat-trend trend-up">
+                                <i class="fas fa-arrow-up"></i> <span>Yeni katılanlar var</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Appointments -->
+                        <div class="premium-stat-card">
+                            <i class="fas fa-calendar-check stat-icon-bg"></i>
+                            <div class="stat-top">
+                                <div class="stat-icon" style="background: #fff3e0; color: #ef6c00;">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <span class="badge badge-warning">Yoğun</span>
+                            </div>
+                            <span class="stat-value" id="totalAppointmentsCount">0</span>
+                            <span class="stat-label">Bugünkü Randevular</span>
+                            <div class="stat-trend trend-up">
+                                <i class="fas fa-arrow-up"></i> <span>Düne göre artış</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 4: Hospitals -->
+                        <div class="premium-stat-card">
+                            <i class="fas fa-hospital stat-icon-bg"></i>
+                            <div class="stat-top">
+                                <div class="stat-icon" style="background: #f3e5f5; color: #7b1fa2;">
+                                    <i class="fas fa-hospital"></i>
+                                </div>
+                                <span class="badge badge-success">Aktif</span>
+                            </div>
+                            <span class="stat-value" id="totalHospitalsCount">0</span>
+                            <span class="stat-label">Anlaşmalı Hastane</span>
+                            <div class="stat-trend">
+                                <i class="fas fa-minus"></i> <span>Stabil</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Grid -->
+                    <div class="admin-main-grid">
+                        <!-- Left: Activity Chart -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3><i class="fas fa-chart-bar" style="color: var(--primary-color); margin-right: 10px;"></i> Randevu Aktivitesi</h3>
+                                <select class="form-control" style="width: auto; display: inline-block;">
+                                    <option>Bu Hafta</option>
+                                    <option>Bu Ay</option>
+                                </select>
+                            </div>
+                            <div class="chart-container" style="position: relative; height: 300px; width: 100%;">
+                                <canvas id="activityChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Right: Quick Actions & Status -->
+                        <div style="display: flex; flex-direction: column; gap: 30px;">
+                            <!-- Quick Actions -->
+                            <div class="card" style="margin-bottom: 0;">
+                                <h3><i class="fas fa-bolt" style="color: #fbc02d; margin-right: 10px;"></i> Hızlı İşlemler</h3>
+                                <div class="quick-actions-grid" style="margin-top: 15px;">
+                                    <a href="admin-users.html" class="quick-action-btn">
+                                        <i class="fas fa-user-plus" style="color: var(--primary-color);"></i>
+                                        <span>Kullanıcı Ekle</span>
+                                    </a>
+                                    <a href="admin-hospitals.html" class="quick-action-btn">
+                                        <i class="fas fa-clinic-medical" style="color: #2e7d32;"></i>
+                                        <span>Hastane Ekle</span>
+                                    </a>
+                                    <a href="admin-reports.html" class="quick-action-btn">
+                                        <i class="fas fa-file-download" style="color: #ef6c00;"></i>
+                                        <span>Rapor Al</span>
+                                    </a>
+                                    <a href="admin-dashboard.html" class="quick-action-btn">
+                                        <i class="fas fa-sync-alt" style="color: #7b1fa2;"></i>
+                                        <span>Sistemi Yenile</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- System Status -->
+                            <div class="card" style="margin-bottom: 0; flex: 1;">
+                                <h3><i class="fas fa-server" style="color: #455a64; margin-right: 10px;"></i> Sistem Durumu</h3>
+                                <ul class="system-status-list">
+                                    <li class="system-status-item">
+                                        <span><span class="status-indicator status-ok"></span> Veritabanı</span>
+                                        <span class="badge badge-success">Çevrimiçi</span>
+                                    </li>
+                                    <li class="system-status-item">
+                                        <span><span class="status-indicator status-ok"></span> API Servisleri</span>
+                                        <span class="badge badge-success">%99.9 Uptime</span>
+                                    </li>
+                                    <li class="system-status-item">
+                                        <span><span class="status-indicator status-warn"></span> Yedekleme</span>
+                                        <span class="badge badge-warning">Bekliyor</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="js/language-manager.js"></script>
+    <script type="module" src="js/user-session.js"></script>
+    <script type="module" src="js/utils/header-manager.js"></script>
+    <script type="module" src="js/admin-dashboard.js"></script>
+</body>
+</html>
+

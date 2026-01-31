@@ -1,0 +1,3 @@
+fix: Restore "Kurumsal Plan" button to payment page
+
+Reverted the "Kurumsal Plan" pricing button link to point to `payment.html?plan=premium` as intended, instead of the #contact section. This aligns its behavior with other pricing plans.

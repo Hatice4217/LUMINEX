@@ -1,0 +1,597 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINEX - Raporlama Merkezi</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* PREMIUM Reports Styles */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.5);
+            --shadow-sm: 0 4px 6px rgba(0,0,0,0.02);
+            --shadow-md: 0 10px 30px rgba(0,0,0,0.05);
+            --shadow-lg: 0 20px 40px rgba(0,0,0,0.08);
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --gradient-warning: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            --gradient-info: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+        }
+
+        .dashboard-content {
+            padding-top: 1rem;
+        }
+
+        /* Premium Header */
+        .premium-header {
+            background: var(--gradient-primary);
+            border-radius: 24px;
+            padding: 40px;
+            color: white;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .premium-header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/cubes.png'); /* Subtle texture */
+            opacity: 0.1;
+        }
+        
+        .premium-header::after {
+            content: '';
+            position: absolute;
+            top: -50%; right: -10%;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-title {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .header-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        /* Glassmorphic Filters */
+        .premium-controls {
+            display: flex;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .control-btn {
+            background: rgba(255,255,255,0.9);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            color: #555;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            color: var(--primary-color);
+        }
+        
+        .control-btn.active {
+            background: white;
+            color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* Grid Layout */
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .grid-item {
+            background: var(--glass-bg);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: var(--shadow-md);
+            border: var(--glass-border);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .grid-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .col-span-4 { grid-column: span 4; }
+        .col-span-6 { grid-column: span 6; }
+        .col-span-8 { grid-column: span 8; }
+        .col-span-12 { grid-column: span 12; }
+
+        @media (max-width: 1200px) {
+            .col-span-4 { grid-column: span 6; }
+            .col-span-8 { grid-column: span 12; }
+        }
+        @media (max-width: 768px) {
+            .col-span-4, .col-span-6, .col-span-8 { grid-column: span 12; }
+            .premium-header { flex-direction: column; align-items: flex-start; gap: 20px; padding: 30px; }
+            .premium-controls { width: 100%; overflow-x: auto; }
+        }
+
+        /* Card Typography */
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-subtitle {
+            font-size: 0.85rem;
+            color: #b2bec3;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+        }
+
+        /* Charts Enhancement */
+        .chart-container {
+            height: 250px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding-top: 20px;
+            padding-bottom: 10px;
+            position: relative;
+        }
+        
+        /* Gradient Bars */
+        .chart-bar-wrapper {
+            height: 100%;
+            width: 8%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            position: relative;
+        }
+        
+        .chart-bar {
+            width: 100%;
+            border-radius: 10px;
+            background: var(--gradient-primary);
+            position: relative;
+            transition: height 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 10px rgba(118, 75, 162, 0.3);
+            min-height: 10px;
+        }
+        
+        .chart-label {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: #636e72;
+            font-weight: 600;
+        }
+        
+        .chart-tooltip {
+            position: absolute;
+            top: -40px;
+            background: #2d3436;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 10;
+        }
+        
+        .chart-bar-wrapper:hover .chart-tooltip {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Donut Chart Redesign */
+        .donut-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            height: 220px;
+        }
+        
+        .donut-ring {
+            width: 180px; height: 180px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary-color) 0% 0%); /* JS will set this */
+            position: relative;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .donut-hole {
+            width: 130px; height: 130px;
+            background: white;
+            border-radius: 50%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .donut-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Metric Cards */
+        .metric-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #dfe6e9;
+        }
+        .metric-row:last-child { border-bottom: none; margin-bottom: 0; }
+        
+        .metric-info h4 { margin: 0 0 5px; color: #2d3436; font-size: 1rem; }
+        .metric-info p { margin: 0; color: #b2bec3; font-size: 0.8rem; }
+        
+        .metric-badge {
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+        .badge-trend-up { background: rgba(56, 239, 125, 0.15); color: #00b894; }
+        .badge-trend-down { background: rgba(255, 118, 117, 0.15); color: #d63031; }
+
+        /* Reports Table Styles */
+        .reports-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 15px;
+        }
+        
+        .reports-table th {
+            text-align: left;
+            color: #b2bec3;
+            font-weight: 600;
+            padding: 0 20px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        
+        .report-row {
+            background: white;
+            transition: all 0.3s;
+            border-radius: 16px;
+        }
+        
+        .report-row td {
+            padding: 20px;
+            vertical-align: middle;
+            border-top: 1px solid #f1f2f6;
+            border-bottom: 1px solid #f1f2f6;
+        }
+        .report-row td:first-child { border-left: 1px solid #f1f2f6; border-top-left-radius: 16px; border-bottom-left-radius: 16px; }
+        .report-row td:last-child { border-right: 1px solid #f1f2f6; border-top-right-radius: 16px; border-bottom-right-radius: 16px; text-align: right; }
+        
+        .report-row:hover {
+            transform: scale(1.01);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            z-index: 2;
+            position: relative;
+            border-color: transparent;
+        }
+        
+        .file-icon-box {
+            width: 50px; height: 50px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+            margin-right: 15px;
+        }
+        .icon-pdf { background: rgba(255, 118, 117, 0.1); color: #d63031; }
+        .icon-xls { background: rgba(56, 239, 125, 0.1); color: #00b894; }
+        .icon-csv { background: rgba(9, 132, 227, 0.1); color: #0984e3; }
+
+        .btn-download {
+            background: var(--text-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-download:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(54, 103, 168, 0.3);
+        }
+
+        /* Floating Action Button */
+        .fab-generate {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 65px;
+            height: 65px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            box-shadow: 0 10px 30px rgba(118, 75, 162, 0.4);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+        
+        .fab-generate:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        .fab-tooltip {
+            position: absolute;
+            right: 80px;
+            background: #2d3436;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: 0.3s;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        
+        .fab-generate:hover + .fab-tooltip { opacity: 1; transform: translateX(-10px); }
+
+    </style>
+<script>
+      try {
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+          document.documentElement.classList.add('sidebar-is-collapsed');
+        }
+      } catch (e) {}
+    </script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="logo">
+                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" style="display: flex; align-items: center; gap: 5px; margin-left: -10px;">
+                    <div style="
+                        width: 80px; 
+                        height: 80px; 
+                        background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); 
+                        -webkit-mask: url(clean-logo.png) no-repeat center / contain; 
+                        mask: url(clean-logo.png) no-repeat center / contain;
+                        display: inline-block;">
+                    </div>
+                    <div style="display: flex; align-items: baseline; gap: 8px;">
+                        <span style="font-family: 'Exo 2', sans-serif; font-size: 2.2rem; font-weight: 700; color: #001F6B; letter-spacing: 1px; line-height: 1;">LUMINEX</span>
+                        <span style="font-family: 'Exo 2', sans-serif; font-size: 2.2rem; font-weight: 700; color: #001F6B; letter-spacing: 1px; line-height: 1;">SAĞLIK KURULUŞU</span>
+                    </div>
+                </a>
+            </div>
+            <div class="user-info">
+                <span id="welcomeMessage"></span>
+                <div class="icons">
+                    <i id="themeToggleButton" class="fas fa-moon"></i>
+                    <i class="fas fa-bell"></i>
+                    <i class="fas fa-cog"></i>
+                    <i id="logoutButton" class="fas fa-sign-out-alt"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <!-- Side Menu -->
+            <aside class="side-menu">
+                <ul id="dynamicSideMenu">
+                    <!-- Populated by header-manager.js -->
+                </ul>
+                <div class="sidebar-toggle-wrapper">
+                    <button class="sidebar-toggle-button">
+                        <i class="fas fa-chevron-left"></i>
+                        <span>Menüyü Daralt</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Premium Reports Content -->
+            <main class="dashboard-content">
+                
+                <!-- Premium Header -->
+                <div class="premium-header">
+                    <div class="header-content">
+                        <h1 class="header-title">Raporlama Merkezi</h1>
+                        <p class="header-subtitle">Yapay zeka destekli veri analitiği ve kurumsal performans göstergeleri.</p>
+                    </div>
+                    <div class="premium-controls">
+                        <button id="btnOverview" class="control-btn active"><i class="fas fa-chart-pie"></i> Genel Bakış</button>
+                        <button id="btnFinancial" class="control-btn"><i class="fas fa-file-invoice-dollar"></i> Finansal</button>
+                        <button id="btnKPI" class="control-btn"><i class="fas fa-user-md"></i> Doktor KPI</button>
+                        <div style="width: 1px; background: #ddd; margin: 0 5px;"></div>
+                        <button id="btnDateFilter" class="control-btn" style="background: transparent; border: 1px solid rgba(255,255,255,0.5); color: white;">
+                            <i class="far fa-calendar-alt"></i> Bu Ay
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dashboard Grid -->
+                <div class="reports-grid">
+                    
+                    <!-- Col 1: Weekly Activity (Bar Chart) -->
+                    <div class="grid-item col-span-8">
+                        <div class="card-title">
+                            <i class="fas fa-wave-square" style="color: #6c5ce7;"></i>
+                            Haftalık Randevu Yoğunluğu
+                        </div>
+                        <div class="card-subtitle">Gerçek zamanlı hasta trafiği analizi</div>
+                        
+                        <div class="chart-container" id="weeklyActivityChart">
+                            <!-- JS will populate this -->
+                        </div>
+                    </div>
+
+                    <!-- Col 2: Status Distribution (Donut) -->
+                    <div class="grid-item col-span-4">
+                        <div class="card-title">
+                            <i class="fas fa-check-double" style="color: #00b894;"></i>
+                            Başarı Oranları
+                        </div>
+                        <div class="card-subtitle">Randevu Tamamlanma Durumu</div>
+                        
+                        <div class="donut-wrapper" id="statusDonutChart">
+                            <div class="donut-ring">
+                                <div class="donut-hole">
+                                    <span class="donut-value">0%</span>
+                                    <span style="font-size: 0.8rem; color: #b2bec3; margin-top: 5px;">Tamamlanan</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #636e72;">
+                                <span style="width: 12px; height: 12px; border-radius: 50%; background: #00b894;"></span> Başarılı
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #636e72;">
+                                <span style="width: 12px; height: 12px; border-radius: 50%; background: #fab1a0;"></span> İptal
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Col 3: Key Performance Indicators -->
+                    <div class="grid-item col-span-4">
+                        <div class="card-title">
+                            <i class="fas fa-tachometer-alt" style="color: #fd79a8;"></i>
+                            Sistem Performansı
+                        </div>
+                        <div class="card-subtitle">Sunucu ve Operasyonel Metrikler</div>
+                        
+                        <div style="margin-top: 30px;">
+                            <div class="metric-row">
+                                <div class="metric-info">
+                                    <h4>Sunucu Yanıt Süresi</h4>
+                                    <p>Ortalama API gecikmesi</p>
+                                </div>
+                                <span class="metric-badge badge-trend-up"><i class="fas fa-arrow-down"></i> 45ms</span>
+                            </div>
+                            <div class="metric-row">
+                                <div class="metric-info">
+                                    <h4>Veritabanı Yükü</h4>
+                                    <p>Anlık işlem kapasitesi</p>
+                                </div>
+                                <span class="metric-badge badge-trend-up" style="background: rgba(9, 132, 227, 0.1); color: #0984e3;">%24</span>
+                            </div>
+                            <div class="metric-row">
+                                <div class="metric-info">
+                                    <h4>Aktif Oturumlar</h4>
+                                    <p>Anlık çevrimiçi kullanıcı</p>
+                                </div>
+                                <span class="metric-badge badge-trend-up" style="background: rgba(253, 121, 168, 0.1); color: #fd79a8;">142</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Col 4: Reports List -->
+                    <div class="grid-item col-span-8">
+                        <div class="card-title">
+                            <i class="fas fa-file-alt" style="color: #0984e3;"></i>
+                            Hazır Rapor Arşivi
+                        </div>
+                        <div class="card-subtitle">Otomatik oluşturulan periyodik dökümanlar</div>
+                        
+                        <table class="reports-table">
+                            <thead>
+                                <tr>
+                                    <th>Rapor Adı</th>
+                                    <th>Oluşturulma</th>
+                                    <th>Boyut</th>
+                                    <th>İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportsTableBody">
+                                <!-- JS will populate this -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+        
+        <!-- Floating Action Button for Quick Generate -->
+        <div class="fab-generate" onclick="generateNewReport()" title="Hızlı Rapor Oluştur">
+            <i class="fas fa-magic"></i>
+        </div>
+        <div class="fab-tooltip">Yapay Zeka ile Rapor Oluştur</div>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script type="module" src="js/user-session.js"></script>
+    <script type="module" src="js/utils/header-manager.js"></script>
+    <script type="module" src="js/admin-reports.js"></script>
+</body>
+</html>
+

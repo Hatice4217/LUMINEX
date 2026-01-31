@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('landingTheme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('theme-dark');
+                // We can't add to body yet as it doesn't exist, but adding to html (documentElement) is usually enough for CSS selectors using html.theme-dark or body.theme-dark if we change CSS to support html.theme-dark.
+                // However, our CSS targets body.theme-dark.
+                // So we need a script immediately after body open.
+            }
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang="registerTitle"></title>
+    <script defer src="js/language-manager.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body lang="tr">
+    <script>
+      (function() {
+        try {
+          var theme = localStorage.getItem('landingTheme') || 'light';
+          document.body.className = theme === 'dark' ? 'theme-dark' : 'theme-light';
+        } catch (e) {
+          document.body.className = 'theme-light';
+        }
+      })();
+    </script>
+    <div class="login-container">
+        <div class="info-panel">
+            <div class="logo" style="display: flex; flex-direction: column; align-items: center; margin-bottom: 0; pointer-events: none;">
+                <div style="
+                    width: 1400px; 
+                    height: 560px; 
+                    background-color: #FFFFFF; 
+                    -webkit-mask: url(image.png) no-repeat center / contain; 
+                    mask: url(image.png) no-repeat center / contain;
+                    display: inline-block;">
+                </div>
+            </div>
+            <div class="content" style="margin-top: -80px; position: relative;">
+                <h1 style="font-weight: 300; font-size: 2.5rem;" data-lang="newBeginning"></h1>
+                <p data-lang="joinUs"></p>
+            </div>
+            <div class="register-link-panel">
+                <p><span data-lang="alreadyHaveAccount"></span> <a href="login.html" data-lang="loginNow"></a></p>
+            </div>
+        </div>
+        <div class="form-panel">
+            <div class="auth-card fade-in-up" style="position: relative; z-index: 999;">
+                <div class="top-right-actions">
+                    <div class="lang-switcher">
+                        <div class="selected-lang">
+                            <img src="https://flagcdn.com/tr.svg" alt="Türkçe">
+                            <span>Türkçe</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <ul class="lang-options">
+                            <li data-lang="tr"><img src="https://flagcdn.com/tr.svg" alt="Türkçe"><span>Türkçe</span></li>
+                            <li data-lang="en"><img src="https://flagcdn.com/gb.svg" alt="English"><span>English</span></li>
+                        </ul>
+                    </div>
+                    <a href="index.html" class="btn-home-text" title="Ana Sayfaya Dön">Ana Sayfaya Dön</a>
+                </div>
+                <div class="auth-header" style="margin-top: 60px;">
+                    <h2 data-lang="register"></h2>
+                </div>
+
+                <form id="registerForm" novalidate>
+                    <div class="form-group">
+                        <label for="fullName" data-lang="fullName"></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="fullName" name="fullName" placeholder="" required data-lang-placeholder="fullNamePlaceholder">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="tcKimlikRegister" data-lang="tcId">T.C. Kimlik Numarası</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-id-card"></i>
+                            <input type="text" id="tcKimlikRegister" name="tcKimlikRegister" placeholder="T.C. Kimlik Numaranızı giriniz" required maxlength="11" data-lang-placeholder="tcIdPlaceholder">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="emailRegister" data-lang="email"></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="emailRegister" name="emailRegister" placeholder="" required data-lang-placeholder="emailPlaceholder">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone" data-lang="phoneNumber"></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" id="phone" name="phone" placeholder="" data-lang-placeholder="phonePlaceholder">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="passwordRegister" data-lang="password"></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="passwordRegister" name="passwordRegister" placeholder="" required data-lang-placeholder="passwordPlaceholder">
+                            <span class="toggle-password"><i class="fas fa-eye"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="passwordConfirm" data-lang="passwordConfirm"></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="" required data-lang-placeholder="passwordConfirmPlaceholder">
+                            <span class="toggle-password"><i class="fas fa-eye"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="birthDate" data-lang="birthDate"></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-calendar-alt"></i>
+                            <input type="date" id="birthDate" name="birthDate" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="gender" data-lang="gender"></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-venus-mars"></i>
+                            <select id="gender" name="gender" class="form-control">
+                                <option value="" data-lang="select"></option>
+                                <option value="male" data-lang="male"></option>
+                                <option value="female" data-lang="female"></option>
+                                <option value="other" data-lang="other"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="termsCheck" name="termsCheck" required>
+                            <label class="form-check-label" for="termsCheck" style="font-size: 0.85rem;" data-lang="termsLabel"></label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" style="background: #001F6B !important; border-color: #001F6B !important; color: white; box-shadow: none;" data-lang="registerButton"></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/script.js"></script>
+    <script type="module" src="js/register.js"></script>
+</body>
+</html>
+

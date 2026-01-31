@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang="contactSupportSidebar">LUMINEX - İletişim & Destek</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" crossorigin=""/>
+    <style>
+        .contact-hero {
+            background: linear-gradient(135deg, #001F6B 0%, #004e92 100%);
+            border-radius: 24px;
+            padding: 30px 40px;
+            color: white;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 31, 107, 0.2);
+        }
+        .contact-hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/cubes.png');
+            opacity: 0.05;
+        }
+        .contact-hero h1 { 
+            color: white !important; 
+            margin-bottom: 8px; 
+            font-size: 2.2rem; 
+            text-shadow: 0 2px 15px rgba(0,0,0,0.3);
+            font-weight: 700;
+        }
+        .contact-hero p { 
+            color: rgba(255,255,255,0.95) !important; 
+            font-size: 1.05rem; 
+            font-weight: 400;
+            max-width: 700px;
+            margin: 0 auto;
+            text-shadow: 0 1px 8px rgba(0,0,0,0.2);
+        }
+
+        .support-channels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .channel-card {
+            background: var(--white-color);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        .channel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border-color: var(--primary-color);
+        }
+        .channel-icon {
+            width: 60px; height: 60px;
+            background: rgba(var(--primary-color-rgb), 0.1);
+            color: var(--primary-color);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 1.5rem;
+        }
+        .channel-card h3 { font-size: 1.2rem; margin-bottom: 10px; color: var(--text-color); }
+        .channel-card p { font-size: 0.95rem; color: var(--text-light); margin-bottom: 15px; }
+        .channel-link { color: var(--primary-color); font-weight: 600; text-decoration: none; }
+
+        .contact-main-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        @media (max-width: 992px) { .contact-main-grid { grid-template-columns: 1fr; } }
+
+        .faq-section { margin-top: 60px; }
+        .faq-section h2 { text-align: center; margin-bottom: 35px; font-size: 2rem; }
+        
+        .faq-accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .faq-item {
+            background: var(--white-color);
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .faq-question {
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .faq-question h4 { margin: 0; font-size: 1.05rem; font-weight: 500; color: var(--text-color); }
+        .faq-question i { color: var(--text-light); transition: transform 0.3s ease; }
+        .faq-answer {
+            max-height: 0;
+            padding: 0 25px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: rgba(var(--primary-color-rgb), 0.02);
+        }
+        .faq-item.active { border-color: var(--primary-color); box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
+        .faq-item.active .faq-answer { max-height: 200px; padding-bottom: 25px; }
+        .faq-item.active .faq-question i { transform: rotate(180deg); color: var(--primary-color); }
+
+        .map-wrapper {
+            height: 350px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        /* Support Ticket Table/Grid Styles for Admin */
+        .ticket-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+    </style>
+<script>
+      try {
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+          document.documentElement.classList.add('sidebar-is-collapsed');
+        }
+      } catch (e) {}
+</script>
+</head>
+<body lang="tr">
+    <div class="dashboard-container">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="logo">
+                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" style="display: flex; align-items: center; gap: 2px; margin-left: -30px;">
+                    <div style="
+                        width: 60px; 
+                        height: 60px; 
+                        background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); 
+                        -webkit-mask: url(clean-logo.png) no-repeat center / contain; 
+                        mask: url(clean-logo.png) no-repeat center / contain;
+                        display: inline-block;">
+                    </div>
+                    <span style="font-family: 'Exo 2', sans-serif; font-size: 2.5rem; font-weight: 700; color: #001F6B; letter-spacing: 1px; display: flex; align-items: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">LUMINEX</span>
+                </a>
+            </div>
+            <div class="user-info">
+                <span id="welcomeMessage"></span>
+                <div class="icons">
+                    <i id="themeToggleButton" class="fas fa-moon"></i>
+                    <div class="notification-wrapper" style="position: relative; display: inline-block;">
+                        <i class="fas fa-bell" style="cursor: pointer;"></i>
+                        <span class="notification-badge" style="display: none; position: absolute; top: -8px; right: -8px; background: #ff4757; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; align-items: center; justify-content: center; font-weight: bold; border: 2px solid var(--white-color);"></span>
+                        <div class="notification-dropdown dropdown" style="position: absolute; top: 100%; right: 0; width: 320px; background: var(--white-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; z-index: 1000; flex-direction: column; overflow: hidden; margin-top: 15px;"></div>
+                    </div>
+                    <i class="fas fa-cog"></i>
+                    <i id="logoutButton" class="fas fa-sign-out-alt"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-wrapper">
+            <aside class="side-menu">
+                <ul id="dynamicSideMenu"></ul>
+                <div class="sidebar-toggle-wrapper">
+                    <button class="sidebar-toggle-button">
+                        <i class="fas fa-chevron-left"></i>
+                        <span data-lang="collapseMenu">Menüyü Daralt</span>
+                    </button>
+                </div>
+            </aside>
+
+            <main class="dashboard-content">
+                
+                <!-- Admin View -->
+                <div id="adminSupportView" style="display: none;">
+                    <h1 data-lang="adminSupportRequestsSidebar" class="reveal">Destek Talepleri</h1>
+                    
+                    <div class="card reveal">
+                        <div class="ticket-list-header">
+                            <h2 data-lang="pendingTickets">Bekleyen Talepler</h2>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="ticketSearchInput" class="form-control" placeholder="Ara..." style="margin: 0; width: 250px;">
+                                <select id="ticketFilterStatus" class="form-control" style="margin: 0; width: 150px;">
+                                    <option value="all" data-lang="all">Tümü</option>
+                                    <option value="open" data-lang="statusOpen">Açık</option>
+                                    <option value="closed" data-lang="statusClosed">Kapalı</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="ticketGrid" class="support-grid"></div>
+                    </div>
+                </div>
+
+                <!-- Patient View -->
+                <div id="patientContactView" class="reveal">
+                    <div class="contact-hero">
+                        <h1 data-lang="contactHeroTitle">Size Nasıl Yardımcı Olabiliriz?</h1>
+                        <p data-lang="contactHeroSubtitle">Luminex destek ekibi olarak her zaman yanınızdayız.</p>
+                    </div>
+
+                    <div class="support-channels reveal">
+                        <div class="channel-card">
+                            <div class="channel-icon"><i class="fas fa-phone-alt"></i></div>
+                            <h3 data-lang="callUs">Bizi Arayın</h3>
+                            <p data-lang="callUsDesc">Hafta içi 09:00 - 18:00 saatleri arasında ulaşabilirsiniz.</p>
+                            <a href="tel:05519521622" class="channel-link">0551 952 16 22</a>
+                        </div>
+                        <div class="channel-card">
+                            <div class="channel-icon"><i class="fas fa-envelope"></i></div>
+                            <h3 data-lang="emailUs">E-posta Gönderin</h3>
+                            <p data-lang="emailUsDesc">Tüm sorularınız için 7/24 bize yazabilirsiniz.</p>
+                            <a href="mailto:destek@luminex.com.tr" class="channel-link">destek@luminex.com.tr</a>
+                        </div>
+                        <div class="channel-card">
+                            <div class="channel-icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <h3 data-lang="visitUs">Ziyaret Edin</h3>
+                            <p data-lang="visitUsDesc">Merkez ofisimizde sizi ağırlamaktan mutluluk duyarız.</p>
+                            <a href="#map-section" class="channel-link" data-lang="showOnMap">Haritada Gör</a>
+                        </div>
+                    </div>
+
+                    <div class="contact-main-grid reveal">
+                        <div class="card contact-form-card">
+                            <div id="contactFormAlert" class="form-alert"></div>
+                            <h2 data-lang="sendTicket">Destek Talebi Oluşturun</h2>
+                            <form id="contactForm">
+                                <div class="form-group">
+                                    <label for="contactSubject" data-lang="subject">Konu</label>
+                                    <div class="custom-select-wrapper">
+                                        <input type="text" id="contactSubject" class="form-control" placeholder="Konu seçin..." required autocomplete="off" data-lang-placeholder="selectSubject">
+                                        <div class="custom-options-panel" id="contactSubjectPanel"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="contactMessage" data-lang="yourMessage">Mesajınız</label>
+                                    <textarea id="contactMessage" class="form-control" rows="6" placeholder="Lütfen mesajınızı detaylıca açıklayın..." required data-lang-placeholder="enterMessageDetails"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block" data-lang="sendMessage">Mesaj Gönder</button>
+                            </form>
+                        </div>
+
+                        <div class="contact-info-col">
+                            <div class="card map-card" id="map-section">
+                                <h3 data-lang="ourLocation" style="margin-bottom: 15px;"><i class="fas fa-map-marked-alt"></i> Konumumuz</h3>
+                                <div id="map" class="map-wrapper"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-section reveal">
+                        <h2 data-lang="faqTitle">Sıkça Sorulan Sorular</h2>
+                        <div class="faq-accordion" id="faqAccordion">
+                            <!-- JS renders this -->
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="js/language-manager.js"></script>
+    <script type="module" src="js/user-session.js"></script>
+    <script type="module" src="js/utils/header-manager.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="js/contact.js" type="module"></script>
+</body>
+</html>

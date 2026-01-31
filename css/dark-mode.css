@@ -1,0 +1,816 @@
+/* DARK MODE OVERRIDES - PREMIUM */
+html.theme-dark, body.theme-dark {
+    background-color: var(--body-bg);
+    color: var(--text-color);
+}
+
+body.theme-dark {
+    --primary-color: #3b82f6; /* Vivid Blue */
+    --primary-dark: #1d4ed8;
+    --text-color: #f1f5f9; /* Bright White-ish */
+    --text-light: #94a3b8;
+    --body-bg: #020617; /* Deep Midnight Black (No more gray) */
+    --white-color: #0f172a; /* Dark card background */
+    --border-color: #1e293b;
+    --input-bg: #0f172a;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --secondary-background: #1e293b;
+}
+
+body.theme-dark h1,
+body.theme-dark h2,
+body.theme-dark h3,
+body.theme-dark h4,
+body.theme-dark h5,
+body.theme-dark h6,
+body.theme-dark label,
+body.theme-dark span,
+body.theme-dark .theme-label {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+body.theme-dark p,
+body.theme-dark .text-muted {
+    color: #e0e0e0 !important;
+}
+
+body.theme-dark .profile-tabs {
+    background-color: var(--input-bg);
+    border-bottom-color: var(--border-color);
+}
+
+body.theme-dark .profile-tab {
+    color: #b2bec3;
+}
+
+body.theme-dark .profile-tab:hover {
+    color: #ffffff;
+}
+
+body.theme-dark .profile-tab.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    background-color: rgba(255,255,255,0.05);
+}
+
+body.theme-dark #security h4 {
+    color: var(--primary-color) !important; /* Ensure visibility for security heading */
+}
+
+body.theme-dark .card, 
+body.theme-dark .side-menu,
+body.theme-dark .top-bar,
+body.theme-dark .stats-card,
+body.theme-dark .announcements-card,
+body.theme-dark .appointment-item,
+body.theme-dark .test-result-item,
+body.theme-dark .prescription-item,
+body.theme-dark .health-history-item,
+body.theme-dark .hospital-card,
+body.theme-dark .user-card,
+body.theme-dark .department-card,
+body.theme-dark .ticket-card,
+body.theme-dark .filter-card-header,
+body.theme-dark .modern-swal-popup,
+body.theme-dark .custom-options-panel,
+body.theme-dark .profile-section,
+body.theme-dark .profile-sidebar,
+body.theme-dark .profile-main,
+body.theme-dark .stat-card { /* Added .stat-card here for consistency */
+    background: #1e293b !important; /* Force Midnight Blue for all cards, overriding gradients */
+    border-color: var(--border-color);
+    color: var(--text-color);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3); /* Consistent shadow */
+}
+
+/* Dark Mode for Availability Table */
+body.theme-dark .availability-table {
+    background-color: #1e293b;
+    color: var(--text-color);
+}
+
+body.theme-dark .availability-table th,
+body.theme-dark .availability-table td {
+    border-color: var(--border-color);
+    color: var(--text-color);
+    /* Remove generic background-color here to allow specific slot styles to apply */
+}
+
+body.theme-dark .availability-table th {
+    background-color: var(--primary-dark); /* Use primary-dark for header for better contrast */
+    color: var(--text-color);
+    position: sticky; /* Inherit sticky property for dark mode */
+    top: 0;
+    z-index: 10;
+}
+
+body.theme-dark .availability-table .time-col {
+    background-color: var(--primary-dark); /* Ensure time column sticky background is dark */
+    position: sticky;
+    left: 0;
+    z-index: 15;
+}
+
+body.theme-dark .availability-table th.time-col {
+    z-index: 20;
+}
+
+body.theme-dark .availability-table td:hover {
+    background-color: var(--secondary-background); /* Darker hover for dark mode */
+}
+
+/* Dark Mode Slot Styles */
+body.theme-dark .slot-available {
+    background: linear-gradient(135deg, #1f422e, #1a362a); /* Darker green gradient */
+    border-color: #2e7d32;
+    color: #a8e6a8;
+}
+body.theme-dark .slot-available i {
+    color: #a8e6a8;
+}
+body.theme-dark .slot-available:hover {
+    box-shadow: 0 4px 15px rgba(0, 150, 0, 0.2);
+}
+
+body.theme-dark .slot-occupied {
+    background: linear-gradient(135deg, #3d242c, #331e24); /* Darker red-pink gradient */
+    border-color: #c62828;
+    color: #ffcdd2;
+}
+body.theme-dark .slot-occupied::after {
+    color: rgba(198, 40, 40, 0.4); /* Faded red for dark mode */
+}
+
+body.theme-dark .slot-blocked-manual {
+    background: linear-gradient(135deg, #2a204e, #201a3b); /* Darker purple-blue gradient */
+    border-color: #673ab7;
+    color: #d1c4e9;
+}
+body.theme-dark .slot-blocked-manual i {
+    color: #d1c4e9;
+}
+body.theme-dark .slot-blocked-manual:hover {
+    box-shadow: 0 4px 15px rgba(103, 58, 183, 0.2);
+}
+
+body.theme-dark .slot-blocked, body.theme-dark .slot-blocked-past {
+    background-color: #2d3436; /* Darker grey */
+    border: 1px dashed var(--border-color); /* Keep dashed border */
+    color: #7f8c8d;
+    opacity: 0.8;
+}
+body.theme-dark .slot-blocked::after, body.theme-dark .slot-blocked-past::after {
+    background-image: linear-gradient(45deg, rgba(0,0,0,0.2) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2) 75%, transparent 75%, transparent);
+}
+
+/* Dark Mode for Review Items */
+body.theme-dark .review-item {
+    background-color: #1e293b !important;
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+body.theme-dark .review-text {
+    color: #b2bec3 !important; /* Lighter grey for text */
+}
+
+body.theme-dark .review-author {
+    color: var(--primary-color) !important;
+}
+
+/* Dark Mode for Availability Calendar Controls */
+body.theme-dark .week-navigator {
+    background-color: #0f172a !important; /* Darker shade for container */
+    border-color: var(--border-color);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+}
+
+body.theme-dark .week-navigator .nav-btn {
+    background-color: #1e293b !important; /* Match card bg */
+    color: var(--text-color);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+body.theme-dark .week-navigator .nav-btn:hover {
+    background-color: var(--primary-color) !important;
+    color: #ffffff !important;
+}
+
+body.theme-dark .week-navigator .current-week-display {
+    color: var(--text-color) !important;
+}
+
+/* Ensure stat card text is visible on new background */
+body.theme-dark .stat-card-title {
+    color: #cbd5e1 !important;
+}
+
+body.theme-dark .stat-card-value {
+    color: #ffffff !important;
+}
+
+body.theme-dark .top-bar .logo a {
+    text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+}
+
+body.theme-dark .side-menu ul li a:hover,
+body.theme-dark .side-menu ul li a.active {
+    background-color: var(--secondary-background);
+    color: #a29bfe;
+    border-left-color: #a29bfe;
+}
+
+body.theme-dark .form-control {
+    background-color: var(--input-bg);
+    color: white;
+    border-color: var(--border-color);
+}
+
+body.theme-dark .form-control::placeholder {
+    color: #7f8c8d;
+}
+
+body.theme-dark .stat-card-value,
+body.theme-dark .stat-card-title {
+    color: var(--text-color);
+}
+
+body.theme-dark .premium-header::before {
+    opacity: 0.05;
+}
+
+body.theme-dark .filter-card-header {
+    border-bottom: 1px solid var(--border-color);
+}
+
+body.theme-dark .user-card-footer,
+body.theme-dark .card-footer,
+body.theme-dark .ticket-footer {
+    border-top-color: var(--border-color);
+}
+
+body.theme-dark .info-panel {
+    background-color: #0f1519;
+}
+
+body.theme-dark .custom-option:hover {
+    background-color: var(--secondary-background);
+}
+
+/* Specific Dark Mode adjustments for profile management form labels and groups */
+body.theme-dark .form-group label {
+    color: #f8f8f8; /* Very light color for labels in dark mode */
+}
+
+body.theme-dark .form-group {
+    background-color: transparent; /* Ensure form-group itself doesn't force a white background */
+    /* Remove padding and border-radius here if they are causing issues, or ensure they inherit correctly */
+}
+
+/* Specific Dark Mode adjustments for charts/icons if needed */
+body.theme-dark .fa-bell,
+body.theme-dark .fa-cog,
+body.theme-dark .fa-sign-out-alt {
+    color: var(--text-light);
+}
+
+body.theme-dark .quick-access-item i {
+    text-shadow: 0 0 15px rgba(108, 92, 231, 0.4);
+}
+/* Dark Mode overrides for doctor initials */
+body.theme-dark .doctor-initials {
+    background-color: var(--primary-dark); /* Darker primary color for default in dark mode */
+    color: #fff !important;
+}
+
+body.theme-dark .doctor-initials.female {
+    background-color: #D8BFD8; /* Slightly darker pink for dark mode */
+    color: #1d1d1f !important; /* Dark text on dark pink */
+}
+
+body.theme-dark .doctor-initials.male {
+    background-color: #6495ED; /* Slightly darker blue for dark mode */
+    color: #1d1d1f !important; /* Dark text on dark blue */
+}
+
+
+/* ENHANCED DARK MODE - PREMIUM MIDNIGHT */
+
+/* Scrollbar Styling */
+body.theme-dark ::-webkit-scrollbar {
+    width: 10px;
+    background-color: #0f172a;
+}
+
+body.theme-dark ::-webkit-scrollbar-thumb {
+    background-color: #334155;
+    border-radius: 5px;
+    border: 2px solid #0f172a;
+}
+
+body.theme-dark ::-webkit-scrollbar-thumb:hover {
+    background-color: #475569;
+}
+
+/* Premium Header Adjustments */
+body.theme-dark .premium-header {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+body.theme-dark .premium-header h1 {
+    color: #fff !important;
+    text-shadow: 0 0 20px rgba(129, 140, 248, 0.5) !important; /* Indigo Glow */
+}
+
+/* Sidebar & Top Bar Integration */
+body.theme-dark .side-menu,
+body.theme-dark .top-bar {
+    background-color: #1e293b !important; /* Match card bg */
+    border-right: 1px solid #334155;
+    border-bottom: 1px solid #334155;
+}
+
+body.theme-dark .side-menu ul li a {
+    color: #94a3b8 !important;
+}
+
+body.theme-dark .side-menu ul li a:hover, 
+body.theme-dark .side-menu ul li a.active {
+    background-color: rgba(129, 140, 248, 0.1) !important; /* Transparent Indigo */
+    color: #818cf8 !important;
+    border-left-color: #818cf8 !important;
+}
+
+/* Cards with subtle glow */
+body.theme-dark .card,
+body.theme-dark .ticket-card,
+body.theme-dark .user-card,
+body.theme-dark .hospital-card,
+body.theme-dark .department-card {
+    background-color: #1e293b !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.theme-dark .card:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(129, 140, 248, 0.1) !important; /* Subtle indigo glow on hover */
+    border-color: rgba(129, 140, 248, 0.3) !important;
+}
+
+/* Admin Dashboard Specific Fixes */
+body.theme-dark .premium-stat-card,
+body.theme-dark .chart-card,
+body.theme-dark .quick-action-btn {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f1f5f9 !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
+}
+
+body.theme-dark .quick-action-btn:hover {
+    background-color: #2d3436 !important;
+}
+
+/* Input Fields */
+body.theme-dark .form-control, 
+body.theme-dark input, 
+body.theme-dark select, 
+body.theme-dark textarea {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+    color: #f1f5f9 !important;
+}
+
+body.theme-dark .form-control:focus {
+    border-color: #818cf8 !important;
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2) !important;
+}
+
+/* Buttons */
+body.theme-dark .btn-primary, 
+body.theme-dark .btn-add-new {
+    background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4) !important;
+    color: white !important;
+    border: none !important;
+}
+
+body.theme-dark .btn-primary:hover {
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.6) !important;
+    transform: translateY(-2px);
+}
+
+/* Icons */
+body.theme-dark .fas, 
+body.theme-dark .far, 
+body.theme-dark i {
+    color: #94a3b8; /* Default muted icon color */
+}
+
+body.theme-dark .quick-access-item i {
+    color: #818cf8 !important; /* Bright primary icons */
+    text-shadow: 0 0 15px rgba(129, 140, 248, 0.6) !important;
+}
+
+/* Tables */
+body.theme-dark .premium-table thead {
+    background: #0f172a !important;
+}
+
+body.theme-dark .premium-table th {
+    color: #cbd5e1 !important;
+    border-bottom-color: #334155 !important;
+}
+
+body.theme-dark .premium-table td {
+    border-bottom-color: #334155 !important;
+    color: #94a3b8 !important;
+}
+
+body.theme-dark .premium-table tr:hover td {
+    background-color: #1e293b !important;
+}
+
+/* SweetAlert Dark */
+body.theme-dark .swal2-popup {
+    background: #1e293b !important;
+    color: #f1f5f9 !important;
+    border: 1px solid #334155;
+}
+
+body.theme-dark .swal2-title,
+body.theme-dark .swal2-content {
+    color: #f1f5f9 !important;
+}
+
+/* Global Scrollbar for Dark Mode */
+body.theme-dark::-webkit-scrollbar,
+body.theme-dark *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background-color: #0f172a;
+}
+
+body.theme-dark::-webkit-scrollbar-thumb,
+body.theme-dark *::-webkit-scrollbar-thumb {
+    background-color: #334155;
+    border-radius: 4px;
+    border: 2px solid #0f172a;
+}
+
+/* Side Menu Icons */
+body.theme-dark .side-menu ul li a i {
+    color: #94a3b8 !important;
+    transition: color 0.3s ease;
+}
+
+body.theme-dark .side-menu ul li a:hover,
+body.theme-dark .side-menu ul li a.active i {
+    color: #818cf8 !important;
+    text-shadow: 0 0 10px rgba(129, 140, 248, 0.4);
+}
+
+/* Fix Stats Visibility */
+body.theme-dark .stat-value,
+body.theme-dark .stat-card-value,
+body.theme-dark .stats-card p strong,
+body.theme-dark h1, 
+body.theme-dark h2, 
+body.theme-dark h3,
+body.theme-dark h4,
+body.theme-dark strong {
+    color: #f1f5f9 !important; /* Bright white-ish */
+    text-shadow: 0 0 10px rgba(255,255,255,0.1); /* Subtle glow for readability */
+}
+
+/* Colorful Gradient Stats for Dark Mode */
+body.theme-dark .stat-value,
+body.theme-dark .stat-card-value {
+    background: linear-gradient(to right, #22d3ee, #818cf8) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    font-weight: 800 !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+    display: inline-block; /* Needed for gradient text */
+}
+
+body.theme-dark h1, 
+body.theme-dark h2, 
+body.theme-dark h3 {
+    color: #e0e7ff !important; /* Soft Indigo White */
+}
+
+body.theme-dark .stat-label,
+body.theme-dark p {
+    color: #cbd5e1 !important; /* Readable Slate */
+}
+
+/* --- NEW: Hero Cards & Online Services Dark Mode --- */
+body.theme-dark .hero-card {
+    background: rgba(30, 41, 59, 0.6) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+body.theme-dark .hero-card:hover {
+    background: rgba(30, 41, 59, 0.9) !important;
+    border-color: rgba(129, 140, 248, 0.3) !important;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5), 0 0 20px rgba(129, 140, 248, 0.1);
+}
+
+body.theme-dark .card-icon {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+body.theme-dark .card-content h3 {
+    color: #f1f5f9 !important;
+}
+
+body.theme-dark .card-content p {
+    color: #94a3b8 !important;
+}
+
+body.theme-dark .card-arrow {
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+}
+
+body.theme-dark .hero-card:hover .card-arrow {
+    background: var(--primary-color); /* Vivid Blue from dark mode variables */
+    border-color: var(--primary-color);
+    color: #ffffff; /* White arrow icon */
+    box-shadow: 0 5px 20px rgba(59, 130, 246, 0.4); /* Glow effect with the new color */
+}
+
+/* Online Services Dark Mode */
+body.theme-dark .online-services {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+body.theme-dark .service-mini-card {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+body.theme-dark .service-mini-card span {
+    color: #cbd5e1 !important;
+}
+
+body.theme-dark .service-mini-card:hover {
+    background: #818cf8; /* Indigo accent */
+    border-color: #818cf8;
+}
+
+body.theme-dark .service-mini-card:hover i,
+body.theme-dark .service-mini-card:hover span {
+    color: #ffffff !important;
+    text-shadow: none;
+}
+
+/* --- NEW: Featured Doctors Dark Mode --- */
+body.theme-dark .doctor-card {
+    background-color: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+body.theme-dark .doctor-info h3 {
+    color: #e0e7ff !important;
+}
+
+body.theme-dark .doctor-info span {
+    color: #818cf8 !important;
+}
+
+body.theme-dark .doctor-info p {
+    color: #cbd5e1 !important;
+}
+
+body.theme-dark .btn-book-doc {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    border: none;
+    color: white !important;
+}
+
+body.theme-dark .btn-book-doc:hover {
+    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+    transform: scale(1.05);
+}
+
+
+/* ==========================================================================
+   LOGIN & REGISTER PAGE DARK MODE OVERRIDES (PREMIUM MIDNIGHT)
+   ========================================================================== */
+
+body.theme-dark .login-container {
+    background-color: #060b14 !important; /* Almost black, very subtle lift from body */
+    border: 1px solid rgba(255, 255, 255, 0.02); /* Extremely faint border */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Right Side (Form Area) - Ultra Premium Dark */
+body.theme-dark .form-panel {
+    background-color: transparent !important; /* Let container color show through */
+}
+
+body.theme-dark .auth-card {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+body.theme-dark .auth-header h2 {
+    color: #ffffff !important; /* Pure White */
+    font-weight: 600 !important;
+    letter-spacing: -0.5px;
+}
+
+/* Left Side (Info/Image Area) */
+body.theme-dark .info-panel {
+    background: linear-gradient(180deg, #0f172a 0%, #060b14 100%) !important; /* Seamless match */
+    border-right: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+body.theme-dark .info-panel h1 {
+    color: #ffffff !important;
+}
+
+body.theme-dark .info-panel p {
+    color: #cbd5e1 !important; /* Bright Silver, NOT Gray */
+}
+
+/* Input Fields - High Contrast & Clean */
+body.theme-dark .input-wrapper input,
+body.theme-dark .input-wrapper select,
+body.theme-dark .form-control {
+    background-color: #050b14 !important; /* Deepest Navy/Black */
+    border: 1px solid #1e293b !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    padding-left: 45px;
+    height: 50px;
+}
+
+body.theme-dark .input-wrapper input::placeholder {
+    color: #475569 !important; /* Dark subtle text for placeholder only */
+}
+
+body.theme-dark .input-wrapper i {
+    color: #94a3b8 !important; /* Silver Icon */
+    z-index: 10; /* Ensure icon is above background */
+}
+
+body.theme-dark .input-wrapper input:focus {
+    border-color: #3b82f6 !important; /* Vivid Blue Focus Border */
+    background-color: #0f172a !important; /* Slightly lighter dark blue, NOT WHITE */
+    box-shadow: 0 0 0 1px #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+body.theme-dark .input-wrapper input:focus + i {
+    color: #60a5fa !important; /* Light Blue Icon on Focus */
+}
+
+/* Prevent Chrome/Edge Autofill from turning background white/yellow */
+body.theme-dark input:-webkit-autofill,
+body.theme-dark input:-webkit-autofill:hover, 
+body.theme-dark input:-webkit-autofill:focus, 
+body.theme-dark input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #050b14 inset !important; /* Force dark background */
+    -webkit-text-fill-color: #ffffff !important; /* Force white text */
+    transition: background-color 5000s ease-in-out 0s;
+    caret-color: #ffffff;
+}
+
+/* Checkbox & Links */
+body.theme-dark .form-check-label {
+    color: #e2e8f0 !important; /* Silver/White */
+}
+
+body.theme-dark .forgot-password {
+    color: #60a5fa !important; /* Vivid Blue Link */
+}
+
+body.theme-dark .lang-switcher .selected-lang {
+    background: #0b0f19 !important;
+    border: 1px solid #1e293b !important;
+    color: #ffffff !important;
+}
+
+/* Toggle Password Eye */
+body.theme-dark .toggle-password {
+    color: #64748b !important;
+}
+
+body.theme-dark .toggle-password:hover {
+    color: #f1f5f9 !important;
+}
+
+/* Labels */
+body.theme-dark label {
+    color: #cbd5e1 !important; /* Light Slate */
+}
+
+/* Checkbox */
+body.theme-dark .form-check-label {
+    color: #cbd5e1 !important;
+}
+
+/* Links */
+body.theme-dark .forgot-password,
+body.theme-dark .register-link-panel a {
+    color: #38bdf8 !important; /* Sky Blue */
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+body.theme-dark .forgot-password:hover,
+body.theme-dark .register-link-panel a:hover {
+    color: #7dd3fc !important;
+    text-decoration: none;
+}
+
+body.theme-dark .register-link-panel p {
+    color: #94a3b8 !important;
+}
+
+/* Language Switcher in Auth Card */
+body.theme-dark .auth-card .selected-lang {
+    background: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid #334155 !important;
+    color: #e2e8f0 !important;
+}
+
+body.theme-dark .auth-card .lang-options {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
+}
+
+body.theme-dark .auth-card .lang-options li {
+    color: #e2e8f0 !important;
+}
+
+body.theme-dark .auth-card .lang-options li:hover {
+    background: #334155 !important;
+    color: #fff !important;
+}
+
+/* Logo Mask Fix for Dark Mode */
+body.theme-dark .logo div {
+    background-color: #f8fafc !important; /* Bright White Logo */
+    opacity: 0.9;
+}
+
+/* Submit Button - Matte & Elegant */
+body.theme-dark .btn-primary {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important; /* Slightly darker/richer blue */
+    border: 1px solid rgba(255,255,255,0.05) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; /* Minimal shadow, no glow */
+}
+
+body.theme-dark .btn-primary:hover {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important; /* Very subtle lift on hover */
+    transform: translateY(-1px);
+}
+
+/* --- Login/Register Page Actions --- */
+body.theme-dark .top-right-actions .btn-home-text {
+    background: rgba(255, 255, 255, 0.1);
+    color: #94a3b8; /* --text-light in dark mode */
+}
+
+body.theme-dark .top-right-actions .btn-home-text:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #f1f5f9; /* --text-color in dark mode */
+}
+
+body.theme-dark .lang-switcher .selected-lang {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+}
+
+body.theme-dark .lang-switcher .selected-lang:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+body.theme-dark .lang-options {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+body.theme-dark .lang-options li {
+    color: #f1f5f9;
+}
+
+body.theme-dark .lang-options li:hover {
+    background: #334155;
+}

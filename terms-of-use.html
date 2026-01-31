@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINEX - Kullanım Şartları</title>
+    <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="css/kvkk-page.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <style>
+        body { overflow: hidden !important; }
+        .terms-alert {
+            background: rgba(217, 48, 37, 0.1);
+            border-left: 4px solid #D93025;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 0 10px 10px 0;
+        }
+        body.theme-light .terms-alert { background: #fff5f5; }
+    </style>
+</head>
+<body class="theme-light">
+    <div class="background-animation"></div>
+    
+    <nav class="navbar scrolled">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-logo">
+                <img src="clean-logo.png" alt="Luminex Logo">
+                <span>LUMINEX</span>
+            </a>
+            <div class="nav-right-actions">
+                <button id="landingThemeToggle" class="theme-toggle-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <a href="index.html" class="btn btn-secondary" data-lang="backToHome">Ana Sayfaya Dön</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="legal-page-container">
+        <div class="container">
+            <div class="legal-card">
+                <div class="legal-header">
+                    <i class="fas fa-file-contract"></i>
+                    <h1 data-lang="termsMainHeader">Kullanım Şartları</h1>
+                </div>
+                
+                <div class="legal-tabs-wrapper">
+                    <aside class="legal-tabs-nav">
+                        <button class="tab-btn active" onclick="openTab(event, 'general-terms')">
+                            <i class="fas fa-handshake"></i> Genel Çerçeve
+                        </button>
+                        <button class="tab-btn" onclick="openTab(event, 'user-code')">
+                            <i class="fas fa-user-shield"></i> Kullanıcı Etiği
+                        </button>
+                        <button class="tab-btn" onclick="openTab(event, 'medical-warning')">
+                            <i class="fas fa-exclamation-triangle"></i> Tıbbi Uyarılar
+                        </button>
+                        <button class="tab-btn" onclick="openTab(event, 'legal-action')">
+                            <i class="fas fa-gavel"></i> Hukuki Sorumluluk
+                        </button>
+                    </aside>
+
+                    <div class="legal-content">
+                        <div id="general-terms" class="legal-content-pane active">
+                            <h2>LUMINEX Kullanım Sözleşmesi</h2>
+                            <p>Bu Kullanım Şartları, LUMINEX platformu ile son kullanıcı (siz) arasındaki yasal ilişkiyi belirleyen ana sözleşmedir. Platformumuza kayıt olarak veya ziyaret ederek bu maddelerin tamamını kabul etmiş sayılırsınız.</p>
+                            <p>LUMINEX, sağlık teknolojilerinde öncü bir rol üstlenerek platformun özelliklerini dilediği zaman geliştirme, sınırlama veya değiştirme hakkına sahiptir. Bu sözleşme "yaşayan bir metin" olup, yapılan güncellemeler yayınlandığı andan itibaren geçerlilik kazanır.</p>
+                        </div>
+
+                        <div id="user-code" class="legal-content-pane">
+                            <h2>Sorumlu Kullanıcı İlkesi</h2>
+                            <p>Platformdan en yüksek verimi alabilmeniz için şu kurallara uymanız gerekmektedir:</p>
+                            <ul>
+                                <li><strong>Kimlik Doğruluğu:</strong> Kayıt sırasında verilen T.C. Kimlik ve iletişim bilgileri tamamen şahsınıza ait ve güncel olmalıdır. Başkasının adına hesap açmak yasal suç teşkil edebilir.</li>
+                                <li><strong>Hesap Güvenliği:</strong> Şifrenizin gizliliğinden bizzat sorumlusunuz. Hesabınız üzerinden yapılan her işlem sizin tarafınızdan yapılmış kabul edilir.</li>
+                                <li><strong>Sistem Güvenliği:</strong> Platforma yönelik siber saldırı, veri kazıma (scraping) veya tersine mühendislik girişimlerinde bulunmak kesinlikle yasaktır.</li>
+                            </ul>
+                        </div>
+
+                        <div id="medical-warning" class="legal-content-pane">
+                            <div class="terms-alert">
+                                <h3>KRİTİK UYARI: Teşhis ve Tedavi Sınırı</h3>
+                                <p>LUMINEX, bir tıbbi kuruluş veya hastane değildir. Platform üzerinden sunulan yapay zeka yönlendirmeleri (Neyim Var?) sadece **bilgilendirme amaçlı ön elemedir.**</p>
+                            </div>
+                            <p>Sistemimiz tarafından sunulan hiçbir veri, bir doktorun fiziki muayenesinin, laboratuvar tanısının veya profesyonel görüşünün yerine geçemez. LUMINEX sonuçlarına dayanarak kendi kendinize tedavi uygulamayınız, ilaç kullanmayınız veya mevcut tedavinizi durdurmayınız.</p>
+                            <p><strong>Acil Durumlar:</strong> Hayati tehlike hissettiğiniz anlarda lütfen platformu kullanmak yerine derhal **112 Acil Çağrı** merkezine ulaşınız.</p>
+                        </div>
+
+                        <div id="legal-action" class="legal-content-pane">
+                            <h2>Sorumluluk Reddi ve Yetkili Mahkemeler</h2>
+                            <p>LUMINEX, platformun kesintisiz çalışması için elinden geleni yapar; ancak internet sağlayıcıları, sunucu arızaları veya mücbir sebeplerden kaynaklanan veri gecikmelerinden sorumlu tutulamaz.</p>
+                            <p>Platform üzerindeki tüm içerikler, tasarımlar ve AI algoritmaları LUMINEX'e ait fikri mülkiyettir. İzinsiz kullanım durumunda yasal işlem başlatılır.</p>
+                            <p>Bu sözleşmeden doğacak her türlü ihtilafta **İstanbul (Çağlayan) Mahkemeleri** ve İcra Daireleri yetkili kılınmıştır.</p>
+                            <div class="legal-footer">
+                                <p>💡 Sistemi kullanmaya devam ettiğinizde, bu şartları kabul etmiş sayılırsınız.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstTab = document.querySelector('.tab-btn');
+            if (firstTab) {
+                const tabName = firstTab.getAttribute('onclick').match(/'([^']+)'/)[1];
+                openTab({ currentTarget: firstTab }, tabName);
+            }
+        });
+
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("legal-content-pane");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).classList.add("active");
+            if (evt && evt.currentTarget) {
+                evt.currentTarget.classList.add("active");
+            }
+        }
+    </script>
+    <script src="js/language-manager.js"></script>
+    <script type="module" src="js/script.js"></script>
+</body>
+</html>

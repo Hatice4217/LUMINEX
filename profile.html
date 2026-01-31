@@ -1,0 +1,327 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINEX - Profilim</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="css/style.css?v=2">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+<script>
+      try {
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+          document.documentElement.classList.add('sidebar-is-collapsed');
+        }
+      } catch (e) {}
+    </script>
+<script>
+      try {
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+          document.documentElement.classList.add('sidebar-is-collapsed');
+        }
+      } catch (e) {}
+</script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="logo">
+                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" style="display: flex; align-items: center; gap: 2px; margin-left: -30px;">
+                    <div style="
+                        width: 60px; 
+                        height: 60px; 
+                        background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); 
+                        -webkit-mask: url(clean-logo.png) no-repeat center / contain; 
+                        mask: url(clean-logo.png) no-repeat center / contain;
+                        display: inline-block;">
+                    </div>
+                    <span style="font-family: 'Exo 2', sans-serif; font-size: 2.5rem; font-weight: 700; color: #001F6B; letter-spacing: 1px; display: flex; align-items: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">LUMINEX</span>
+                </a>
+            </div>
+            <div class="user-info">
+                <span id="welcomeMessage"></span>
+                <div class="icons">
+                    <i id="themeToggleButton" class="fas fa-moon"></i>
+                    <i class="fas fa-bell"></i>
+                    <i class="fas fa-cog"></i>
+                    <i id="logoutButton" class="fas fa-sign-out-alt"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <!-- Side Menu -->
+            <aside class="side-menu">
+                <ul id="dynamicSideMenu">
+                    <!-- Populated by header-manager.js -->
+                </ul>
+                <div class="sidebar-toggle-wrapper">
+                    <button class="sidebar-toggle-button">
+                        <i class="fas fa-chevron-left"></i>
+                        <span>Menüyü Daralt</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Profile Management Content -->
+            <main class="dashboard-content">
+                <h1 data-lang="profileManagementTitle" class="reveal">Profil Yönetimi</h1>
+                
+                <div class="doctor-profile-grid reveal"> <!-- Reusing doctor-profile-grid for layout consistency -->
+                    <!-- Sidebar (can be repurposed or removed if not needed for patients) -->
+                    <aside class="profile-sidebar" style="display: none;">
+                        <!-- Patient-specific sidebar content if any, otherwise hide -->
+                    </aside>
+
+                    <!-- Main Content (Forms) -->
+                    <section class="profile-main">
+                        <div class="profile-tabs">
+                            <div class="profile-tab active" data-target="personal-info"><i class="fas fa-user"></i> <span data-lang="personalInfo">Kişisel Bilgiler</span></div>
+                            <div class="profile-tab" data-target="security"><i class="fas fa-lock"></i> <span data-lang="security">Güvenlik</span></div>
+                            <div class="profile-tab" data-target="theme-settings"><i class="fas fa-palette"></i> <span data-lang="themeSettings">Tema Ayarları</span></div>
+                            <div class="profile-tab" data-target="children"><i class="fas fa-child"></i> <span data-lang="myChildren">Çocuklarım</span></div>
+                        </div>
+
+                        <div class="profile-content-body">
+                            <!-- Personal Info Tab -->
+                            <div id="personal-info" class="profile-section active">
+                                <form id="profileForm">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="profileFullName" data-lang="fullName">Ad Soyad</label>
+                                            <input type="text" id="profileFullName" class="form-control" placeholder="Yükleniyor..." readonly data-lang-placeholder="loadingText">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="profileEmail" data-lang="email">E-posta</label>
+                                            <input type="email" id="profileEmail" class="form-control" placeholder="Yükleniyor..." readonly data-lang-placeholder="loadingText">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="profilePhone" data-lang="phoneNumber">Telefon</label>
+                                            <input type="tel" id="profilePhone" class="form-control" placeholder="Yükleniyor..." data-lang-placeholder="loadingText">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="profileBirthDate" data-lang="birthDate">Doğum Tarihi</label>
+                                            <input type="date" id="profileBirthDate" class="form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="profileGender" data-lang="gender">Cinsiyet</label>
+                                            <select id="profileGender" class="form-control">
+                                                <option value="" data-lang="select">Seçiniz</option>
+                                                <option value="male" data-lang="male">Erkek</option>
+                                                <option value="female" data-lang="female">Kadın</option>
+                                                <option value="other" data-lang="other">Diğer</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-actions" style="margin-top: 20px; text-align: right;">
+                                        <button type="button" class="btn btn-primary" id="editProfileBtn" data-lang="edit">Düzenle</button>
+                                        <button type="submit" class="btn btn-success" id="saveProfileBtn" style="display: none;" data-lang="save">Kaydet</button>
+                                        <button type="button" class="btn btn-secondary" id="cancelEditBtn" style="display: none;" data-lang="cancel">İptal</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Security Tab -->
+                            <div id="security" class="profile-section">
+                                <h4 style="border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px;"><i class="fas fa-lock"></i> <span data-lang="passwordChange">Şifre Değişikliği</span></h4>
+                                <form id="passwordChangeForm" style="max-width: 500px;">
+                                    <div class="form-group">
+                                        <label for="currentPassword" data-lang="currentPassword">Mevcut Şifre</label>
+                                        <input type="password" id="currentPassword" class="form-control" autocomplete="current-password">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newPassword" data-lang="newPasswordLabel">Yeni Şifre</label>
+                                        <input type="password" id="newPassword" class="form-control" autocomplete="new-password">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="confirmNewPassword" data-lang="confirmNewPasswordLabel">Yeni Şifre Tekrar</label>
+                                        <input type="password" id="confirmNewPassword" class="form-control" autocomplete="new-password">
+                                    </div>
+                                    <div class="form-actions" style="margin-top: 20px; text-align: right;">
+                                        <button type="submit" class="btn btn-danger" data-lang="updatePasswordButton">Şifreyi Güncelle</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Theme Settings Tab -->
+                            <div id="theme-settings" class="profile-section">
+                                <form id="themeSettingsForm" style="max-width: 100%;">
+                                    <div class="form-group" style="margin-bottom: 0; text-align: left;">
+                                        <label style="display: block; margin-bottom: 15px; font-weight: 600;" data-lang="selectInterfaceTheme">Arayüz Teması Seçin</label>
+                                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;" id="patientThemeOptions">
+                                            <!-- Theme options will be rendered here by JavaScript -->
+                                        </div>
+                                    </div>
+                                    <div class="form-actions" style="margin-top: 20px; text-align: right;">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save"></i> <span data-lang="saveTheme">Temayı Kaydet</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Children Tab -->
+                            <div id="children" class="profile-section">
+                                <div id="childrenList">
+                                    <!-- Existing children will be loaded here by JS -->
+                                    <p data-lang="noChildrenRegistered">Henüz kayıtlı çocuğunuz bulunmamaktadır.</p>
+                                </div>
+                                <hr style="margin: 20px 0;">
+                                <h3 data-lang="addNewChild">Yeni Çocuk Ekle</h3>
+                                <form id="addChildForm">
+                                    <div class="child-form-grid">
+                                        <div class="form-group">
+                                            <label for="childTcKimlik" data-lang="tcId">T.C. Kimlik Numarası</label>
+                                            <div class="input-wrapper">
+                                                <i class="fas fa-id-card"></i>
+                                                <input type="text" id="childTcKimlik" class="form-control" placeholder="Çocuğun T.C. Kimlik Numarası" required inputmode="numeric" pattern="[0-9]{11}" maxlength="11" data-lang-placeholder="childTcPlaceholder">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="childFullName" data-lang="fullName">Ad Soyad</label>
+                                            <div class="input-wrapper">
+                                                <i class="fas fa-user"></i>
+                                                <input type="text" id="childFullName" class="form-control" placeholder="Çocuğun Adı Soyadı" required data-lang-placeholder="childNamePlaceholder">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-actions" style="margin-top: 15px; text-align: right;">
+                                        <button type="submit" class="btn btn-primary" data-lang="addChild">Çocuk Ekle</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+    <style>
+        .doctor-profile-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .child-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .child-form-grid {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+        }
+
+        .child-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+        }
+        
+        .child-item span {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .child-item .btn-sm {
+            padding: 5px 15px;
+            font-size: 0.85rem;
+            width: auto;
+            margin-left: 10px;
+        }
+
+        .profile-section .form-actions .btn {
+            width: auto !important;
+            min-width: 0 !important;
+            padding: 8px 20px !important;
+            font-size: 0.9rem !important;
+            margin-left: 10px;
+            display: inline-block;
+        }
+
+        .form-control:read-only, .form-control:disabled {
+            background-color: var(--input-bg);
+            color: var(--text-light);
+            opacity: 0.8;
+            cursor: not-allowed;
+        }
+
+        .theme-option {
+            background-color: var(--white-color);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .theme-option:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        .theme-option.selected {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
+        }
+        .theme-preview-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+        }
+        .theme-label {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        .theme-radio {
+            margin-left: auto;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background-color: var(--input-bg);
+            transition: all 0.2s;
+            position: relative;
+        }
+        .theme-radio:checked {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+        }
+        .theme-radio:checked::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script type="module" src="js/user-session.js"></script>
+    <script type="module" src="js/utils/header-manager.js"></script>
+    <script type="module" src="js/profile.js"></script>
+</body>
+</html>
+

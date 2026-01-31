@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINEX - Doktor Profil Yönetimi</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+<script>
+      try {
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+          document.documentElement.classList.add('sidebar-is-collapsed');
+        }
+      } catch (e) {}
+    </script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="logo">
+                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" style="display: flex; align-items: center; gap: 2px; margin-left: -30px;">
+                    <div style="
+                        width: 60px; 
+                        height: 60px; 
+                        background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); 
+                        -webkit-mask: url(clean-logo.png) no-repeat center / contain; 
+                        mask: url(clean-logo.png) no-repeat center / contain;
+                        display: inline-block;">
+                    </div>
+                    <span style="font-family: 'Exo 2', sans-serif; font-size: 2.5rem; font-weight: 700; color: #001F6B; letter-spacing: 1px; display: flex; align-items: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">LUMINEX</span>
+                </a>
+            </div>
+            <div class="user-info">
+                <span id="welcomeMessage"></span>
+                <div class="icons">
+                    <i id="themeToggleButton" class="fas fa-moon"></i>
+                    <i class="fas fa-bell"></i>
+                    <i class="fas fa-cog"></i>
+                    <i id="logoutButton" class="fas fa-sign-out-alt"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <!-- Side Menu -->
+            <aside class="side-menu">
+                <ul id="dynamicSideMenu">
+                    <!-- Populated by header-manager.js -->
+                </ul>
+                <div class="sidebar-toggle-wrapper">
+                    <button class="sidebar-toggle-button">
+                        <i class="fas fa-chevron-left"></i>
+                        <span>Menüyü Daralt</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Doctor Profile Management Content -->
+            <main class="dashboard-content">
+                <h1>Profil Yönetimi</h1>
+                
+                <div class="doctor-profile-grid">
+                    <!-- Sidebar (Visual Identity) -->
+                    <aside class="profile-sidebar">
+                        <div class="profile-avatar-container">
+                            <img src="https://via.placeholder.com/150" alt="Profil Fotoğrafı" class="profile-avatar-img" id="profileImageDisplay">
+                            <label for="avatarUpload" class="avatar-edit-overlay">
+                                <i class="fas fa-camera"></i>
+                            </label>
+                            <input type="file" id="avatarUpload" hidden accept="image/*">
+                        </div>
+                        <h2 class="profile-name-display" id="profileNameDisplay">Dr. Ayşe Yılmaz</h2>
+                        <span class="profile-title-display" id="profileTitleDisplay">Uzm. Dr. - Kardiyoloji</span>
+                        
+                        <div class="profile-stats-mini">
+                            <div class="stat-mini-item">
+                                <strong>4.8</strong>
+                                <span>Puan</span>
+                            </div>
+                            <div class="stat-mini-item">
+                                <strong>120+</strong>
+                                <span>Hasta</span>
+                            </div>
+                            <div class="stat-mini-item">
+                                <strong>10</strong>
+                                <span>Yıl</span>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <!-- Main Content (Forms) -->
+                    <section class="profile-main">
+                        <div class="profile-tabs">
+                            <div class="profile-tab active" data-target="personal-info"><i class="fas fa-user"></i> Kişisel Bilgiler</div>
+                            <div class="profile-tab" data-target="security"><i class="fas fa-lock"></i> Güvenlik</div>
+                            <div class="profile-tab" data-target="theme-settings"><i class="fas fa-palette"></i> Tema Ayarları</div>
+                        </div>
+
+                        <div class="profile-content-body">
+                            <!-- Personal Info Tab -->
+                            <div id="personal-info" class="profile-section active">
+                                <form id="doctorProfileForm">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="doctorFullName">Ad Soyad</label>
+                                            <input type="text" id="doctorFullName" class="form-control" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="doctorTitle">Ünvan</label>
+                                            <input type="text" id="doctorTitle" class="form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="doctorEmail">E-posta</label>
+                                            <input type="email" id="doctorEmail" class="form-control" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="doctorBranch">Branş</label>
+                                            <input type="text" id="doctorBranch" class="form-control" readonly>
+                                        </div>
+                                        <div class="form-group" style="grid-column: span 2;">
+                                            <label for="doctorHospital">Çalıştığı Hastane</label>
+                                            <input type="text" id="doctorHospital" class="form-control" readonly>
+                                        </div>
+                                        <div class="form-group" style="grid-column: span 2;">
+                                            <label for="doctorAbout">Hakkında</label>
+                                            <textarea id="doctorAbout" class="form-control" rows="4"></textarea>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-actions" style="margin-top: 20px; text-align: right;">
+                                        <button type="button" class="btn btn-primary" id="editDoctorProfileBtn">Düzenle</button>
+                                        <button type="submit" class="btn btn-success" id="saveDoctorProfileBtn" style="display: none;">Değişiklikleri Kaydet</button>
+                                        <button type="button" class="btn btn-secondary" id="cancelDoctorEditBtn" style="display: none;">İptal</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Security Tab -->
+                            <div id="security" class="profile-section">
+                                <h4 style="color: var(--text-color); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px;"><i class="fas fa-lock"></i> Şifre Değişikliği</h4>
+                                <form id="doctorPasswordChangeForm" style="max-width: 500px;">
+                                    <div class="form-group">
+                                        <label for="doctorCurrentPassword">Mevcut Şifre</label>
+                                        <input type="password" id="doctorCurrentPassword" class="form-control" autocomplete="current-password">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="doctorNewPassword">Yeni Şifre</label>
+                                        <input type="password" id="doctorNewPassword" class="form-control" autocomplete="new-password">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="doctorConfirmNewPassword">Yeni Şifre Tekrar</label>
+                                        <input type="password" id="doctorConfirmNewPassword" class="form-control" autocomplete="new-password">
+                                    </div>
+                                    <div class="form-actions" style="margin-top: 20px; text-align: right;">
+                                        <button type="submit" class="btn btn-danger">Şifreyi Güncelle</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Theme Settings Tab -->
+                            <div id="theme-settings" class="profile-section">
+                                <form id="doctorThemeSettingsForm" style="max-width: 100%;">
+                                    <div class="form-group" style="margin-bottom: 0; text-align: left;">
+                                        <label style="display: block; margin-bottom: 15px; font-weight: 600; color: var(--text-color);">Arayüz Teması Seçin</label>
+                                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;" id="doctorThemeOptions">
+                                            <!-- Theme options will be rendered here by JavaScript -->
+                                        </div>
+                                    </div>
+                                    <div class="form-actions" style="margin-top: 20px; text-align: right;">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save"></i> Temayı Kaydet
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+    <style>
+        .profile-section .form-actions .btn {
+            width: auto !important;
+            min-width: 0 !important;
+            padding: 8px 20px !important;
+            font-size: 0.9rem !important;
+            margin-left: 10px;
+            display: inline-block;
+        }
+
+        .theme-option {
+            background-color: var(--white-color);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .theme-option:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        .theme-option.selected {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
+        }
+        .theme-preview-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+        }
+        .theme-label {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        .theme-radio {
+            margin-left: auto;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background-color: var(--input-bg);
+            transition: all 0.2s;
+            position: relative;
+        }
+        .theme-radio:checked {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+        }
+        .theme-radio:checked::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script type="module" src="js/user-session.js"></script>
+    <script type="module" src="js/utils/header-manager.js"></script>
+    <script type="module" src="js/doctor-profile.js"></script>
+</body>
+</html>

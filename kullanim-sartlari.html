@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang="termsPageTitle">LUMINEX - Kullanım Şartları</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f5f7;
+            font-family: 'Poppins', sans-serif;
+            color: #1d1d1f;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.07);
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #000033;
+        }
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: #000033;
+        }
+        p, li {
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        strong {
+            font-weight: 600;
+        }
+        .footer-note {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #6e6e73;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-switcher" id="langSwitcher" style="position: absolute; top: 20px; right: 20px; z-index: 1000;">
+        <div class="selected-lang">
+            <img src="https://flagcdn.com/tr.svg" alt="TR Flag">
+            <span>Türkçe</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        <ul class="lang-options">
+            <li data-lang="tr"><img src="https://flagcdn.com/tr.svg" alt="TR Flag"> Türkçe</li>
+            <li data-lang="en"><img src="https://flagcdn.com/gb.svg" alt="GB Flag"> English</li>
+        </ul>
+    </div>
+    <div class="container">
+        <h1 data-lang="termsMainHeader">KULLANIM ŞARTLARI</h1>
+        <p><strong data-lang="termsWelcomeText">LUMINEX’e hoş geldiniz.</strong></p>
+        <p data-lang="termsIntroText">Bu platform, kullanıcıların sağlık hizmetlerine kolay ve güvenli bir şekilde erişmesini sağlamak amacıyla tasarlanmıştır. Sistemi kullanarak aşağıdaki şartları kabul etmiş olursunuz:</p>
+        
+        <ul>
+            <li data-lang="termItem1">LUMINEX, sunduğu randevu, bilgilendirme ve sağlık yönlendirme hizmetlerini geliştirme hakkını saklı tutar.</li>
+            <li data-lang="termItem2">Kullanıcı, sisteme kayıt olurken verdiği bilgilerin doğru ve güncel olduğunu beyan eder.</li>
+            <li data-lang="termItem3">LUMINEX üzerinde yapılan işlemler yalnızca bilgilendirme ve yönlendirme amaçlıdır; tıbbi tavsiye niteliği taşımaz.</li>
+            <li data-lang="termItem4">Kullanıcı, hesabının güvenliğinden sorumludur. Şifresini üçüncü kişilerle paylaşmamalıdır.</li>
+            <li data-lang="termItem5">LUMINEX, sistemde yapılan hatalı veya eksik bildirimlerden doğan zararlardan sorumlu tutulamaz.</li>
+            <li data-lang="termItem6">Kullanıcı dilediği zaman hesabını silebilir, verilerini sistemden kaldırabilir.</li>
+            <li data-lang="termItem7">Kullanım koşulları zaman zaman güncellenebilir; güncel versiyon her zaman bu alanda yer alacaktır.</li>
+        </ul>
+
+        <p class="footer-note" data-lang="termsFooter">💡 Sistemi kullanmaya devam ettiğinizde, bu şartları kabul etmiş sayılırsınız.</p>
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="register.html" class="btn" style="display: inline-block; width: auto; text-decoration: none;" data-lang="backToRegisterBtn">Kayıt Ekranına Geri Dön</a>
+        </div>
+    </div>
+    <script src="js/language-manager.js"></script>
+</body>
+</html>

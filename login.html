@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang="loginTitle"></title>
+    <script defer src="js/language-manager.js"></script>
+    <script>console.log('index.html loaded');</script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+</head>
+<body lang="tr">
+    <script>
+      (function() {
+        try {
+          var theme = localStorage.getItem('landingTheme') || 'light';
+          document.body.className = theme === 'dark' ? 'theme-dark' : 'theme-light';
+        } catch (e) {
+          document.body.className = 'theme-light';
+        }
+      })();
+    </script>
+    <div class="login-container">
+        <div class="info-panel" style="pointer-events: none; width: 50%;">
+            <div class="logo" style="display: flex; flex-direction: column; align-items: center; margin-bottom: 0; pointer-events: none;">
+                <div style="
+                    width: 1400px; 
+                    height: 560px; 
+                    background-color: #FFFFFF; 
+                    -webkit-mask: url(image.png) no-repeat center / contain; 
+                    mask: url(image.png) no-repeat center / contain;
+                    display: inline-block;">
+                </div>
+            </div>
+            <div class="content" style="color: white; margin: -60px 0 0 0; padding: 0; position: relative;">
+                <h1 style="margin: 0; padding: 0; font-size: 2.2rem; font-weight: 300;" data-lang="welcomeBack"></h1>
+                <p data-lang="niceToSeeYou"></p>
+            </div>
+            <div class="register-link-panel" style="pointer-events: auto;">
+                <p><span data-lang="noAccount"></span> <a href="register.html" data-lang="registerNow"></a></p>
+            </div>
+        </div>
+        <div class="form-panel" style="position: relative; z-index: 9999;">
+            <div class="auth-card" style="position: relative;">
+                <div class="top-right-actions">
+                    <div class="lang-switcher">
+                        <div class="selected-lang">
+                            <img src="https://flagcdn.com/tr.svg" alt="Türkçe">
+                            <span>Türkçe</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <ul class="lang-options">
+                            <li data-lang="tr"><img src="https://flagcdn.com/tr.svg" alt="Türkçe"><span>Türkçe</span></li>
+                            <li data-lang="en"><img src="https://flagcdn.com/gb.svg" alt="English"><span>English</span></li>
+                        </ul>
+                    </div>
+                    <a href="index.html" class="btn-home-text" title="Ana Sayfaya Dön">Ana Sayfaya Dön</a>
+                </div>
+                <div class="auth-header" style="margin-top: 60px;">
+                    <h2 data-lang="login"></h2>
+                </div>
+
+                <form id="loginForm" novalidate>
+                    <div class="form-group">
+                        <label for="tcLogin" data-lang="tcId">T.C. Kimlik Numarası</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-id-card"></i>
+                            <input type="text" id="tcLogin" name="tcLogin" placeholder="T.C. Kimlik Numaranızı giriniz" required inputmode="numeric" pattern="[0-9]{11}" maxlength="11" autocomplete="on" data-lang-placeholder="tcIdPlaceholder">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="passwordLogin" data-lang="password"></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="passwordLogin" name="passwordLogin" placeholder="" required autocomplete="current-password" data-lang-placeholder="passwordPlaceholder">
+                            <span class="toggle-password"><i class="fas fa-eye"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-options">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe" data-lang="rememberMe"></label>
+                        </div>
+                        <a href="#" class="forgot-password" data-lang="forgotPassword"></a>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" style="background: #001F6B !important; border-color: #001F6B !important; color: white; box-shadow: none;" data-lang="loginButton"></button>
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+    <script type="module" src="js/user-session.js"></script>
+    <script type="module" src="js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="js/utils/header-manager.js"></script>
+    
+    <!-- Contextual Login Script (Akıllı Karşılama) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("Login Context Script Loaded. Checking params...");
+            const params = new URLSearchParams(window.location.search);
+            const deptName = params.get('dep');
+            console.log("Department Parameter:", deptName);
+
+            if (deptName) {
+                const formPanel = document.querySelector('.auth-card'); 
+                const authHeader = document.querySelector('.auth-header');
+                
+                if (formPanel && authHeader) {
+                    console.log("Elements found. Creating info box...");
+                    const infoBox = document.createElement('div');
+                    const decodedDept = decodeURIComponent(deptName);
+                    
+                    infoBox.style.cssText = `
+                        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+                        border-left: 5px solid #001F6B;
+                        border-radius: 12px;
+                        padding: 20px;
+                        margin-bottom: 20px;
+                        margin-top: 60px; /* Dil değiştirici ile çakışmaması için */
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+                        animation: fadeIn 0.6s ease-out;
+                    `;
+                    
+                    infoBox.innerHTML = `
+                        <div style="display: flex; align-items: flex-start; gap: 15px;">
+                            <div style="background: white; padding: 10px; border-radius: 50%; color: #001F6B; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                <i class="fas fa-user-md" style="font-size: 1.2rem;"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0 0 5px 0; color: #001F6B; font-size: 1rem; font-weight: 700;">Analiz Sonucu</h4>
+                                <p style="margin: 0; font-size: 0.95rem; color: #444; line-height: 1.5;">
+                                    <strong style="color: #001F6B;">${decodedDept}</strong> bölümü için yönlendirildiniz. 
+                                    <br>Randevunuzu tamamlamak için lütfen giriş yapınız.
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    formPanel.insertBefore(infoBox, authHeader);
+                    authHeader.style.marginTop = "10px"; 
+                } else {
+                    console.error("Auth card or header not found in DOM.");
+                }
+            }
+        });
+    </script>
+</body>
+</html>

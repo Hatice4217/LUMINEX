@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINEX - Gizlilik Politikası</title>
+    <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="css/kvkk-page.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <style>
+        body { overflow: hidden !important; }
+        .detail-block {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+        }
+        body.theme-light .detail-block { background: rgba(0, 31, 107, 0.02); }
+    </style>
+</head>
+<body class="theme-light">
+    <div class="background-animation"></div>
+    
+    <nav class="navbar scrolled">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-logo">
+                <img src="clean-logo.png" alt="Luminex Logo">
+                <span>LUMINEX</span>
+            </a>
+            <div class="nav-right-actions">
+                <button id="landingThemeToggle" class="theme-toggle-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <a href="index.html" class="btn btn-secondary" data-lang="backToHome">Ana Sayfaya Dön</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="legal-page-container">
+        <div class="container">
+            <div class="legal-card">
+                <div class="legal-header">
+                    <i class="fas fa-user-shield"></i>
+                    <h1 data-lang="privacyPolicyTitle">Gizlilik Politikası</h1>
+                </div>
+                
+                <div class="legal-tabs-wrapper">
+                    <aside class="legal-tabs-nav">
+                        <button class="tab-btn active" onclick="openTab(event, 'vision')">
+                            <i class="fas fa-eye"></i> Gizlilik Vizyonumuz
+                        </button>
+                        <button class="tab-btn" onclick="openTab(event, 'security-tech')">
+                            <i class="fas fa-microchip"></i> Güvenlik Teknolojileri
+                        </button>
+                        <button class="tab-btn" onclick="openTab(event, 'data-lifecycle')">
+                            <i class="fas fa-recycle"></i> Veri Yaşam Döngüsü
+                        </button>
+                        <button class="tab-btn" onclick="openTab(event, 'user-control')">
+                            <i class="fas fa-user-cog"></i> Kullanıcı Kontrolü
+                        </button>
+                    </aside>
+
+                    <div class="legal-content">
+                        <div id="vision" class="legal-content-pane active">
+                            <h2>Gizliliğiniz, Bizim En Hassas Değerimizdir</h2>
+                            <p>LUMINEX Sağlık Teknolojileri olarak, kullanıcılarımızın dijital dünyadaki her bir ayak izinin ne kadar kıymetli olduğunun bilincindeyiz. Gizlilik politikamız, sadece yasal bir zorunluluk değil, platformumuzun temel etik anayasasıdır.</p>
+                            <div class="detail-block">
+                                <h3>Minimum Veri, Maksimum Fayda</h3>
+                                <p>Sistemimiz, "Veri Minimizasyonu" ilkesine göre çalışır. Size en doğru randevuyu sunmak ve en hızlı tahlil sonucunu ulaştırmak için gereken veriler dışındaki hiçbir bilginiz işleme alınmaz. Verileriniz, anonimleştirilerek sadece sistem performansını artırmak amacıyla analiz edilir.</p>
+                            </div>
+                            <p>LUMINEX ekosistemi içinde, verileriniz asla üçüncü taraf reklam ajanslarına veya veri borsalarına satılmaz. Bizim için "Müşteri" değil, "Emanetçi" konumundasınız.</p>
+                        </div>
+
+                        <div id="security-tech" class="legal-content-pane">
+                            <h2>Siber Dünyada Aşılmaz Kaleler</h2>
+                            <p>Verilerinizin siber saldırılara karşı korunması için dünya standartlarında bir savunma hattı kurduk:</p>
+                            <ul style="margin-bottom: 25px;">
+                                <li><strong>256-Bit Uçtan Uca Şifreleme:</strong> Tüm veri trafiğiniz, askeri düzeyde AES-256 protokolleri ile şifrelenir.</li>
+                                <li><strong>SOC 7/24 İzleme:</strong> Güvenlik Operasyon Merkezimiz, sistemlerimizi olası tehditlere karşı her saniye yapay zeka ile denetlemektedir.</li>
+                                <li><strong>İzole Sağlık Veri Havuzu:</strong> Tıbbi verileriniz (tahlil, teşhis vb.), sistemin diğer katmanlarından tamamen izole edilmiş özel güvenlikli sunucularda barındırılır.</li>
+                                <li><strong>Pentest Denetimleri:</strong> Bağımsız siber güvenlik firmaları tarafından her yıl düzenli olarak sızma testleri yapılarak sistemimiz zorlanmaktadır.</li>
+                            </ul>
+                        </div>
+
+                        <div id="data-lifecycle" class="legal-content-pane">
+                            <h2>Verilerinizin Yolculuğu</h2>
+                            <p>LUMINEX'te verileriniz şu aşamalardan geçer:</p>
+                            <div class="detail-block">
+                                <h3>1. Toplama ve Doğrulama</h3>
+                                <p>Kayıt sırasında girilen bilgileriniz T.C. Kimlik doğrulama sistemleri ile eşleştirilir. Bu, hesabınızın başkası tarafından ele geçirilmesini önleyen ilk barajdır.</p>
+                            </div>
+                            <div class="detail-block">
+                                <h3>2. İşleme ve Analiz</h3>
+                                <p>Yapay zeka algoritmalarımız (Neyim Var?), şikayetlerinizi analiz ederken sadece semptom verilerini kullanır. Kişisel kimliğiniz bu analiz sürecinden tamamen bağımsız tutulur.</p>
+                            </div>
+                            <div class="detail-block">
+                                <h3>3. Paylaşım ve Saklama</h3>
+                                <p>Verileriniz, sadece randevu aldığınız uzman doktorlar tarafından görüntülenebilir. Randevu sonrası verileriniz, yasal saklama süreleri dolana kadar şifreli olarak muhafaza edilir.</p>
+                            </div>
+                        </div>
+
+                        <div id="user-control" class="legal-content-pane">
+                            <h2>Dijital Egemenlik Haklarınız</h2>
+                            <p>Kendi verilerinizin patronu sizsiniz. LUMINEX size şu imkanları sunar:</p>
+                            <ul>
+                                <li><strong>Veri İhracı:</strong> Sistemdeki tüm geçmişinizi dilediğiniz zaman PDF veya Excel formatında indirip başka bir kuruma sunabilirsiniz.</li>
+                                <li><strong>Unutulma Hakkı:</strong> Hesabınızı sildiğinizde, yasal olarak saklanması zorunlu olan mali kayıtlar dışındaki tüm tıbbi ve kişisel geçmişiniz sunucularımızdan kalıcı olarak yok edilir.</li>
+                                <li><strong>Şeffaf Rıza:</strong> Platformun hangi özelliğinin hangi verinize eriştiğini ayarlar kısmından görebilir, rızanızı dilediğiniz an geri çekebilirsiniz.</li>
+                            </ul>
+                            <p>Gizlilik konusundaki her türlü talebiniz için hukuk departmanımıza <strong>privacy@luminex.com.tr</strong> üzerinden 7/24 ulaşabilirsiniz.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstTab = document.querySelector('.tab-btn');
+            if (firstTab) {
+                const tabName = firstTab.getAttribute('onclick').match(/'([^']+)'/)[1];
+                openTab({ currentTarget: firstTab }, tabName);
+            }
+        });
+
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("legal-content-pane");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).classList.add("active");
+            if (evt && evt.currentTarget) {
+                evt.currentTarget.classList.add("active");
+            }
+        }
+    </script>
+    <script src="js/language-manager.js"></script>
+    <script type="module" src="js/script.js"></script>
+</body>
+</html>

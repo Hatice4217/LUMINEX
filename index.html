@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINEX - Sağlıkta Dijital Dönüşüm ve Akıllı Randevu Sistemi</title>
+    <!-- SEO & Social Media Meta Tags -->
+    <meta name="description" content="LUMINEX: Yapay zeka destekli triyaj, kolay randevu ve kurumsal klinik çözümleri sunan modern sağlık platformu.">
+    <meta name="keywords" content="hastane randevu sistemi, klinik yönetim yazılımı, yapay zeka sağlık, doktor randevu, online tahlil sonuçları">
+    <meta property="og:title" content="LUMINEX - Sağlıkta Dijital Dönüşüm">
+    <meta property="og:description" content="Klinikler için akıllı çözümler, hastalar için kesintisiz sağlık takibi.">
+    <meta property="og:image" content="luminex-logo.png">
+    <meta property="og:url" content="https://luminex.com.tr">
+    <meta name="twitter:card" content="summary_large_image">
+    
+    <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body class="">
+    <script>
+      (function() {
+        try {
+          var theme = localStorage.getItem('landingTheme') || 'light';
+          document.body.className = theme === 'dark' ? 'theme-dark' : 'theme-light';
+        } catch (e) {
+          document.body.className = 'theme-light';
+        }
+      })();
+    </script>
+    <div class="background-animation"></div>
+    
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="#" class="navbar-logo">
+                <img src="clean-logo.png" alt="Luminex Logo" id="main-logo">
+                <span>LUMINEX</span>
+            </a>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#about" class="nav-link" data-lang="about">Hakkımızda</a></li>
+                <li class="nav-item"><a href="#features" class="nav-link" data-lang="features">Özellikler</a></li>
+                <li class="nav-item"><a href="#corporate" class="nav-link" data-lang="forClinics">Klinikler İçin</a></li>
+                <li class="nav-item"><a href="#contact" class="nav-link" data-lang="contact">İletişim</a></li>
+            </ul>
+            <div class="nav-right-actions">
+                <div class="lang-switcher" id="langSwitcher">
+                    <button type="button" class="selected-lang">
+                        <img src="https://flagcdn.com/tr.svg" alt="TR Flag">
+                        <span>Türkçe</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <ul class="lang-options">
+                        <li data-lang="tr"><img src="https://flagcdn.com/tr.svg" alt="TR Flag"> Türkçe</li>
+                        <li data-lang="en"><img src="https://flagcdn.com/gb.svg" alt="GB Flag"> English</li>
+                    </ul>
+                </div>
+                
+                <button id="landingThemeToggle" class="theme-toggle-btn" title="Modu Değiştir">
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                <a href="login.html" class="btn btn-login" data-lang="login">Giriş Yap</a>
+                <a href="register.html" class="btn btn-register" data-lang="register">Kayıt Ol</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <h1 data-lang="heroTitle">Sağlıkta Dijital Dönüşüm</h1>
+            <p data-lang="heroSubtitle">LUMINEX ile sağlık hizmetlerine tek tıkla ulaşın. Randevularınızı planlayın, sonuçlarınızı görün.</p>
+            
+            <div class="hero-cards-grid reveal">
+                <a href="login.html?redirect=appointment.html" class="hero-card primary-card">
+                    <div class="card-icon"><i class="fas fa-calendar-check"></i></div>
+                    <div class="card-content">
+                        <h3 data-lang="cardAppointmentTitle">Randevu Al</h3>
+                        <p data-lang="cardAppointmentDesc">Hastane ve hekim seçerek kolayca randevu oluşturun.</p>
+                    </div>
+                    <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+                </a>
+
+                <a href="login.html?redirect=test-results.html" class="hero-card secondary-card">
+                    <div class="card-icon"><i class="fas fa-flask"></i></div>
+                    <div class="card-content">
+                        <h3 data-lang="cardResultsTitle">Tahlil Sonuçları</h3>
+                        <p data-lang="cardResultsDesc">Laboratuvar ve görüntüleme sonuçlarınıza anında erişin.</p>
+                    </div>
+                    <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+                </a>
+
+                <a href="login.html?redirect=doctors.html" class="hero-card accent-card">
+                    <div class="card-icon"><i class="fas fa-user-md"></i></div>
+                    <div class="card-content">
+                        <h3 data-lang="cardDoctorsTitle">Doktor Bul</h3>
+                        <p data-lang="cardDoctorsDesc">Uzman hekim kadromuzu inceleyin ve bilgi alın.</p>
+                    </div>
+                    <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+                </a>
+
+                <a href="symptom-checker.html" class="hero-card info-card">
+                    <div class="card-icon"><i class="fas fa-heartbeat"></i></div>
+                    <div class="card-content">
+                        <h3 data-lang="cardSymptomTitle">Neyim Var?</h3>
+                        <p data-lang="cardSymptomDesc">Şikayetlerinize göre yapay zeka destekli ön teşhis.</p>
+                    </div>
+                    <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+                </a>
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        <section id="about" class="about reveal">
+            <div class="container">
+                <div class="about-container">
+                    <div class="about-content">
+                        <h2 data-lang="aboutTitle">Modern Sağlık Deneyimi</h2>
+                        <p data-lang="aboutText">Luminex, geleneksel sağlık hizmetlerini dijital dünyanın hızı ve kolaylığıyla birleştirir. Size zaman kazandıran, stresi azaltan ve sağlık yönetiminizi kolaylaştıran bir platform sunuyoruz.</p>
+                        <div class="about-extended">
+                            <div class="about-item">
+                                <h3 data-lang="missionTitle">Misyonumuz</h3>
+                                <p data-lang="missionText">Sağlık hizmetlerine erişimi basitleştirmek, hasta ve doktor arasındaki iletişimi güçlendirmek ve en son teknolojiyi kullanarak herkes için daha sağlıklı bir gelecek inşa etmek.</p>
+                            </div>
+                            <div class="about-item">
+                                <h3 data-lang="visionTitle">Vizyonumuz</h3>
+                                <p data-lang="visionText">Türkiye'nin en yenilikçi ve en çok tercih edilen dijital sağlık platformu olmak; sağlık verilerinizi güvenli, erişilebilir ve anlamlı kılarak hayat kalitenizi artırmak.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="about-visual">
+                        <div class="visual-circle main-circle">
+                            <i class="fas fa-hospital-user"></i>
+                        </div>
+                        <div class="visual-circle small-circle top-right">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <div class="visual-circle small-circle bottom-left">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="features" class="features reveal">
+            <div class="container">
+                <h2 data-lang="featuresTitle">Neden LUMINEX?</h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <i class="fas fa-calendar-check"></i>
+                        <h3 data-lang="feature1Title">Kolay Randevu</h3>
+                        <p data-lang="feature1Text">Saniyeler içinde, dilediğiniz doktordan randevu alın.</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-file-medical-alt"></i>
+                        <h3 data-lang="feature2Title">Anında Sonuçlar</h3>
+                        <p data-lang="feature2Text">Tahlil ve görüntüleme sonuçlarınıza anında erişin.</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-comments"></i>
+                        <h3 data-lang="feature3Title">Güvenli İletişim</h3>
+                        <p data-lang="feature3Text">Doktorunuzla güvenli ve özel bir şekilde mesajlaşın.</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-heartbeat"></i>
+                        <h3 data-lang="feature4Title">Sağlık Geçmişi</h3>
+                        <p data-lang="feature4Text">Tüm sağlık geçmişinizi tek bir yerde güvenle saklayın.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="testimonials-section reveal">
+            <div class="container">
+                <h2 data-lang="testimonialsTitle">Hastalarımız Ne Diyor?</h2>
+                <div class="testimonials-grid">
+                    <div class="testimonial-item">
+                        <p class="testimonial-text" data-lang="testimonial1Text">"Randevu almak hiç bu kadar kolay olmamıştı. Tahlil sonuçlarımı evimden anında görüntüleyebiliyorum. Harika bir sistem!"</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">AY</div>
+                            <div class="author-info">
+                                <h4 data-lang="testimonial1Author">Ayşe Yılmaz</h4>
+                                <span data-lang="patientLabel">Hasta</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-item">
+                        <p class="testimonial-text" data-lang="testimonial2Text">"Doktorumla iletişim kurabilmek benim için çok önemliydi. Luminex sayesinde aklımdaki soruları anında sorabiliyorum."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">MK</div>
+                            <div class="author-info">
+                                <h4 data-lang="testimonial2Author">Mehmet Kaya</h4>
+                                <span data-lang="patientLabel">Hasta</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-item">
+                        <p class="testimonial-text" data-lang="testimonial3Text">"Tüm sağlık geçmişimin tek bir yerde olması büyük kolaylık. Hangi doktora gidersem gideryim bilgilerim yanımda."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">ZE</div>
+                            <div class="author-info">
+                                <h4 data-lang="testimonial3Author">Zeynep Erdem</h4>
+                                <span data-lang="patientLabel">Hasta</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="corporate" class="corporate-section reveal">
+            <div class="container">
+                <h2 data-lang="solutionsTitle">Klinik Yönetiminde Yeni Nesil Çözümler</h2>
+                <p class="section-subtitle" data-lang="solutionsSubtitle">Luminex'i kendi kliniğinizde kullanın, verimliliğinizi %40 artırın.</p>
+                
+                <div class="b2b-grid">
+                    <div class="b2b-card">
+                        <div class="b2b-icon"><i class="fas fa-robot"></i></div>
+                        <h3 data-lang="b2bFeature1Title">AI Destekli Triyaj</h3>
+                        <p data-lang="b2bFeature1Text">Hastalarınız yanlış bölüme randevu almaz, doktorlarınızın vakti boşa gitmez.</p>
+                    </div>
+                    <div class="b2b-card">
+                        <div class="b2b-icon"><i class="fas fa-paint-brush"></i></div>
+                        <h3 data-lang="b2bFeature2Title">White-Label Tasarım</h3>
+                        <p data-lang="b2bFeature2Text">Kendi logonuz ve renklerinizle kliniğinize özel bir deneyim sunun.</p>
+                    </div>
+                    <div class="b2b-card">
+                        <div class="b2b-icon"><i class="fas fa-chart-line"></i></div>
+                        <h3 data-lang="b2bFeature3Title">Gelişmiş Analitik</h3>
+                        <p data-lang="b2bFeature3Text">Hangi branşın ne kadar yoğun olduğunu ve hasta memnuniyetini anlık takip edin.</p>
+                    </div>
+                </div>
+                
+                <div class="b2b-cta">
+                    <a href="#contact" class="btn btn-primary" data-lang="demoRequest">Demo Talep Et</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="pricing" class="pricing-section reveal">
+            <div class="container">
+                <h2 data-lang="pricingTitle">Klinik Yönetiminde Mükemmelliği Seçin</h2>
+                <p class="section-subtitle" data-lang="pricingSubtitle">Size özel başlangıç, profesyonel ve kurumsal çözümlerle geleceği bugünden yakalayın.</p>
+                
+                <div class="pricing-grid">
+                    <!-- Basic -->
+                    <div class="pricing-card">
+                        <div class="plan-name" data-lang="planBasic">Başlangıç</div>
+                        <div class="plan-subtitle"></div>
+                        <div class="plan-price">₺1.499<span>/ay</span></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> <span data-lang="featAppointment">Online Randevu Sistemi</span></li>
+                            <li><i class="fas fa-check"></i> <span data-lang="featPatients">Sınırsız Hasta Kaydı</span></li>
+                            <li><i class="fas fa-check"></i> <span data-lang="featSMS">SMS Bildirimleri (500 Adet)</span></li>
+                        </ul>
+                        <a href="payment.html?plan=basic" class="btn btn-secondary" data-lang="selectPlan">Hemen Başla</a>
+                    </div>
+
+                    <!-- Standard - Popular -->
+                    <div class="pricing-card popular">
+                        <div class="popular-badge">EN ÇOK TERCİH EDİLEN</div>
+                        <div class="plan-name" data-lang="planStandard">Profesyonel</div>
+                        <div class="plan-subtitle" data-lang="planSubtitlePro">Başlangıç paketine ek olarak</div>
+                        <div class="plan-price">₺3.999<span>/ay</span></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> <span data-lang="featAppointment">Her Şey Dahil Randevu</span></li>
+                            <li><i class="fas fa-check"></i> <span data-lang="featAnalysis">Gelişmiş Raporlama</span></li>
+                            <li><i class="fas fa-check"></i> <span data-lang="featAI">AI Destekli Triyaj</span></li>
+                            <li><i class="fas fa-check"></i> <span data-lang="featLab">Laboratuvar Entegrasyonu</span></li>
+                        </ul>
+                        <a href="payment.html?plan=standard" class="btn btn-primary" data-lang="selectPlan">Hemen Başla</a>
+                    </div>
+
+                    <!-- Enterprise -->
+                    <div class="pricing-card">
+                        <div class="plan-name" data-lang="planPremium">Kurumsal</div>
+                        <div class="plan-subtitle" data-lang="planSubtitleEnt">Profesyonel pakete ek olarak</div>
+                        <div class="plan-price">₺8.999<span>/ay</span></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> <span data-lang="featFull">Tüm Özellikler Sınırsız</span></li>
+                            <li><i class="fas fa-check"></i> <span data-lang="featAI">Özel Eğitilmiş AI Modeli</span></li>
+                            <li><i class="fas fa-check"></i> <span data-lang="featWhiteLabel">Tam White-Label Deneyimi</span></li>
+                            <li><i class="fas fa-check"></i> <span data-lang="featSupport">7/24 Öncelikli Teknik Destek</span></li>
+                            <li><i class="fas fa-check"></i> <span data-lang="featCustom">Özel API Erişimi</span></li>
+                        </ul>
+                        <a href="payment.html?plan=premium" class="btn btn-secondary" data-lang="selectPlan">Hemen Başla</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NEW: FAQ Section -->
+        <section id="faq" class="faq-section reveal">
+            <div class="container">
+                <h2 data-lang="faqTitle">Sıkça Sorulan Sorular</h2>
+                <div class="faq-container">
+                    <!-- FAQ 1 -->
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span data-lang="faq1Q">Luminex'i mevcut hastane sistemime (HBYS) entegre edebilir miyim?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p data-lang="faq1A">Evet, Luminex HL7 ve FHIR standartlarını destekler. Mevcut HBYS yazılımınızla %100 uyumlu çalışarak veri kaybı olmadan çift yönlü entegrasyon sağlar.</p>
+                        </div>
+                    </div>
+                    <!-- FAQ 2 -->
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span data-lang="faq2Q">Veri güvenliği ve KVKK uyumluluğu nasıl sağlanıyor?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p data-lang="faq2A">Tüm verileriniz 256-bit SSL ile şifrelenir ve Türkiye'deki Tier-3 veri merkezlerinde saklanır. Sistemimiz KVKK ve GDPR standartlarına tam uyumludur.</p>
+                        </div>
+                    </div>
+                    <!-- FAQ 3 -->
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span data-lang="faq3Q">Kurulum ve eğitim süreci ne kadar sürüyor?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p data-lang="faq3A">Bulut tabanlı yapımız sayesinde kurulum gerekmez. Hesabınız 24 saat içinde aktif edilir ve personeliniz için 2 günlük online eğitim programımız ücretsizdir.</p>
+                        </div>
+                    </div>
+                    <!-- FAQ 4 -->
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span data-lang="faq4Q">Teknik destek hizmetiniz neleri kapsıyor?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p data-lang="faq4A">Tüm paketlerimizde 7/24 e-posta desteği standarttır. Kurumsal paketlerde ise size özel atanan müşteri temsilcisi ile telefonla 7/24 destek alabilirsiniz.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact reveal">
+            <div class="container">
+                <h2 data-lang="corporateContactTitle">Luminex'i Kliniğinize Taşıyın</h2>
+                <p class="section-subtitle" data-lang="corporateContactDesc" style="margin-bottom: 3rem; text-align: center;">Hemen bir demo randevusu oluşturun ve dijital dönüşümünüzü başlatalım.</p>
+                <div class="contact-grid">
+                    <div class="contact-form-card">
+                        <div id="indexFormWarning" class="warning-info-box" style="display: none; background: rgba(120, 199, 199, 0.1); border-left: 5px solid var(--accent-color); color: var(--text-color); margin-bottom: 25px; padding: 15px; border-radius: 8px; align-items: center; gap: 15px;">
+                            <div class="icon-wrapper" style="background: rgba(120, 199, 199, 0.3); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent-color); flex-shrink: 0;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0 0 3px 0; color: #b71c1c; font-size: 0.95rem; font-weight: 700;" data-lang="warningTitle"></h4>
+                                <p style="margin: 0; font-size: 0.85rem; color: #b71c1c;" data-lang="fillAllFields"></p>
+                            </div>
+                        </div>
+                        <form id="contactForm" action="https://formspree.io/f/mqeboqzk" method="POST">
+                            <div class="form-group">
+                                <label for="contactName" data-lang="yourName">Adınız</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="contactName" name="name" class="form-control" placeholder="Adınız" required>
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactEmail" data-lang="yourEmail">E-posta Adresiniz</label>
+                                <div class="input-wrapper">
+                                    <input type="email" id="contactEmail" name="email" class="form-control" placeholder="E-posta Adresiniz" required>
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactMessage" data-lang="yourMessage">Mesajınız</label>
+                                <div class="input-wrapper">
+                                    <textarea id="contactMessage" name="message" class="form-control" rows="5" placeholder="Mesajınız" required></textarea>
+                                    <i class="fas fa-comment-alt" style="top: 20px; transform: none;"></i>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" data-lang="sendMessage">Gönder</button>
+                        </form>
+                    </div>
+                    <div class="contact-info-card">
+                        <h3 data-lang="contactInfoTitle">İletişim Bilgileri</h3>
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <p data-lang="addressText">Merkez Mah. Sağlık Sok. No:123, İstanbul</p>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-phone"></i>
+                            <p data-lang="phoneText">+90 (212) 555 00 00</p>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <p data-lang="emailText">destek@luminex.com.tr</p>
+                        </div>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="https://www.linkedin.com/in/haticesarlak?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3Bny60L0pCQTSNJQP3AlYKbw%3D%3D" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer-premium">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-col corporate-col">
+                    <div class="footer-logo">
+                        <img src="clean-logo.png" alt="Luminex Logo">
+                        <span>LUMINEX</span>
+                    </div>
+                    <p class="company-desc" data-lang="footerCompanyDesc">Sağlık teknolojilerinde yenilikçi çözümler sunan, hasta ve doktor arasındaki köprüyü dijital dünyada kuran güvenilir sağlık platformu.</p>
+                    <div class="corporate-info">
+                        <h5 data-lang="corporateInfoTitle">Kurumsal Bilgilerimiz:</h5>
+                        <ul>
+                            <li><strong data-lang="mersisNoLabel">MERSİS No:</strong> 0123456789000001</li>
+                            <li><strong data-lang="tradeRegistryNoLabel">Ticari Sicil No:</strong> 123456</li>
+                            <li><strong data-lang="taxNoLabel">Vergi No:</strong> 1234567890</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="footer-col contact-col">
+                    <h4 class="footer-heading" data-lang="contactInfoTitle">İletişim Bilgilerimiz</h4>
+                    <div class="contact-list">
+                        <div class="contact-item">
+                            <i class="fas fa-phone-alt"></i>
+                            <div class="contact-details">
+                                <span class="contact-value">+90 (212) 555 00 00</span>
+                                <span class="contact-sub" data-lang="contactHours">Hafta içi: 09:00 - 18:00</span>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <div class="contact-details">
+                                <span class="contact-value">destek@luminex.com.tr</span>
+                                <span class="contact-sub" data-lang="contactEmailSupport">7/24 E-posta Desteği</span>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div class="contact-details">
+                                <span class="contact-value" data-lang="contactAddressLine1">Luminex Plaza, Şişli</span>
+                                <span class="contact-sub" data-lang="contactAddressLine2">İstanbul, Türkiye</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-col links-col">
+                    <h4 class="footer-heading" data-lang="quickLinksTitle">Hızlı Bağlantılar</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html" data-lang="home">Anasayfa</a></li>
+                        <li><a href="login.html" data-lang="loginRegisterLink">Giriş Yap / Kayıt Ol</a></li>
+                        <li><a href="#about" data-lang="about">Hakkımızda</a></li>
+                        <li><a href="#features" data-lang="features">Özellikler</a></li>
+                        <li><a href="#contact" data-lang="contact">İletişim</a></li>
+                        <li><a href="kvkk.html" data-lang="kvkkLink">KVKK Aydınlatma Metni</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-trust">
+                <div class="trust-badges">
+                    <div class="badge-item"><i class="fas fa-shield-alt"></i> <span data-lang="trustSSL">256-Bit SSL</span></div>
+                    <div class="badge-item"><i class="fas fa-lock"></i> <span data-lang="trustSecure">Güvenli Altyapı</span></div>
+                    <div class="badge-item"><i class="fas fa-user-md"></i> <span data-lang="trustVerified">Onaylı Platform</span></div>
+                    <div class="badge-item"><i class="fas fa-check-circle"></i> <span data-lang="trustEtbis">ETBİS Kayıtlı</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="footer-container bottom-flex">
+                <p class="copyright" data-lang="footerCopyright">&copy; 2025 LUMINEX Sağlık Teknolojileri A.Ş. Tüm hakları saklıdır.</p>
+                <div class="legal-links">
+                    <a href="privacy-policy.html" data-lang="privacyPolicy">Gizlilik Politikası</a>
+                    <span class="sep">|</span>
+                    <a href="terms-of-use.html" data-lang="termsOfUse">Kullanım Şartları</a>
+                    <span class="sep">|</span>
+                    <a href="cookie-policy.html" data-lang="cookiePolicy">Çerez Politikası</a>
+                </div>
+            </div>
+        </div>
+        
+        <button id="scrollTopBtn" class="scroll-top-btn" title="Yukarı Çık"><i class="fas fa-arrow-up"></i></button>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="js/language-manager.js"></script>
+    <script type="module" src="js/script.js"></script>
+</body>
+</html>

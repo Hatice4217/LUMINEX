@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINEX - KVKK Aydınlatma Metni</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007AFF;
+            --primary-dark: #005ECB;
+            --text-color: #1d1d1f;
+            --text-light: #6e6e73;
+            --body-bg: #f5f5f7;
+            --white-color: #ffffff;
+            --border-color: #e5e5e5;
+            --input-bg: #f7f7f7;
+            --shadow-color: rgba(0, 0, 0, 0.06);
+
+            --font-family-sans-serif: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --border-radius: 12px;
+            --border-radius-lg: 24px;
+        }
+        body {
+            background-color: var(--body-bg);
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 40px;
+            background-color: var(--white-color);
+            border-radius: var(--border-radius-lg);
+            box-shadow: 0 10px 30px var(--shadow-color);
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #000033;
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            color: #000033;
+        }
+        p, li {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        li {
+            padding-left: 1.5em;
+            text-indent: -1.5em;
+        }
+        li:before {
+            content: "â€¢";
+            color: var(--primary-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        strong {
+            font-weight: 600;
+        }
+        .footer-note {
+            margin-top: 30px;
+            font-size: 1rem;
+            color: var(--text-light);
+            text-align: center;
+            font-weight: 500;
+        }
+        .btn {
+            display: inline-block;
+            font-weight: 500;
+            color: var(--white-color);
+            text-align: center;
+            background-color: var(--primary-color);
+            border: none;
+            padding: 16px;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 122, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 data-lang="kvkkMainHeader">🔐 KVKK AYDINLATMA METNİ</h1>
+        <p><strong data-lang="kvkkIntroText">LUMINEX olarak kişisel verilerinizi 6698 Sayılı Kişisel Verilerin Korunması Kanunu (“KVKK”) kapsamında korumaktayız.</strong></p>
+        
+        <h2 data-lang="dataController">Veri Sorumlusu</h2>
+        <p data-lang="dataControllerText">LUMINEX Sağlık Teknolojileri.</p>
+
+        <h2 data-lang="collectedData">Toplanan Veriler</h2>
+        <p data-lang="collectedDataText">Ad-soyad, e-posta adresi, telefon numarası, doğum tarihi, cinsiyet, randevu geçmişi.</p>
+
+        <h2 data-lang="processingPurpose">Veri İşleme Amacı</h2>
+        <ul>
+            <li data-lang="purposeItem1">Randevu işlemlerini yürütmek,</li>
+            <li data-lang="purposeItem2">Hatırlatma ve bilgilendirme mesajları göndermek,</li>
+            <li data-lang="purposeItem3">Hizmet kalitesini artırmak.</li>
+        </ul>
+
+        <h2 data-lang="retentionPeriod">Veri Saklama Süresi</h2>
+        <p data-lang="retentionPeriodText">Yasal zorunluluklar ve hizmet sürekliliği kapsamında makul bir süre boyunca saklanır.</p>
+
+        <h2 data-lang="dataSharing">Veri Paylaşımı</h2>
+        <p data-lang="dataSharingText">Verileriniz üçüncü kişilerle paylaşılmaz; yalnızca gerekli yasal mercilerle paylaşılabilir.</p>
+
+        <h2 data-lang="userRights">Haklarınız</h2>
+        <ul>
+            <li data-lang="rightsItem1">Kişisel verilerinize erişme,</li>
+            <li data-lang="rightsItem2">Düzeltilmesini veya silinmesini isteme,</li>
+            <li data-lang="rightsItem3">İşlemeyi reddetme haklarına sahipsiniz.</li>
+        </ul>
+
+        <h2 data-lang="kvkkContact">İletişim</h2>
+        <p><span data-lang="kvkkContactText">Talepleriniz için destek@luminex.com.tr adresinden bize ulaşabilirsiniz.</span></p>
+
+        <p class="footer-note" data-lang="kvkkFooter">🔒 LUMINEX, kişisel verilerinizi özenle korur ve gizliliğinizi her zaman ön planda tutar.</p>
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="register.html" class="btn" style="display: inline-block; width: auto; text-decoration: none;" data-lang="backToRegisterBtn">Kayıt Ekranına Geri Dön</a>
+        </div>
+    </div>
+</body>
+</html>
+

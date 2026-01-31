@@ -1,0 +1,167 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINEX - Tahlil ve Sonuçlar</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* INLINE BADGE STYLES FOR TEST RESULTS */
+        .badge {
+            display: inline-flex !important;
+            align-items: center !important;
+            padding: 0.4em 0.8em !important;
+            font-size: 0.8em !important;
+            font-weight: 600 !important;
+            line-height: 1 !important;
+            color: #fff !important; /* Default white text */
+            text-align: center !important;
+            white-space: nowrap !important;
+            vertical-align: baseline !important;
+            border-radius: 0.5rem !important;
+            transition: all 0.2s ease-in-out !important;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
+        }
+        .badge[data-status='Raporlandı'] {
+            background-color: #2ecc71 !important; /* Canlı yeşil */
+            color: #fff !important;
+            box-shadow: 0 2px 5px rgba(46, 204, 113, 0.4) !important;
+        }
+        .badge[data-status='Sonuç Bekleniyor'],
+        .badge[data-status='Beklemede'] {
+            background-color: #3498db !important; /* Canlı mavi */
+            color: #fff !important;
+            box-shadow: 0 2px 5px rgba(52, 152, 219, 0.4) !important;
+        }
+        .badge[data-status='İptal Edildi'] {
+            background-color: #dc3545 !important; /* Kırmızı */
+            color: #fff !important;
+            box-shadow: 0 2px 5px rgba(220, 53, 69, 0.4) !important;
+        }
+        .badge[data-status='Onaylandı'] {
+            background-color: #007bff !important; /* Blue */
+            color: #fff !important;
+            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.4) !important;
+        }
+    </style>
+<script>
+      try {
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+          document.documentElement.classList.add('sidebar-is-collapsed');
+        }
+      } catch (e) {}
+    </script>
+<script>
+      try {
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+          document.documentElement.classList.add('sidebar-is-collapsed');
+        }
+      } catch (e) {}
+</script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="logo">
+                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" style="display: flex; align-items: center; gap: 2px; margin-left: -30px;">
+                    <div style="
+                        width: 60px; 
+                        height: 60px; 
+                        background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); 
+                        -webkit-mask: url(clean-logo.png) no-repeat center / contain; 
+                        mask: url(clean-logo.png) no-repeat center / contain;
+                        display: inline-block;">
+                    </div>
+                    <span style="font-family: 'Exo 2', sans-serif; font-size: 2.5rem; font-weight: 700; color: #001F6B; letter-spacing: 1px; display: flex; align-items: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">LUMINEX</span>
+                </a>
+            </div>
+            <div class="user-info">
+                <span id="welcomeMessage"></span>
+                <div class="icons">
+                    <i id="themeToggleButton" class="fas fa-moon"></i>
+                    <i class="fas fa-bell"></i>
+                    <i class="fas fa-cog"></i>
+                    <i id="logoutButton" class="fas fa-sign-out-alt"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <!-- Side Menu -->
+            <aside class="side-menu">
+                <ul id="dynamicSideMenu">
+                    <!-- Populated by header-manager.js -->
+                </ul>
+                <div class="sidebar-toggle-wrapper">
+                    <button class="sidebar-toggle-button">
+                        <i class="fas fa-chevron-left"></i>
+                        <span>Menüyü Daralt</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Test Results Content -->
+            <main class="dashboard-content">
+                <h1 data-lang="testResultsSidebar" class="reveal">Tahlil ve Sonuçlar</h1>
+
+                <!-- New Compact Filter Card -->
+                <div class="card filter-card collapsed reveal">
+                    <div class="filter-card-header">
+                        <h3><i class="fas fa-filter"></i> <span data-lang="filter">Sonuçları Filtrele</span></h3>
+                        <button id="toggle-filter-body" class="btn-icon"><i class="fas fa-chevron-down"></i></button>
+                    </div>
+                    <div id="filter-card-body" class="filter-card-body">
+                        <div class="filter-card-content-wrapper">
+                            <div class="filter-form-compact">
+                                <div class="form-group">
+                                    <label for="filter-start-date" data-lang="startDate">Başlangıç Tarihi</label>
+                                    <input type="date" id="filter-start-date" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="filter-end-date" data-lang="endDate">Bitiş Tarihi</label>
+                                    <input type="date" id="filter-end-date" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="filter-test-name" data-lang="testName">Test Adı</label>
+                                    <input type="text" id="filter-test-name" class="form-control" placeholder="Kan, idrar..." data-lang-placeholder="searchByTestName">
+                                </div>
+                                <div class="form-group" style="display: flex; align-items: center; gap: 10px; height: 50px;">
+                                    <input type="checkbox" id="filter-out-of-range" style="width: 18px; height: 18px; cursor: pointer; margin: 0;">
+                                    <label for="filter-out-of-range" style="margin: 0; cursor: pointer; font-weight: 500; font-size: 0.9rem; white-space: nowrap;" data-lang="outOfRangeOnly">Sadece Referans Dışı</label>
+                                </div>
+                                <div class="form-actions-compact">
+                                    <button id="applyFilters" class="btn btn-primary" data-lang="applyFilters">Filtrele</button>
+                                    <button id="clearFilters" class="btn btn-outline-secondary" data-lang="clear">Temizle</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="active-filters-container" class="active-filters-container" style="display: none;">
+                    <!-- Active filter pills will be injected here by JS -->
+                </div>
+
+                <div class="card">
+                    <div id="testResultsList" class="test-results-list">
+                        <!-- Test results will be loaded here dynamically -->
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="js/language-manager.js"></script>
+    <script type="module" src="js/user-session.js"></script>
+    <script type="module" src="js/utils/header-manager.js"></script>
+    <script src="js/test-results.js" type="module"></script>
+</body>
+</html>
+

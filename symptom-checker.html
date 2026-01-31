@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINEX - Neyim Var?</title>
+    <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <style>
+        body {
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: 0 !important; 
+            overflow: hidden; 
+        }
+        
+        /* Wizard Container - Mode Aware */
+        
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .wizard-container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #ffffff; /* Default Light */
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 180px);
+            min-height: 500px;
+            border: 1px solid rgba(0,0,0,0.05);
+            /* --- NEW ANIMATION --- */
+            animation: fadeInSlideUp 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            transition: none; /* Disable other transitions */
+        }
+        
+        /* Dark Mode (Default for landing.css when .theme-light is NOT present) */
+        body:not(.theme-light) .wizard-container {
+            background: #1e293b !important;
+            border-color: rgba(255,255,255,0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        .wizard-header {
+            background: linear-gradient(135deg, #001F6B, #004e92);
+            padding: 15px 30px; 
+            color: white;
+            text-align: center;
+            flex-shrink: 0; 
+        }
+        .wizard-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: white !important;
+        }
+        .wizard-header p {
+            opacity: 0.8;
+            font-size: 0.85rem;
+            color: white !important;
+        }
+        .wizard-content {
+            padding: 30px 40px;
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            /* justify-content: center; Removed to prevent clipping on overflow */
+            align-items: center;
+            overflow-y: auto; 
+            background: transparent;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333; /* Default Light */
+            margin-bottom: 30px;
+        }
+        
+        body:not(.theme-light) .question-text {
+            color: #f1f5f9 !important;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px;
+            width: 100%;
+            max-width: 700px;
+        }
+        
+        .option-btn {
+            background: #f8f9fa; /* Default Light */
+            border: 2px solid #e9ecef;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #495057; /* Default Light */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        body:not(.theme-light) .option-btn {
+            background: #0f172a !important;
+            border-color: #334155 !important;
+            color: #cbd5e1 !important;
+        }
+
+        .option-btn:hover {
+            border-color: #78C7C7;
+            background: rgba(120, 199, 199, 0.1);
+            color: #004e92;
+            transform: translateY(-3px);
+        }
+        
+        body:not(.theme-light) .option-btn:hover {
+            background: #334155 !important;
+            color: #fff !important;
+        }
+
+        /* Navbar Integration */
+        .navbar { 
+            position: relative;
+            background: var(--bg-color) !important;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+        }
+        
+        /* Symptom Selector Grid Styles */
+        .symptom-category-card {
+            background: #f8f9fa; /* Default Light */
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+        
+        body:not(.theme-light) .symptom-category-card {
+            background: #0f172a !important;
+            border-color: rgba(255,255,255,0.05) !important;
+        }
+
+        .symptom-category-card h3 {
+            color: #001F6B;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        body:not(.theme-light) .symptom-category-card h3 {
+            color: #f1f5f9 !important;
+            border-bottom-color: rgba(255,255,255,0.1) !important;
+        }
+
+        .symptom-btn {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            color: #555;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        body:not(.theme-light) .symptom-btn {
+            background: #1e293b !important;
+            border-color: #334155 !important;
+            color: #cbd5e1 !important;
+        }
+
+        .gender-option, .age-option {
+            background: #ffffff !important;
+            color: #555 !important;
+            border: 2px solid #eee !important;
+        }
+
+        body:not(.theme-light) .gender-option, 
+        body:not(.theme-light) .age-option {
+            background: #0f172a !important;
+            color: #cbd5e1 !important;
+            border-color: #334155 !important;
+        }
+
+        /* Highly Visible Selection in Dark Mode */
+        body:not(.theme-light) .gender-option.selected, 
+        body:not(.theme-light) .age-option.selected {
+            background: rgba(56, 189, 248, 0.15) !important;
+            border-color: #38bdf8 !important;
+            color: #38bdf8 !important;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.25) !important;
+            transform: translateY(-2px);
+        }
+
+        body:not(.theme-light) .gender-option.selected i {
+            color: #38bdf8 !important;
+        }
+
+        .result-card p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+        
+        body:not(.theme-light) .result-card p {
+            color: #cbd5e1 !important;
+        }
+
+        .result-details {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+
+        body:not(.theme-light) .result-details {
+            border-top-color: rgba(255,255,255,0.1);
+        }
+
+        .result-details small {
+            display: block;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        body:not(.theme-light) .result-details small {
+            color: #94a3b8;
+        }
+
+        .result-details h2 {
+            color: #001F6B;
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
+        body:not(.theme-light) .result-details h2 {
+            color: #38bdf8 !important; /* Bright Sky Blue for Dark Mode */
+        }
+
+        .action-btn {
+            background: #ffc107;
+            color: #333 !important;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 193, 7, 0.5);
+            background: #ffca2c;
+        }
+
+        /* --- COMPACT RESULT CARD STYLES --- */
+        .premium-result-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            padding: 0;
+            width: 100%;
+            max-width: 550px;
+            text-align: center;
+            overflow: hidden;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            margin: auto;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e3f2fd 100%);
+            padding: 25px 25px 15px; /* Reduced padding */
+            position: relative;
+        }
+
+        .result-icon-wrapper {
+            width: 60px; /* Reduced from 80px */
+            height: 60px; /* Reduced from 80px */
+            background: linear-gradient(135deg, #001F6B, #004e92);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px; /* Reduced margin */
+            color: white;
+            font-size: 1.8rem; /* Reduced font size */
+            box-shadow: 0 5px 15px rgba(0, 31, 107, 0.3);
+        }
+
+        .result-header h3 {
+            font-size: 1.4rem; /* Slightly reduced */
+            color: #001F6B;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .result-body {
+            padding: 20px 25px; /* Reduced padding */
+        }
+
+        .result-desc {
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 15px; /* Reduced margin */
+        }
+
+        .recommendation-box {
+            background: #f8f9fa;
+            border: 2px dashed #e9ecef;
+            border-radius: 12px;
+            padding: 15px; /* Reduced padding */
+            transition: all 0.3s;
+        }
+
+        .rec-label {
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 2px;
+            font-weight: 600;
+        }
+
+        .rec-dept {
+            font-size: 1.5rem; /* Slightly reduced */
+            color: #001F6B;
+            margin: 0;
+            font-weight: 800;
+        }
+
+        .result-footer {
+            padding: 0 25px 20px; /* Reduced padding */
+        }
+
+        .premium-action-btn {
+            background: linear-gradient(135deg, #001F6B 0%, #004e92 100%);
+            color: white;
+            border: none;
+            padding: 14px 25px; /* Reduced padding */
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 15px rgba(0, 31, 107, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .premium-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(0, 31, 107, 0.3);
+            filter: brightness(1.1);
+        }
+
+        .ai-disclaimer {
+            margin-top: 15px; /* Reduced margin */
+            padding: 10px 15px; /* Reduced padding */
+            background: rgba(0, 31, 107, 0.03);
+            border-radius: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            text-align: left;
+            font-size: 0.8rem; /* Slightly reduced */
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .ai-disclaimer i {
+            color: #001F6B;
+            font-size: 1.1rem;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .ai-disclaimer p {
+            margin: 0;
+            color: #666 !important; /* Force override result-card p style */
+        }
+
+        body:not(.theme-light) .ai-disclaimer {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        body:not(.theme-light) .ai-disclaimer i {
+            color: #38bdf8;
+        }
+
+        body:not(.theme-light) .ai-disclaimer p {
+            color: #94a3b8 !important;
+        }
+
+        /* --- URGENT STATE --- */
+        .premium-result-card.urgent .result-header {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe3e3 100%);
+        }
+        
+        .premium-result-card.urgent .result-icon-wrapper {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4);
+            animation: pulse-red 2s infinite;
+        }
+
+        .premium-result-card.urgent h3 { color: #c0392b; }
+        .premium-result-card.urgent .rec-dept { color: #c0392b; }
+        .premium-result-card.urgent .premium-action-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            box-shadow: 0 10px 20px rgba(231, 76, 60, 0.3);
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+
+        /* --- DARK MODE OVERRIDES (PREMIUM) --- */
+        body:not(.theme-light) .premium-result-card {
+            background: #1e293b;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+
+        body:not(.theme-light) .result-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        body:not(.theme-light) .result-icon-wrapper {
+            background: linear-gradient(135deg, #38bdf8, #0ea5e9); /* Bright Cyan/Blue */
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+        }
+
+        body:not(.theme-light) .result-header h3 {
+            color: #f1f5f9;
+        }
+
+        body:not(.theme-light) .result-desc {
+            color: #cbd5e1;
+        }
+
+        body:not(.theme-light) .recommendation-box {
+            background: rgba(255,255,255,0.03);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        body:not(.theme-light) .rec-label {
+            color: #94a3b8;
+        }
+
+        body:not(.theme-light) .rec-dept {
+            color: #38bdf8; /* Cyan */
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
+
+        body:not(.theme-light) .premium-action-btn {
+            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+            box-shadow: 0 10px 20px rgba(2, 132, 199, 0.3);
+            color: #0f172a; /* Dark text on bright button */
+        }
+
+        /* Dark Mode Urgent */
+        body:not(.theme-light) .premium-result-card.urgent .result-icon-wrapper {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.5);
+        }
+        body:not(.theme-light) .premium-result-card.urgent h3 { color: #fca5a5; }
+        body:not(.theme-light) .premium-result-card.urgent .rec-dept { color: #fca5a5; text-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+        body:not(.theme-light) .premium-result-card.urgent .premium-action-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3);
+        }
+    </style>
+</head>
+<body class="">
+    <script>
+      (function() {
+        try {
+          var theme = localStorage.getItem('landingTheme') || 'light';
+          document.body.className = theme === 'dark' ? 'theme-dark' : 'theme-light';
+        } catch (e) {
+          document.body.className = 'theme-light';
+        }
+      })();
+    </script>
+    <div class="background-animation"></div>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-logo">
+                <img src="clean-logo.png" alt="Luminex Logo">
+                <span>LUMINEX</span>
+            </a>
+            
+            <div class="nav-right-actions">
+                <div class="lang-switcher" id="langSwitcher">
+                    <button type="button" class="selected-lang">
+                        <img src="https://flagcdn.com/tr.svg" alt="TR Flag">
+                        <span>Türkçe</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <ul class="lang-options">
+                        <li data-lang="tr"><img src="https://flagcdn.com/tr.svg" alt="TR Flag"> Türkçe</li>
+                        <li data-lang="en"><img src="https://flagcdn.com/gb.svg" alt="GB Flag"> English</li>
+                    </ul>
+                </div>
+                
+                <button id="landingThemeToggle" class="theme-toggle-btn" title="Modu Değiştir">
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                <a href="index.html" class="btn btn-sm" style="color: var(--text-color); border: 1px solid var(--border-color); padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: 600;">
+                    <i class="fas fa-arrow-left"></i> <span data-lang="backToHome">Geri Dön</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="wizard-container">
+        <div class="wizard-header">
+            <h1 data-lang="cardSymptomTitle"><i class="fas fa-user-md"></i> Neyim Var?</h1>
+            <p data-lang="cardSymptomDesc">Akıllı Asistan Belirtilerinizi Analiz Ediyor</p>
+        </div>
+        
+        <div class="wizard-content" id="wizardContent">
+            <!-- Dynamic Content Will Be Loaded Here -->
+            <div style="margin: auto; display: flex; flex-direction: column; align-items: center;">
+                <div class="loader"></div>
+                <p data-lang="loadingText">Semptomlar yükleniyor...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/language-manager.js"></script>
+    <script type="module" src="js/script.js"></script>
+    <script src="js/symptom-checker.js"></script>
+    <!-- user-session.js'i eklemiyorum ki redirect olmasın -->
+</body>
+</html>

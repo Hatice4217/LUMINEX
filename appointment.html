@@ -1,0 +1,182 @@
+﻿
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINEX - Randevu Al</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+<script>
+      try {
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+          document.documentElement.classList.add('sidebar-is-collapsed');
+        }
+      } catch (e) {}
+    </script>
+<script>
+      try {
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+          document.documentElement.classList.add('sidebar-is-collapsed');
+        }
+      } catch (e) {}
+</script>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="logo">
+                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" style="display: flex; align-items: center; gap: 2px; margin-left: -30px;">
+                    <div style="
+                        width: 60px; 
+                        height: 60px; 
+                        background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); 
+                        -webkit-mask: url(clean-logo.png) no-repeat center / contain; 
+                        mask: url(clean-logo.png) no-repeat center / contain;
+                        display: inline-block;">
+                    </div>
+                    <span style="font-family: 'Exo 2', sans-serif; font-size: 2.5rem; font-weight: 700; color: #001F6B; letter-spacing: 1px; display: flex; align-items: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">LUMINEX</span>
+                </a>
+            </div>
+            <div class="user-info">
+                <span id="welcomeMessage"></span>
+                <div class="icons">
+                    <i id="themeToggleButton" class="fas fa-moon"></i>
+                    <i class="fas fa-bell"></i>
+                    <i class="fas fa-cog"></i>
+                    <i id="logoutButton" class="fas fa-sign-out-alt"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <!-- Side Menu -->
+            <aside class="side-menu">
+                <ul id="dynamicSideMenu">
+                    <!-- Populated by header-manager.js -->
+                </ul>
+                <div class="sidebar-toggle-wrapper">
+                    <button class="sidebar-toggle-button">
+                        <i class="fas fa-chevron-left"></i>
+                        <span>Menüyü Daralt</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Appointment Booking Content -->
+            <main class="dashboard-content">
+                <h1 data-lang="appointmentTitle">Randevu Al</h1>
+                
+                <div class="card form-container">
+                    <form id="appointmentForm">
+                        <div class="form-section">
+                            <legend data-lang="locationInfo">Konum Bilgileri</legend>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="provinceInput" data-lang="provinceSelection">İl Seçimi</label>
+                                    <div class="custom-select-wrapper">
+                                        <input type="text" id="provinceInput" class="form-control" placeholder="İl yazın veya seçin..." autocomplete="off" data-lang-placeholder="typeOrSelectProvince">
+                                        <div class="custom-options-panel" id="provinceOptionsPanel"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="districtInput" data-lang="districtSelection">İlçe Seçimi</label>
+                                    <div class="custom-select-wrapper">
+                                        <input type="text" id="districtInput" class="form-control" placeholder="Önce İl Seçiniz" autocomplete="off" disabled data-lang-placeholder="selectProvinceFirst">
+                                        <div class="custom-options-panel" id="districtOptionsPanel"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="hospitalInput" data-lang="hospitalSelection">Hastane Seçimi</label>
+                                    <div class="custom-select-wrapper">
+                                        <input type="text" id="hospitalInput" class="form-control" placeholder="Önce İlçe Seçiniz" autocomplete="off" disabled data-lang-placeholder="selectDistrictFirst">
+                                        <div class="custom-options-panel" id="hospitalOptionsPanel"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <legend data-lang="appointmentDetails">Randevu Detayları</legend>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="branchInput" data-lang="branchSelection">Branş Seçimi</label>
+                                    <div class="custom-select-wrapper">
+                                        <input type="text" id="branchInput" list="branchList" class="form-control" placeholder="Branş yazın veya seçin..." autocomplete="off" data-lang-placeholder="typeOrSelectBranch">
+                                        <div class="custom-options-panel" id="branchOptionsPanel"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="doctorInput" data-lang="doctorSelection">Doktor Seçimi</label>
+                                    <div class="custom-select-wrapper">
+                                        <input type="text" id="doctorInput" list="doctorList" class="form-control" placeholder="Hastane ve Branş Seçiniz" autocomplete="off" disabled data-lang-placeholder="selectHospitalAndBranch">
+                                        <div class="custom-options-panel" id="doctorOptionsPanel"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group" id="patientSelectionGroup" style="display: none;">
+                                    <label for="patientSelect" data-lang="appointmentPerson">Randevu Alan Kişi</label>
+                                    <div class="input-wrapper">
+                                        <i class="fas fa-user-friends"></i>
+                                        <select id="patientSelect" class="form-control">
+                                            <!-- Options will be dynamically loaded by JS -->
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="appointmentDate" data-lang="dateSelection">Tarih Seçimi</label>
+                                    <input type="date" id="appointmentDate" class="form-control" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <legend data-lang="availableHours">Müsait Saatler</legend>
+                             <div id="timeSlots" class="time-slots">
+                                <p class="time-slot-placeholder" data-lang="selectDateFirst">Lütfen tarih seçimi yapınız.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <legend data-lang="importantHealthInfo">Önemli Sağlık Bilgisi</legend>
+                            <div class="form-group">
+                                <div class="input-wrapper">
+                                    <textarea id="healthInfo" class="form-control" rows="4" placeholder="Önemli sağlık bilgilerinizi buraya yazabilirsiniz..." data-lang-placeholder="enterHealthInfoPlaceholder"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="summary-and-button-wrapper">
+                            <div class="form-section appointment-summary">
+                                <h3><i class="fas fa-clipboard-list"></i> <span data-lang="appointmentSummary">Randevu Özeti</span></h3>
+                                <div class="summary-grid">
+                                    <p><i class="fas fa-user"></i> <strong data-lang="patientLabel">Hasta:</strong> <span id="summaryPatient" data-lang="notSelected">Seçilmedi</span></p>
+                                    <p><i class="fas fa-user-md"></i> <strong data-lang="doctorLabel">Doktor:</strong> <span id="summaryDoctor" data-lang="notSelected">Seçilmedi</span></p>
+                                    <p><i class="fas fa-calendar-alt"></i> <strong data-lang="dateLabel">Tarih:</strong> <span id="summaryDate" data-lang="notSelected">Seçilmedi</span></p>
+                                    <p><i class="fas fa-clock"></i> <strong data-lang="timeLabel">Saat:</strong> <span id="summaryTime" data-lang="notSelected">Seçilmedi</span></p>
+                                    <p><i class="fas fa-notes-medical"></i> <strong data-lang="healthInfo">Sağlık Bilgisi:</strong> <span id="summaryHealthInfo" data-lang="notEntered">Girilmedi</span></p>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" disabled data-lang="confirmAppointment">Randevuyu Onayla</button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="js/language-manager.js"></script>
+    <script type="module" src="js/utils/storage-utils.js"></script>
+    <script type="module" src="js/utils/header-manager.js"></script>
+    <script type="module" src="js/user-session.js"></script>
+    <script type="module" src="js/appointment.js"></script>
+</body>
+</html>
+

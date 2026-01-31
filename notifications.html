@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang="notificationsTitle">LUMINEX - Bildirimler</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        .notifications-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .notifications-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .filter-tab {
+            padding: 8px 20px;
+            border-radius: 50px;
+            background: var(--white-color);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            color: var(--text-light);
+        }
+        .filter-tab.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .notification-full-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            background: var(--white-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .notification-full-item.unread {
+            border-left: 4px solid var(--primary-color);
+            background: rgba(var(--primary-color-rgb), 0.02);
+        }
+        .notif-full-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        .notif-full-icon.appointment { background: #e3f2fd; color: #1565c0; }
+        .notif-full-icon.test_result { background: #e8f5e9; color: #2e7d32; }
+        .notif-full-icon.alert { background: #fff3e0; color: #ef6c00; }
+        .notif-full-icon.system { background: #f3e5f5; color: #7b1fa2; }
+        .notif-full-icon.info { background: #f0f7ff; color: #007AFF; }
+        
+        .notif-full-content {
+            flex-grow: 1;
+        }
+        .notif-full-content p {
+            margin: 0 0 8px 0;
+            line-height: 1.5;
+            color: var(--text-color);
+        }
+        .notif-full-time {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+        .notif-full-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .mark-as-read-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+        }
+        .mark-as-read-btn:hover {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body lang="tr">
+    <div class="dashboard-container">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="logo">
+                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" style="display: flex; align-items: center; gap: 2px; margin-left: -30px;">
+                    <div style="
+                        width: 60px; 
+                        height: 60px; 
+                        background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); 
+                        -webkit-mask: url(clean-logo.png) no-repeat center / contain; 
+                        mask: url(clean-logo.png) no-repeat center / contain;
+                        display: inline-block;">
+                    </div>
+                    <span style="font-family: 'Exo 2', sans-serif; font-size: 2.5rem; font-weight: 700; color: #001F6B; letter-spacing: 1px; display: flex; align-items: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">LUMINEX</span>
+                </a>
+            </div>
+            <div class="user-info">
+                <span id="welcomeMessage"></span>
+                <div class="icons">
+                    <i id="themeToggleButton" class="fas fa-moon"></i>
+                    <div class="notification-wrapper" style="position: relative; display: inline-block;">
+                        <i class="fas fa-bell" style="cursor: pointer;"></i>
+                        <span class="notification-badge" style="display: none; position: absolute; top: -8px; right: -8px; background: #ff4757; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; align-items: center; justify-content: center; font-weight: bold; border: 2px solid var(--white-color);"></span>
+                        <div class="notification-dropdown dropdown" style="position: absolute; top: 100%; right: 0; width: 320px; background: var(--white-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; z-index: 1000; flex-direction: column; overflow: hidden; margin-top: 15px;"></div>
+                    </div>
+                    <i class="fas fa-cog"></i>
+                    <i id="logoutButton" class="fas fa-sign-out-alt"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-wrapper">
+            <aside class="side-menu">
+                <ul id="dynamicSideMenu">
+                    <!-- header-manager.js will fill this -->
+                </ul>
+                <div class="sidebar-toggle-wrapper">
+                    <button class="sidebar-toggle-button">
+                        <i class="fas fa-chevron-left"></i>
+                        <span data-lang="collapseMenu">Menüyü Daralt</span>
+                    </button>
+                </div>
+            </aside>
+
+            <main class="dashboard-content">
+                <h1 data-lang="notificationsTitle" class="reveal">Bildirimler</h1>
+                
+                <div class="notifications-container reveal">
+                    <div class="notifications-header">
+                        <h2 style="font-size: 1.4rem; font-weight: 600; color: var(--text-color); margin: 0;" data-lang="allNotifications">Tüm Bildirimler</h2>
+                        <button id="markAllReadBtn" class="btn btn-secondary btn-sm" data-lang="markAllAsRead" style="width: auto;">
+                            Tümünü Okundu İşaretle
+                        </button>
+                    </div>
+
+                    <div class="filter-controls reveal" style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; align-items: center; background: var(--white-color); padding: 15px; border-radius: var(--border-radius); border: 1px solid var(--border-color);">
+                        <div class="filter-tabs" style="margin-bottom: 0;">
+                            <div class="filter-tab active" data-filter="all" data-lang="all">Tümü</div>
+                            <div class="filter-tab" data-filter="unread" data-lang="unread">Okunmamış</div>
+                        </div>
+                        
+                        <div style="flex-grow: 1; min-width: 200px; position: relative;">
+                            <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-light); opacity: 0.6;"></i>
+                            <input type="text" id="notifSearch" placeholder="Bildirimlerde ara..." data-lang-placeholder="searchNotifications" style="width: 100%; padding: 10px 15px 10px 40px; border-radius: 50px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color); outline: none;">
+                        </div>
+
+                        <div style="min-width: 180px;">
+                            <select id="categoryFilter" class="form-control" style="margin: 0; border-radius: 50px; padding: 8px 15px;">
+                                <option value="all" data-lang="allCategories">Tüm Kategoriler</option>
+                                <option value="appointment" data-lang="categoryAppointment">Randevular</option>
+                                <option value="test_result" data-lang="categoryTestResult">Tahlil Sonuçları</option>
+                                <option value="alert" data-lang="categoryAlert">Uyarılar</option>
+                                <option value="system" data-lang="categorySystem">Sistem</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="notifications-list" class="reveal">
+                        <!-- JS renders here -->
+                        <div class="skeleton-notifications">
+                            <div class="skeleton" style="height: 100px; margin-bottom: 15px;"></div>
+                            <div class="skeleton" style="height: 100px; margin-bottom: 15px;"></div>
+                            <div class="skeleton" style="height: 100px; margin-bottom: 15px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="js/language-manager.js"></script>
+    <script type="module" src="js/user-session.js"></script>
+    <script type="module" src="js/utils/header-manager.js"></script>
+    <script type="module" src="js/notifications.js"></script>
+</body>
+</html>

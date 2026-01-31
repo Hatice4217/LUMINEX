@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratuvar Sonuç Raporu</title>
+    <link rel="icon" href="site-ikonu.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', 'Arial', sans-serif;
+            background-color: #e9ecef;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            color: #000;
+            line-height: 1.5;
+            font-size: 10pt;
+        }
+        .report-container {
+            width: 21cm;
+            min-height: 29.7cm;
+            background-color: #fff;
+            padding: 1.5cm;
+            box-shadow: 0 0 20px rgba(0,0,0,0.15);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .report-header .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #000;
+        }
+        .report-header .report-info p {
+            margin: 0;
+            text-align: right;
+            font-size: 9pt;
+        }
+        .section-title {
+            font-size: 12pt;
+            font-weight: 700;
+            background-color: #f2f2f2;
+            padding: 5px;
+            margin: 15px 0 10px 0;
+            border: 1px solid #ccc;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10pt;
+            margin-bottom: 10px;
+        }
+        .info-table th, .info-table td {
+            text-align: left;
+            padding: 4px 8px;
+            border: 1px solid #ccc;
+        }
+        .info-table th {
+            width: 140px;
+            font-weight: 700;
+            background-color: #f8f8f8;
+        }
+        
+        /* Results Table */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10pt;
+        }
+        .results-table thead {
+            background-color: #333;
+            color: #fff;
+            font-weight: 700;
+        }
+        .results-table th, .results-table td {
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            text-align: left;
+            vertical-align: middle;
+        }
+        
+        /* Status Styles within Table */
+        .status-high { color: #d32f2f; font-weight: 700; }
+        .status-low { color: #1976d2; font-weight: 700; }
+        .range-indicator { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
+        .range-indicator.high { background-color: #d32f2f; }
+        .range-indicator.low { background-color: #1976d2; }
+        .range-indicator.normal { background-color: #27ae60; }
+        
+        .report-footer {
+            margin-top: auto; /* Pushes footer to the bottom */
+            padding-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9pt;
+        }
+        .signature-area {
+            text-align: center;
+        }
+        .signature-area p {
+            margin: 0;
+        }
+        .signature-area .line {
+            border-bottom: 1px solid #000;
+            width: 200px;
+            margin: 40px auto 5px auto;
+        }
+        
+        /* QR Code Area */
+        .qr-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .qr-box {
+            width: 70px; height: 70px;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, #000 5px, #000 10px), repeating-linear-gradient(-45deg, transparent, transparent 5px, #000 5px, #000 10px); 
+            background-color: #fff; 
+            border: 2px solid #000;
+            margin-top: 10px;
+        }
+
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        @media print {
+            body {
+                background-color: #fff;
+                padding: 0;
+            }
+            .report-container {
+                box-shadow: none;
+                width: 100%;
+                min-height: 0;
+                padding: 0;
+            }
+            .print-button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button onclick="window.print()" class="print-button"><i class="fas fa-print"></i> Yazdır</button>
+    <div class="report-container">
+        <header class="report-header">
+            <div class="logo" id="hospitalName">LUMINEX LABORATUVAR SONUÇLARI</div>
+            <div class="report-info">
+                <p><strong>Tarih:</strong> <span id="printDate">-</span> <span id="printTime"></span></p>
+                <p><strong>Rapor No:</strong> <span id="reportId">-</span></p>
+            </div>
+        </header>
+
+        <div class="section-title">Hasta Bilgileri</div>
+        <table class="info-table">
+            <tr>
+                <th>Ad Soyad</th>
+                <td id="patientName">-</td>
+                <th>T.C. Kimlik No</th>
+                <td id="patientTc">-</td>
+            </tr>
+            <tr>
+                <th>Yaş / Cinsiyet</th>
+                <td id="patientAgeGender">-</td>
+                <th>Protokol No</th>
+                <td id="protocolNo">-</td>
+            </tr>
+            <tr>
+                <th>Kurum</th>
+                <td id="patientInstitution">SGK - Çalışan</td>
+                <th>İstem Tarihi</th>
+                <td id="requestDate">-</td>
+            </tr>
+        </table>
+
+        <div class="section-title">Örnek ve Doktor Bilgileri</div>
+        <table class="info-table">
+            <tr>
+                <th>Doktor</th>
+                <td id="doctorName">-</td>
+                <th>Birim</th>
+                <td id="doctorDept">Biyokimya / Hematoloji</td>
+            </tr>
+            <tr>
+                <th>Test Grubu</th>
+                <td id="testCategoryName">-</td>
+                <th>Numune Türü</th>
+                <td id="sampleType">Kan (Serum)</td>
+            </tr>
+        </table>
+
+        <div class="section-title">Klinik Bilgi / Tanı</div>
+        <div style="border: 1px solid #ccc; padding: 8px; margin-bottom: 15px; background-color: #fffde7;">
+            <span id="clinicalInfo">Rutin Kontrol</span>
+        </div>
+
+        <div class="section-title">Laboratuvar Test Sonuçları</div>
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th style="width: 35%;">Test Adı</th>
+                    <th style="width: 20%;">Sonuç</th>
+                    <th style="width: 15%;">Birim</th>
+                    <th style="width: 30%;">Referans Aralığı</th>
+                </tr>
+            </thead>
+            <tbody id="resultsBody">
+                <!-- Rows will be injected here -->
+            </tbody>
+        </table>
+
+        <footer class="report-footer">
+            <div class="qr-area">
+                <div class="qr-box"></div>
+                <span style="font-size: 9px; margin-top: 2px;">Lab Sonuç Doğrulama</span>
+            </div>
+            
+            <div class="disclaimer" style="flex: 1; margin-left: 20px;">
+                <p style="font-weight: bold;">YASAL UYARI:</p>
+                <p>Bu rapor 5070 sayılı Elektronik İmza Kanunu kapsamında oluşturulmuştur. Islak imza gerektirmez. Laboratuvarımız ISO 15189 standartlarına göre akreditedir. Sonuçlar klinik bulgularla birlikte değerlendirilmelidir.</p>
+            </div>
+
+            <div class="signature-area">
+                <div class="line"></div>
+                <p><strong><span id="footerDoctorName">-</span></strong></p>
+                <p>Uzm. Dr. (Elektronik İmzalıdır)</p>
+            </div>
+        </footer>
+    </div>
+
+    <script type="module" src="js/lab-report.js"></script>
+</body>
+</html>

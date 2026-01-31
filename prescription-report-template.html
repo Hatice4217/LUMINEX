@@ -1,0 +1,324 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Reçete Raporu</title>
+    <link rel="icon" href="site-ikonu.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', 'Arial', sans-serif;
+            background-color: #e9ecef;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            color: #000;
+            line-height: 1.5;
+            font-size: 10pt;
+        }
+        .report-container {
+            width: 21cm;
+            min-height: 29.7cm;
+            background-color: #fff;
+            padding: 1.5cm;
+            box-shadow: 0 0 20px rgba(0,0,0,0.15);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .report-header .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #000;
+        }
+        .report-header .report-info p {
+            margin: 0;
+            text-align: right;
+            font-size: 9pt;
+        }
+        .section-title {
+            font-size: 12pt;
+            font-weight: 700;
+            background-color: #f2f2f2;
+            padding: 5px;
+            margin: 15px 0 10px 0;
+            border: 1px solid #ccc;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10pt;
+            margin-bottom: 10px;
+        }
+        .info-table th, .info-table td {
+            text-align: left;
+            padding: 4px 8px;
+            border: 1px solid #ccc;
+        }
+        .info-table th {
+            width: 140px;
+            font-weight: 700;
+            background-color: #f8f8f8;
+        }
+        
+        /* Prescription Specific Table */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10pt;
+        }
+        .results-table thead {
+            background-color: #333;
+            color: #fff;
+            font-weight: 700;
+        }
+        .results-table th, .results-table td {
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            text-align: left;
+            vertical-align: top;
+        }
+        .results-table .med-name {
+            font-weight: 700;
+            font-size: 11pt;
+        }
+        
+        .report-footer {
+            margin-top: auto; /* Pushes footer to the bottom */
+            padding-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9pt;
+        }
+        .signature-area {
+            text-align: center;
+        }
+        .signature-area p {
+            margin: 0;
+        }
+        .signature-area .line {
+            border-bottom: 1px solid #000;
+            width: 200px;
+            margin: 40px auto 5px auto;
+        }
+        
+        /* QR Code Area */
+        .qr-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .qr-box {
+            width: 70px; height: 70px;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, #000 5px, #000 10px), repeating-linear-gradient(-45deg, transparent, transparent 5px, #000 5px, #000 10px); 
+            background-color: #fff; 
+            border: 2px solid #000;
+            margin-top: 10px;
+        }
+
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        @media print {
+            body {
+                background-color: #fff;
+                padding: 0;
+            }
+            .report-container {
+                box-shadow: none;
+                width: 100%;
+                min-height: 0;
+                padding: 0;
+            }
+            .print-button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button onclick="window.print()" class="print-button"><i class="fas fa-print"></i> Yazdır</button>
+    <div class="report-container">
+        <header class="report-header">
+            <div class="logo" id="hospitalName">LUMINEX SAÄLIK HİZMETLERİ</div>
+            <div class="report-info">
+                <p><strong>Tarih:</strong> <span id="printDate">-</span> <span id="printTime"></span></p>
+                <p><strong>E-Reçete No:</strong> <span id="rxNo">-</span></p>
+            </div>
+        </header>
+
+        <div class="section-title">Hasta Bilgileri</div>
+        <table class="info-table">
+            <tr>
+                <th>Ad Soyad</th>
+                <td id="patientName">-</td>
+                <th>T.C. Kimlik No</th>
+                <td id="patientTC">-</td>
+            </tr>
+            <tr>
+                <th>Yaş</th>
+                <td id="patientAge">-</td>
+                <th>Cinsiyet</th>
+                <td id="patientGender">-</td>
+            </tr>
+            <tr>
+                <th>Güvence</th>
+                <td id="patientType" colspan="3">-</td>
+            </tr>
+        </table>
+
+        <div class="section-title">Protokol ve Doktor Bilgileri</div>
+        <table class="info-table">
+            <tr>
+                <th>Protokol No</th>
+                <td id="protocolNo">-</td>
+                <th>Medula Takip No</th>
+                <td id="medulaNo">-</td>
+            </tr>
+            <tr>
+                <th>Doktor</th>
+                <td id="doctorName">-</td>
+                <th>Diploma No</th>
+                <td id="doctorDiplomaNo">-</td>
+            </tr>
+            <tr>
+                <th>Branş</th>
+                <td id="doctorBranch">-</td>
+                <th>Birim</th>
+                <td id="hospitalDept">-</td>
+            </tr>
+        </table>
+
+        <div class="section-title">Tanı Bilgileri</div>
+        <div style="border: 1px solid #ccc; padding: 8px; margin-bottom: 15px; background-color: #fffde7;">
+            <strong><span id="diagnosisCode">-</span></strong> - <span id="diagnosisText">-</span>
+        </div>
+
+        <div class="section-title">Reçete İçeriği</div>
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th style="width: 5%;">#</th>
+                    <th style="width: 15%;">Barkod</th>
+                    <th style="width: 40%;">İlaç Adı ve Etken Madde</th>
+                    <th style="width: 10%;">Kutu</th>
+                    <th style="width: 30%;">Kullanım Şekli / Periyot</th>
+                </tr>
+            </thead>
+            <tbody id="medicationList">
+                <!-- Rows will be injected here -->
+            </tbody>
+        </table>
+
+        <footer class="report-footer">
+            <div class="qr-area">
+                <div class="qr-box"></div>
+                <span style="font-size: 9px; margin-top: 2px;">E-İmza Doğrulama</span>
+            </div>
+            
+            <div class="disclaimer" style="flex: 1; margin-left: 20px;">
+                <p style="font-weight: bold;">YASAL UYARI:</p>
+                <p>Bu belge 5070 sayılı Elektronik İmza Kanunu kapsamında oluşturulmuştur. Islak imza gerektirmez. İlaçlarınızı eczacınıza danışarak alınız. Yan etki durumunda doktorunuza başvurunuz.</p>
+            </div>
+
+            <div class="signature-area">
+                <div class="line"></div>
+                <p><strong><span id="doctorNameSign">-</span></strong></p>
+                <p>Uzm. Dr. (Elektronik İmzalıdır)</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        window.onload = function() {
+            try {
+                // Get data from LocalStorage (Robust Method)
+                const storedData = localStorage.getItem('luminex_print_data');
+                const data = storedData ? JSON.parse(storedData) : null;
+
+                if(data) {
+                    // Clear storage after reading to keep it clean
+                    localStorage.removeItem('luminex_print_data');
+
+                    // Header Fields
+                    document.getElementById('hospitalName').textContent = data.hospitalName;
+                    document.getElementById('printDate').textContent = data.date;
+                    document.getElementById('printTime').textContent = data.time || '';
+                    document.getElementById('rxNo').textContent = data.id;
+
+                    // Patient Fields
+                    document.getElementById('patientName').textContent = data.patientName;
+                    document.getElementById('patientTC').textContent = data.patientTC;
+                    document.getElementById('patientAge').textContent = data.patientAge !== 'Bilinmiyor' ? data.patientAge + ' Yaş' : '-';
+                    document.getElementById('patientGender').textContent = data.patientGender;
+                    document.getElementById('patientType').textContent = data.patientType;
+
+                    // Protocol & Doctor Fields
+                    document.getElementById('protocolNo').textContent = data.protocolNo;
+                    document.getElementById('medulaNo').textContent = data.medulaNo;
+                    document.getElementById('doctorName').textContent = data.doctorName;
+                    document.getElementById('doctorNameSign').textContent = data.doctorName;
+                    document.getElementById('doctorDiplomaNo').textContent = data.doctorDiplomaNo;
+                    document.getElementById('doctorBranch').textContent = data.branch || data.hospitalDept;
+                    document.getElementById('hospitalDept').textContent = data.hospitalDept;
+
+                    // Diagnosis Fields
+                    document.getElementById('diagnosisCode').textContent = data.diagnosisCode;
+                    document.getElementById('diagnosisText').textContent = data.diagnosis || 'Tanı girilmemiştir.';
+
+                    // Meds
+                    const medList = document.getElementById('medicationList');
+                    data.medicines.forEach((med, index) => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td style="text-align: center;">${index + 1}</td>
+                            <td style="font-family: monospace;">${med.barcode}</td>
+                            <td>
+                                <div class="med-name">${med.name}</div>
+                                <div style="font-size: 9pt; color: #555; font-style: italic;">${med.activeIngredient}</div>
+                            </td>
+                            <td style="text-align: center; font-weight: bold;">${med.boxCount}</td>
+                            <td>
+                                <div>${med.usage}</div>
+                                <div style="font-size: 9pt; color: #555;">${med.period}</div>
+                            </td>
+                        `;
+                        medList.appendChild(tr);
+                    });
+
+                    // Auto print removed per user request
+                    // setTimeout(() => {
+                    //    window.print();
+                    // }, 800);
+                }
+            } catch(e) {
+                console.error("Veri hatası:", e);
+                document.body.innerHTML = '<h2 style="text-align:center; color:red; margin-top:50px;">Hata: Rapor verisi oluşturulamadı.</h2><p style="text-align:center;">' + e.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html>
+
