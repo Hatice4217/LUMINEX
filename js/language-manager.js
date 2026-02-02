@@ -1273,12 +1273,17 @@ const initLanguageSwitcher = () => {
             newSelectedLang.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                
+
                 langOptions.classList.toggle('show-lang-options');
-                
-                // Close all other lang options
-                document.querySelectorAll('.lang-options').forEach(opt => {
-                    if (opt !== langOptions) opt.classList.remove('show-lang-options');
+                langSwitcher.classList.toggle('active');
+
+                // Close all other lang options and remove active class
+                document.querySelectorAll('.lang-switcher').forEach(ls => {
+                    if (ls !== langSwitcher) {
+                        ls.classList.remove('active');
+                        const otherOptions = ls.querySelector('.lang-options');
+                        if (otherOptions) otherOptions.classList.remove('show-lang-options');
+                    }
                 });
             });
 
@@ -1289,6 +1294,7 @@ const initLanguageSwitcher = () => {
                     if (lang) {
                         setLanguage(lang);
                         langOptions.classList.remove('show-lang-options');
+                        langSwitcher.classList.remove('active');
                     }
                 });
             });
@@ -1298,8 +1304,10 @@ const initLanguageSwitcher = () => {
     // Close all when clicking anywhere else
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.lang-switcher')) {
-            document.querySelectorAll('.lang-options').forEach(opt => {
-                opt.classList.remove('show-lang-options');
+            document.querySelectorAll('.lang-switcher').forEach(ls => {
+                ls.classList.remove('active');
+                const opt = ls.querySelector('.lang-options');
+                if (opt) opt.classList.remove('show-lang-options');
             });
         }
     });

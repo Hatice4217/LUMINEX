@@ -793,6 +793,49 @@ body.theme-dark .top-right-actions .btn-home-text:hover {
     color: #f1f5f9; /* --text-color in dark mode */
 }
 
+/* --- Card-in-Card Input Style for Login Page (Dark Mode) --- */
+body.theme-dark.login-page .form-panel {
+    background-color: var(--body-bg); /* Match body background */
+}
+
+body.theme-dark.login-page .auth-card {
+    background-color: #0f172a !important; /* Darker card background */
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6) !important;
+}
+
+body.theme-dark.login-page .auth-header h2 {
+    color: var(--text-color) !important; /* Bright text */
+}
+
+body.theme-dark.login-page .auth-card .form-group {
+    background-color: #1e293b !important; /* Inner card background */
+    border-color: #334155 !important;
+}
+
+body.theme-dark.login-page .auth-card .form-group:focus-within {
+    border-color: var(--primary-color) !important; /* Vivid Blue focus */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}
+
+body.theme-dark.login-page .auth-card .form-group label,
+body.theme-dark.login-page .auth-card .input-wrapper i,
+body.theme-dark.login-page .auth-card .toggle-password {
+    color: var(--text-light) !important;
+}
+
+body.theme-dark.login-page .auth-card .form-group:focus-within .input-wrapper i {
+    color: var(--primary-color) !important;
+}
+
+body.theme-dark.login-page .auth-card .input-wrapper input {
+    color: var(--text-color) !important;
+}
+
+body.theme-dark.login-page .auth-card .input-wrapper input::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+
+
 body.theme-dark .lang-switcher .selected-lang {
     background: rgba(255, 255, 255, 0.1);
     color: #f1f5f9;
@@ -812,5 +855,75 @@ body.theme-dark .lang-options li {
 }
 
 body.theme-dark .lang-options li:hover {
-    background: #334155;
+    background: #334155 !important;
+    color: #fff !important;
 }
+
+/* NEW: Login Page Input Icon Color (Dark Mode) */
+body.theme-dark.login-page .auth-card .input-wrapper i {
+    color: var(--primary-color) !important; /* Use dark mode primary color */
+}
+
+/* NEW: Soften Language/Home Buttons for Login Page (Dark Mode) */
+body.theme-dark.login-page .top-right-actions .selected-lang,
+body.theme-dark.login-page .top-right-actions .btn-home-text {
+    background: none !important;
+    border: none !important;
+    padding: 5px 8px !important;
+    color: var(--text-light) !important; /* Muted text color for dark mode */
+    border-radius: var(--border-radius) !important;
+}
+
+body.theme-dark.login-page .top-right-actions .selected-lang:hover,
+body.theme-dark.login-page .top-right-actions .btn-home-text:hover {
+    background: rgba(var(--primary-color-rgb), 0.15) !important; /* Subtle hover background */
+    color: var(--primary-color) !important; /* Primary color on hover */
+    text-decoration: none !important;
+}
+
+/* ==========================================
+   DARK MODE - TOP RIGHT ACTIONS OVERRIDES
+   ========================================== */
+
+/* 2.1 Dark Mode .top-right-actions */
+body.theme-dark .top-right-actions .btn-home-text {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-light);
+}
+
+body.theme-dark .top-right-actions .btn-home-text:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #ffffff;
+}
+
+/* Dark Mode .lang-switcher */
+body.theme-dark .lang-switcher .selected-lang {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-light);
+}
+
+body.theme-dark .lang-switcher .selected-lang:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* Dark Mode .lang-options */
+body.theme-dark .lang-options {
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.theme-dark .lang-options li {
+    color: var(--text-color);
+}
+
+body.theme-dark .lang-options li:hover {
+    background: rgba(59, 130, 246, 0.15);
+    color: var(--primary-color);
+}
+

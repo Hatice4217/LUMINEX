@@ -142,14 +142,16 @@ window.Luminex = {};
         let loggedInUser = getLoggedInUser();
 
         // Apply theme based on user preference or local storage
-        let themeToApply = 'light'; // Default theme
-        if (loggedInUser && loggedInUser.theme) {
-            themeToApply = loggedInUser.theme;
-        } else {
-            // Fallback to global theme setting if user-specific theme not found
-            themeToApply = localStorage.getItem('landingTheme') || 'light';
-        }
-        applyAdminTheme(themeToApply); // Use the imported function to apply theme
+        // This theme application logic is handled by the inline script on login/register pages
+        // to prevent flickering.
+        // let themeToApply = 'light'; // Default theme
+        // if (loggedInUser && loggedInUser.theme) {
+        //     themeToApply = loggedInUser.theme;
+        // } else {
+        //     // Fallback to global theme setting if user-specific theme not found
+        //     themeToApply = localStorage.getItem('landingTheme') || 'light';
+        // }
+        // applyAdminTheme(themeToApply); // Use the imported function to apply theme
 
         // Ensure loggedInUser (from sessionStorage) is always in the latest format
         if (loggedInUser && (loggedInUser.tcKimlik || loggedInUser.fullName)) {
