@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Production build
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+debug.log
+*.log
+nul
+
+# Screenshots
+Ekran*.png
+*.jpg
+*.jpeg
+*.screenshot
+
+# Temporary files
+*.tmp
+*.temp
+~*
+.*.swp
+
+# Lock files (optional - team work için remove et)
+# package-lock.json
+
+# Test coverage
+coverage/
+.nyc_output/

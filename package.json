@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "http-server": "^14.1.1"
+    "http-server": "^14.1.1",
+    "sweetalert2": "^11.26.18"
   },
   "scripts": {
     "start": "http-server -p 8080"

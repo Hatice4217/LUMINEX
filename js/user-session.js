@@ -51,68 +51,80 @@ window.Luminex = {};
         // Helper to get initials
         const getInitials = (name) => {
             const names = name.split(' ');
-            return names.length > 1 
-                ? (names[0][0] + names[names.length - 1][0]).toUpperCase() 
+            return names.length > 1
+                ? (names[0][0] + names[names.length - 1][0]).toUpperCase()
                 : name[0].toUpperCase();
         };
 
+        // Helper to detect gender based on name
+        const detectGender = (name) => {
+            const firstName = name.split(' ')[0].toLowerCase();
+            const femaleNames = ['ayşe', 'fatma', 'zeynep', 'elife', 'zeyneb', 'hatice', 'meryem', 'sultan', 'şükriye', 'safiye', 'emin', 'ümmü', 'zeynep', 'esra', 'gülşah', 'büşra', 'betül', 'nur', 'selin', 'cera', 'sude', 'ece', 'sinem', 'deniz', 'nil', 'naz', 'nazlı', 'belinay', 'elin', 'selin', 'balım', 'begüm', '/ecr', 'nisanur'];
+            const maleNames = ['ahmet', 'mehmet', 'mustafa', 'ali', 'hasan', 'hüseyin', 'ibrahim', 'osman', 'murat', 'can', 'emre', 'burak', 'arda', 'serkan', 'berk', 'mert', 'kaan', 'kerem', 'yusuf', 'eyüp', 'ömer', 'abdullah', 'muhammed', 'yunus', 'veli', 'rıza', 'nuri', 'kemal', 'tamer', 'erkam'];
+
+            if (femaleNames.includes(firstName)) return 'female';
+            if (maleNames.includes(firstName)) return 'male';
+            return 'neutral';
+        };
+
         let profilesHtml = '<div class="profile-switcher-grid">';
-        
+
         // Parent profile card
         const isParentActive = activeProfile.tc === fullUserData.tc;
+        const parentGender = detectGender(fullUserData.name);
         profilesHtml += `
             <div class="profile-card ${isParentActive ? 'selected' : ''}" data-tc="${fullUserData.tc}" data-ischild="false" data-name="${fullUserData.name}">
-                <div class="card-avatar parent">
+                <div class="card-avatar ${parentGender}">
                     ${getInitials(fullUserData.name)}
-                    <div class="icon-badge"><i class="fas fa-user-shield"></i></div>
+                    <div class="avatar-glow"></div>
+                    <div class="icon-badge"><i class="fas fa-crown"></i></div>
                 </div>
                 <div class="card-info">
                     <h3>${fullUserData.name}</h3>
-                    <span class="badge parent">Ana Hesap</span>
+                    <span class="badge parent"><i class="fas fa-shield-alt"></i> Ana Hesap</span>
                 </div>
-                ${isParentActive ? '<div class="selected-indicator"><i class="fas fa-check"></i></div>' : ''}
+                ${isParentActive ? '<div class="selected-indicator"><i class="fas fa-check-circle"></i></div>' : ''}
             </div>
         `;
 
         // Children profile cards
         children.forEach(child => {
             const isChildActive = activeProfile.tc === child.tc;
+            const childGender = detectGender(child.name);
             profilesHtml += `
                 <div class="profile-card ${isChildActive ? 'selected' : ''}" data-tc="${child.tc}" data-ischild="true" data-name="${child.name}">
-                    <div class="card-avatar child">
+                    <div class="card-avatar ${childGender} child">
                         ${getInitials(child.name)}
+                        <div class="avatar-glow"></div>
                         <div class="icon-badge"><i class="fas fa-child"></i></div>
                     </div>
                     <div class="card-info">
                         <h3>${child.name}</h3>
-                        <span class="badge child">Çocuk Hesabı</span>
+                        <span class="badge child"><i class="fas fa-star"></i> Çocuk Hesabı</span>
                     </div>
-                    ${isChildActive ? '<div class="selected-indicator"><i class="fas fa-check"></i></div>' : ''}
+                    ${isChildActive ? '<div class="selected-indicator"><i class="fas fa-check-circle"></i></div>' : ''}
                 </div>
             `;
         });
         profilesHtml += '</div>';
 
         Swal.fire({
-            title: 'Profil Değiştir',
-            text: 'İşlem yapmak istediğiniz profili seçiniz',
+            title: '<div class="popup-title-wrapper"><i class="fas fa-users-cog"></i> Profil Seçimi</div>',
             html: profilesHtml,
             showCancelButton: false,
             showConfirmButton: false,
             showCloseButton: true,
-            width: '600px',
-            padding: '2em',
-            background: '#fff',
+            width: '650px',
+            padding: '0',
+            background: 'transparent',
             customClass: {
-                popup: 'modern-profile-popup',
-                title: 'modern-profile-title',
-                htmlContainer: 'modern-profile-container'
+                popup: 'premium-profile-popup',
+                closeButton: 'premium-close-button'
             },
             didOpen: () => {
                 const popup = Swal.getPopup();
                 popup.querySelectorAll('.profile-card').forEach(card => {
                     card.addEventListener('click', () => {
-                        // Visual feedback immediately
                         popup.querySelectorAll('.profile-card').forEach(c => c.classList.remove('selected'));
                         card.classList.add('selected');
 
@@ -125,12 +137,11 @@ window.Luminex = {};
                             name: name,
                             isChild: isChild
                         };
-                        
-                        // Short delay for visual effect
+
                         setTimeout(() => {
                              _setActiveProfileAndReload(selectedProfileData);
                              Swal.close();
-                        }, 300);
+                        }, 350);
                     });
                 });
             }

@@ -1,4 +1,4 @@
-# Luminex Proje Dokümantasyonu
+@# Luminex Proje Dokümantasyonu
 
 Bu depo, yönetici panoları, doktor randevuları, hasta sağlık kayıtları ve daha fazlasını içeren bir sağlık sisteminin çeşitli yönlerini yönetmek için tasarlanmış Luminex web uygulamasını içermektedir.
 
@@ -34,7 +34,7 @@ Luminex projesini yerel olarak kurmak için aşağıdaki adımları izleyin:
 1.  **Depoyu klonlayın:**
     ```bash
     git clone [depo-url]
-    cd "LUMINEX GEMINI"
+    cd LUMINEX
     ```
 2.  **Bağımlılıkları yükleyin (varsa, örn: geliştirme araçları veya derleme süreçleri için):**
     ```bash

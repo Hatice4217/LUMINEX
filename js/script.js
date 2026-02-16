@@ -8,11 +8,9 @@ import {
     removeLoggedInUser,
     initAllDummyData
 } from './utils/storage-utils.js';
-import { hashString } from './utils/crypto-utils.js';
+import { hashString, encryptData, decryptData, APP_SECRET } from './utils/crypto-utils.js';
 import { validateAge } from './utils/validation-utils.js';
-
-// Initialize localStorage keys if they don't exist
-// initAllDummyData(); 
+import logger from './utils/logger.js';
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -29,14 +27,70 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Find all links that might navigate away and should save scroll position
-    const linksToSaveScroll = document.querySelectorAll('a[href^="payment.html"], a[href^="login.html"], a[href^="register.html"]');
+    const linksToSaveScroll = document.querySelectorAll('a[href^="payment.html"], a[href^="login.html"], a[href^="register.html"], a[href^="kvkk.html"]');
     linksToSaveScroll.forEach(link => {
-        link.addEventListener('click', () => {
+        link.addEventListener('click', (e) => {
+            // Skip if target="_blank"
+            if (link.getAttribute('target') === '_blank') return;
             // Save the current scroll position before navigating
             sessionStorage.setItem('scrollPosition', window.scrollY);
         });
     });
     // --- END of Scroll Logic ---
+
+    // --- HAMBURGER MENU LOGIC ---
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const navMenu = document.getElementById('navMenu');
+    const navRightActions = document.getElementById('navRightActions');
+    const navOverlay = document.getElementById('navOverlay');
+
+    // Toggle mobile menu
+    function toggleMobileMenu() {
+        hamburgerBtn.classList.toggle('active');
+        navMenu.classList.toggle('active');
+        navRightActions.classList.toggle('active');
+        navOverlay.classList.toggle('active');
+
+        // Prevent body scroll when menu is open
+        document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+    }
+
+    // Close mobile menu
+    function closeMobileMenu() {
+        hamburgerBtn.classList.remove('active');
+        navMenu.classList.remove('active');
+        navRightActions.classList.remove('active');
+        navOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Hamburger button click
+    if (hamburgerBtn) {
+        hamburgerBtn.addEventListener('click', toggleMobileMenu);
+    }
+
+    // Overlay click to close
+    if (navOverlay) {
+        navOverlay.addEventListener('click', closeMobileMenu);
+    }
+
+    // Close menu when clicking on nav links
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (navMenu.classList.contains('active')) {
+                closeMobileMenu();
+            }
+        });
+    });
+
+    // Close menu on window resize if screen becomes larger
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 992 && navMenu.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+    // --- END of Hamburger Menu Logic ---
 
     const loginForm = document.getElementById('loginForm');
     const tcKimlikInput = document.getElementById('tcLogin');
@@ -44,12 +98,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const togglePassword = document.querySelector('.toggle-password');
     const rememberMeCheckbox = document.getElementById('rememberMe');
 
-    // Load remembered TC Kimlik on page load
+    // Load remembered TC Kimlik on page load (DECRYPTED for security)
     if (tcKimlikInput && rememberMeCheckbox) {
-        const rememberedTcKimlik = getLocalStorageItem('rememberedTcKimlik');
-        if (rememberedTcKimlik) {
-            tcKimlikInput.value = rememberedTcKimlik;
-            rememberMeCheckbox.checked = true;
+        const rememberedTcKimlikEncrypted = getLocalStorageItem('rememberedTcKimlik');
+        if (rememberedTcKimlikEncrypted) {
+            // Decrypt the stored TC Kimlik
+            decryptData(rememberedTcKimlikEncrypted, APP_SECRET).then(decrypted => {
+                if (decrypted) {
+                    tcKimlikInput.value = decrypted;
+                    rememberMeCheckbox.checked = true;
+                }
+            });
         }
     }
 
@@ -109,8 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const applyTheme = (theme) => {
         const icon = themeToggleButton ? themeToggleButton.querySelector('i') : null;
-        const logo = document.getElementById('main-logo');
-        
+
         // Apply class based on page type
         document.body.classList.toggle('theme-light', theme === 'light');
         document.body.classList.toggle('theme-dark', theme === 'dark');
@@ -126,18 +184,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Update logo universally
-        if (logo) {
-            if (theme === 'dark') {
-                logo.src = 'clean-logo-dark.png';
-            } else {
-                logo.src = 'clean-logo.png';
-            }
-        }
+        // Note: Logo is handled by CSS (landing.css:298-305) using mask/filter
     };
 
-    // Apply saved theme on initial load - REMOVED TO PREVENT FLICKER
-    // applyTheme(savedTheme);
+    // Apply saved theme on initial load
+    applyTheme(savedTheme);
 
     // Add a single, universal click listener
     if (themeToggleButton) {
@@ -199,7 +250,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (rememberMeCheckbox && tcKimlikInput) {
                 if (rememberMeCheckbox.checked) {
-                    setLocalStorageItem('rememberedTcKimlik', tc);
+                    // Encrypt TC Kimlik before storing (XSS prevention)
+                    encryptData(tc, APP_SECRET).then(encrypted => {
+                        if (encrypted) {
+                            setLocalStorageItem('rememberedTcKimlik', encrypted);
+                        }
+                    });
                 } else {
                     removeLocalStorageItem('rememberedTcKimlik');
                 }
@@ -210,6 +266,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!password) showError(passwordLoginInput, window.getTranslation('passwordRequired'));
                 return;
             }
+
+            // ========================================
+            // TC KIMLIK VALIDASYONU (Production Ready)
+            // ========================================
+            function validateTCKimlik(tc) {
+                // 1. Temel kontroller
+                if (!tc || typeof tc !== 'string') return false;
+
+                // Sadece rakamlar
+                const tcDigits = tc.replace(/\D/g, '');
+                if (tcDigits.length !== 11) return false;
+                if (tcDigits[0] === '0') return false; // Ilk hane 0 olamaz
+
+                // 2. TC Kimlik Algoritma Kontrolü (Resmi Spec)
+                const digits = tcDigits.split('').map(Number);
+
+                // 10. hane: ilk 9 hanenin toplamının 10'a bölümünden kalan
+                const first9Sum = digits.slice(0, 9).reduce((a, b) => a + b, 0);
+                const tenthDigit = (first9Sum % 10);
+                if (digits[9] !== tenthDigit) return false;
+
+                // 11. hane: 1,3,5,7,9 pozisyonlarının toplamı * 7 + 2,4,6,8 pozisyonlarının toplamı
+                //          Sonucun 10'a bölümünden kalan
+                const oddSum = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
+                const evenSum = digits[1] + digits[3] + digits[5] + digits[7];
+                const eleventhDigit = ((oddSum * 7) + evenSum) % 10;
+                if (digits[10] !== eleventhDigit) return false;
+
+                return true;
+            }
+
+            // TC Kimlik validasyonunu çalıştır
+            if (!validateTCKimlik(tc)) {
+                showError(tcKimlikInput, window.getTranslation('invalidTC') || 'Geçersiz TC Kimlik numarası');
+                return;
+            }
+            // ========================================
 
             const registeredUsers = getLuminexUsers();
             const userIndex = registeredUsers.findIndex(u => (u.tc || u.tcKimlik) === tc);
@@ -229,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Lazy migration: Update the old plain-text password to a hashed one
                     registeredUsers[userIndex].password = hashedPassword;
                     setLuminexUsers(registeredUsers);
-                    console.log(`User ${user.tc}'s password has been updated to a new hash.`);
+                    logger.info('Password migrated to hash', { userId: user.id });
                 }
 
                 if (passwordMatch) {
@@ -242,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     setLoggedInUser(user);
 
-                    console.log('Login successful for user:', user.tc, 'Role:', userRole);
+                    logger.info('User login successful', { userId: user.id, role: userRole });
 
                     // Check for redirect parameter or symptom checker parameters
                     const urlParams = new URLSearchParams(window.location.search);
@@ -258,10 +351,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         if(branchParam) targetUrl += `&branch=${branchParam}`;
                         window.location.href = targetUrl;
                     } else if (userRole === 'admin') {
-                        console.log('Redirecting to admin-dashboard.html');
+                        logger.debug('Redirecting to admin dashboard');
                         window.location.href = 'admin-dashboard.html'; 
                     } else if (userRole === 'doctor') {
-                        console.log('Redirecting to doctor-dashboard.html');
+                        logger.debug('Redirecting to doctor dashboard');
                         window.location.href = 'doctor-dashboard.html';
                     } else { // Patient
                         if (user.birthDate && !validateAge(user.birthDate)) {
@@ -273,12 +366,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Akıllı Yönlendirme: Eğer hafızada bir AI önerisi varsa randevu sayfasına git
                         const hasAiRecommendation = sessionStorage.getItem('recommendedBranch');
                         if (hasAiRecommendation) {
-                            console.log('AI önerisi tespit edildi, randevu sayfasına yönlendiriliyor...');
+                            logger.info('AI recommendation redirect', { hasRecommendation: true });
                             window.location.href = 'appointment.html';
                             return;
                         }
 
-                        console.log('Redirecting to dashboard.html');
+                        logger.debug('Redirecting to patient dashboard');
                         window.location.href = 'dashboard.html';
                     }
                 } else {
@@ -330,27 +423,106 @@ document.addEventListener('DOMContentLoaded', function() {
             hideIndexFormWarning(); // Always hide previous warnings on new submission attempt
 
             const contactName = document.getElementById('contactName');
+            const contactPhone = document.getElementById('contactPhone');
             const contactEmail = document.getElementById('contactEmail');
             const contactMessage = document.getElementById('contactMessage');
             const submitButton = contactForm.querySelector('button[type="submit"]');
 
-            let isValid = true;
-            let errorMessageKey = 'fillAllFields'; // Default message key
-
+            // Alan bazlı kontrol ve SweetAlert uyarısı
             if (!contactName.value.trim()) {
-                isValid = false;
-            } else if (!contactEmail.value.trim()) {
-                isValid = false;
-            } else if (!/\S+@\S+\.\S+/.test(contactEmail.value)) { // Basic email format validation
-                errorMessageKey = 'emailInvalid';
-                isValid = false;
-            } else if (!contactMessage.value.trim()) {
-                isValid = false;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Eksik Bilgi!',
+                    text: 'Lütfen adınızı ve soyadınızı giriniz.',
+                    confirmButtonColor: '#78C7C7',
+                    confirmButtonText: 'Tamam'
+                });
+                contactName.focus();
+                return;
             }
 
-            if (!isValid) {
-                showIndexFormWarning('warningTitle', errorMessageKey);
-                return; // Stop submission if validation fails
+            if (!contactPhone.value.trim()) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Eksik Bilgi!',
+                    text: 'Lütfen telefon numaranızı giriniz.',
+                    confirmButtonColor: '#78C7C7',
+                    confirmButtonText: 'Tamam'
+                });
+                contactPhone.focus();
+                return;
+            }
+
+            // Telefon format kontrolü (0XXX XXX XX XX)
+            const phonePattern = /^0[0-9]{3} [0-9]{3} [0-9]{2} [0-9]{2}$/;
+            if (!phonePattern.test(contactPhone.value.trim())) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Geçersiz Telefon!',
+                    text: 'Telefon numarası formatı: 0XXX XXX XX XX olmalıdır.',
+                    confirmButtonColor: '#78C7C7',
+                    confirmButtonText: 'Tamam'
+                });
+                contactPhone.focus();
+                return;
+            }
+
+            if (!contactEmail.value.trim()) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Eksik Bilgi!',
+                    text: 'Lütfen e-posta adresinizi giriniz.',
+                    confirmButtonColor: '#78C7C7',
+                    confirmButtonText: 'Tamam'
+                });
+                contactEmail.focus();
+                return;
+            }
+
+            // Email validasyonu - Production-ready regex
+            // Not: Backend'de MX record check yapılmalı (production için)
+            const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+            if (!emailRegex.test(contactEmail.value.trim())) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Geçersiz E-posta!',
+                    text: 'Lütfen geçerli bir e-posta adresi giriniz (örn: ornek@domain.com).',
+                    confirmButtonColor: '#78C7C7',
+                    confirmButtonText: 'Tamam'
+                });
+                contactEmail.focus();
+                return;
+            }
+
+            // TODO: Production için Backend MX record check
+            // fetch('/api/validate-email?email=' + encodeURIComponent(contactEmail.value))
+            //   .then(res => res.json())
+            //   .then(data => { if (!data.valid) { /* Show error */ } });
+
+
+            if (!contactMessage.value.trim()) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Eksik Bilgi!',
+                    text: 'Lütfen mesajınızı yazınız.',
+                    confirmButtonColor: '#78C7C7',
+                    confirmButtonText: 'Tamam'
+                });
+                contactMessage.focus();
+                return;
+            }
+
+            // KVKK onayı kontrolü
+            const kvkkCheckbox = document.getElementById('kvkkApprove');
+            if (kvkkCheckbox && !kvkkCheckbox.checked) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Onay Gerekli!',
+                    text: 'KVKK Aydınlatma Metni\'ni okuyup onaylamanız gerekmektedir.',
+                    confirmButtonColor: '#78C7C7',
+                    confirmButtonText: 'Tamam'
+                });
+                return;
             }
 
             // Disable button to prevent multiple submissions and show sending state
@@ -433,21 +605,34 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
             } catch (error) {
-                console.error('Contact form submission error:', error);
-                Swal.close(); // Close the "Sending..." SweetAlert if still open
+                logger.error('Formspree submission failed', error);
+
+                // FALLBACK: Formspree çökerse native form submit
+                logger.warn('Attempting fallback submission');
+
+                // Kullanıcıya fallback olduğunu bildir
                 Swal.fire({
-                    icon: 'error',
-                    title: window.getTranslation('genericErrorTitle'),
-                    text: window.getTranslation('genericErrorMessageNetwork'),
-                    confirmButtonText: window.getTranslation('okButton'),
-                    customClass: { // Re-apply premium class to error SweetAlert
+                    icon: 'info',
+                    title: 'Bağlantı Hatası',
+                    text: 'Formsunuz alternate yöntemle gönderiliyor...',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    background: 'rgba(0, 4, 40, 0.85)',
+                    customClass: {
                         popup: 'swal-premium-popup',
                         title: 'swal-premium-title',
                         htmlContainer: 'swal-premium-text',
-                        confirmButton: 'swal-premium-confirm-button',
-                    },
-                    buttonsStyling: false,
+                    }
                 });
+
+                // Native form submit (fallback)
+                // Not: Bu çalışması için SweetAlert'i kapatmamız gerekiyor
+                setTimeout(() => {
+                    Swal.close();
+                    // Native submit - browser'ın default form handling
+                    contactForm.submit();
+                }, 2000);
             } finally {
                 // Re-enable button and restore original text
                 submitButton.disabled = false;
@@ -543,7 +728,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- NEW: Navbar Active Link Highlight on Scroll ---
     const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.nav-link');
+    const scrollNavLinks = document.querySelectorAll('.nav-link');
 
     const navObserverOptions = {
         threshold: 0.6 // Section should be 60% visible
@@ -553,7 +738,7 @@ document.addEventListener('DOMContentLoaded', function() {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const id = entry.target.getAttribute('id');
-                navLinks.forEach(link => {
+                scrollNavLinks.forEach(link => {
                     link.classList.remove('active');
                     if (link.getAttribute('href') === `#${id}`) {
                         link.classList.add('active');
@@ -579,5 +764,51 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add active to next
             slides[currentSlide].classList.add('active');
         }, 4000); // Change every 4 seconds
+
+    // --- TELEFON FORMATLAMA (Türkiye) ---
+    const contactPhone = document.getElementById('contactPhone');
+    if (contactPhone) {
+        contactPhone.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Sadece rakamları al
+
+            // 0 ile başlamalı, maksimum 11 hane
+            if (!value.startsWith('0') && value.length > 0) {
+                value = '0' + value;
+            }
+
+            // Maksimum 11 hane (0XXXXXXXXXX)
+            if (value.length > 11) {
+                value = value.substring(0, 11);
+            }
+
+            // Format: 0XXX XXX XX XX
+            let formatted = '';
+            if (value.length > 0) {
+                formatted = value[0]; // 0
+            }
+            if (value.length > 1) {
+                formatted += value.substring(1, 4); // XXX
+            }
+            if (value.length > 4) {
+                formatted += ' ' + value.substring(4, 7); // XXX
+            }
+            if (value.length > 7) {
+                formatted += ' ' + value.substring(7, 9); // XX
+            }
+            if (value.length > 9) {
+                formatted += ' ' + value.substring(9, 11); // XX
+            }
+
+            e.target.value = formatted;
+        });
+
+        // Sadece rakam girişine izin ver
+        contactPhone.addEventListener('keypress', function(e) {
+            const charCode = (e.which) ? e.which : e.keyCode;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                e.preventDefault();
+            }
+        });
+    }
     }
 });

@@ -3,8 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Security Headers (Meta tags for CSP) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.jsdelivr.net https://flagcdn.com https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
     <title>LUMINEX - Sağlıkta Dijital Dönüşüm ve Akıllı Randevu Sistemi</title>
     <!-- SEO & Social Media Meta Tags -->
+    <link rel="canonical" href="https://luminex.com.tr">
     <meta name="description" content="LUMINEX: Yapay zeka destekli triyaj, kolay randevu ve kurumsal klinik çözümleri sunan modern sağlık platformu.">
     <meta name="keywords" content="hastane randevu sistemi, klinik yönetim yazılımı, yapay zeka sağlık, doktor randevu, online tahlil sonuçları">
     <meta property="og:title" content="LUMINEX - Sağlıkta Dijital Dönüşüm">
@@ -12,21 +18,53 @@
     <meta property="og:image" content="luminex-logo.png">
     <meta property="og:url" content="https://luminex.com.tr">
     <meta name="twitter:card" content="summary_large_image">
-    
-    <link rel="stylesheet" href="css/landing.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+    <link rel="manifest" href="site.webmanifest">
+
+    <!-- SEO: Sitemap -->
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://luminex.com.tr/sitemap.xml">
+
+    <link rel="stylesheet" href="css/landing.css?v=3">
     <link rel="stylesheet" href="css/dark-mode.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&family=Playfair+Display:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+
+    <!-- Schema.org JSON-LD for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "LUMINEX",
+      "url": "https://luminex.com.tr",
+      "logo": "https://luminex.com.tr/clean-logo.png",
+      "description": "Yapay zeka destekli triyaj, kolay randevu ve kurumsal klinik çözümleri sunan modern sağlık platformu.",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Merkez Mah. Sağlık Sok. No:123",
+        "addressLocality": "İstanbul",
+        "addressCountry": "TR"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+90-212-555-00-00",
+        "contactType": "customer service",
+        "availableLanguage": ["Turkish", "English"]
+      }
+    }
+    </script>
 </head>
-<body class="">
+<body>
     <script>
       (function() {
         try {
           var theme = localStorage.getItem('landingTheme') || 'light';
-          document.body.className = theme === 'dark' ? 'theme-dark' : 'theme-light';
+          document.body.classList.add(theme === 'dark' ? 'theme-dark' : 'theme-light');
         } catch (e) {
-          document.body.className = 'theme-light';
+          document.body.classList.add('theme-light');
         }
       })();
     </script>
@@ -35,16 +73,23 @@
     <nav class="navbar">
         <div class="navbar-container">
             <a href="#" class="navbar-logo">
-                <img src="clean-logo.png" alt="Luminex Logo" id="main-logo">
                 <span>LUMINEX</span>
             </a>
-            <ul class="nav-menu">
+
+            <!-- Hamburger Menu Button -->
+            <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+
+            <ul class="nav-menu" id="navMenu">
                 <li class="nav-item"><a href="#about" class="nav-link" data-lang="about">Hakkımızda</a></li>
                 <li class="nav-item"><a href="#features" class="nav-link" data-lang="features">Özellikler</a></li>
                 <li class="nav-item"><a href="#corporate" class="nav-link" data-lang="forClinics">Klinikler İçin</a></li>
                 <li class="nav-item"><a href="#contact" class="nav-link" data-lang="contact">İletişim</a></li>
             </ul>
-            <div class="nav-right-actions">
+            <div class="nav-right-actions" id="navRightActions">
                 <div class="lang-switcher" id="langSwitcher">
                     <button type="button" class="selected-lang">
                         <img src="https://flagcdn.com/tr.svg" alt="TR Flag">
@@ -56,16 +101,19 @@
                         <li data-lang="en"><img src="https://flagcdn.com/gb.svg" alt="GB Flag"> English</li>
                     </ul>
                 </div>
-                
-                <button id="landingThemeToggle" class="theme-toggle-btn" title="Modu Değiştir">
+
+                <button id="landingThemeToggle" class="theme-toggle-btn" title="Modu Değiştir" aria-label="Koyu/Açık Tema Değiştir">
                     <i class="fas fa-moon"></i>
                 </button>
 
-                <a href="login.html" class="btn btn-login" data-lang="login">Giriş Yap</a>
-                <a href="register.html" class="btn btn-register" data-lang="register">Kayıt Ol</a>
+                <a href="login.html" class="btn btn-login" data-lang="login" aria-label="Giriş Yap">Giriş Yap</a>
+                <a href="register.html" class="btn btn-register" data-lang="register" aria-label="Kayıt Ol">Kayıt Ol</a>
             </div>
         </div>
     </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="nav-overlay" id="navOverlay"></div>
 
     <header class="hero">
         <div class="container">
@@ -345,64 +393,221 @@
             <div class="container">
                 <h2 data-lang="corporateContactTitle">Luminex'i Kliniğinize Taşıyın</h2>
                 <p class="section-subtitle" data-lang="corporateContactDesc" style="margin-bottom: 3rem; text-align: center;">Hemen bir demo randevusu oluşturun ve dijital dönüşümünüzü başlatalım.</p>
-                <div class="contact-grid">
-                    <div class="contact-form-card">
-                        <div id="indexFormWarning" class="warning-info-box" style="display: none; background: rgba(120, 199, 199, 0.1); border-left: 5px solid var(--accent-color); color: var(--text-color); margin-bottom: 25px; padding: 15px; border-radius: 8px; align-items: center; gap: 15px;">
-                            <div class="icon-wrapper" style="background: rgba(120, 199, 199, 0.3); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent-color); flex-shrink: 0;">
-                                <i class="fas fa-exclamation-triangle"></i>
+
+                <!-- Warning Message (Üstte tek) -->
+                <div id="indexFormWarning" class="warning-info-box" style="display: none; background: rgba(120, 199, 199, 0.1); border-left: 5px solid var(--accent-color); color: var(--text-color); margin-bottom: 25px; padding: 15px; border-radius: 8px; align-items: center; gap: 15px;">
+                    <div class="icon-wrapper" style="background: rgba(120, 199, 199, 0.3); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent-color); flex-shrink: 0;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin: 0 0 3px 0; color: #b71c1c; font-size: 0.95rem; font-weight: 700;" data-lang="warningTitle"></h4>
+                        <p style="margin: 0; font-size: 0.85rem; color: #b71c1c;" data-lang="fillAllFields"></p>
+                    </div>
+                </div>
+
+                <!-- 3 Sütunlu Form -->
+                <!--
+                    FORM SUBMISION STRATEGY (Production-Ready):
+
+                    Primary: Formspree (aktif, HTTP 200 verified)
+                    - Endpoint: https://formspree.io/f/mqeboqzk
+                    - Limit: 50 forms/month (free plan)
+                    - Fallback: Native form submit (JavaScript disabled)
+
+                    TODO: Backend API Migration (Long-term)
+                    - Create: /api/contact endpoint
+                    - Features: Database save + Email send + Analytics
+                    - Benefits: No limits, full control, spam protection
+                    - Priority: Medium (when Formspree limit reached)
+
+                    Migration Plan:
+                    1. Create POST /api/contact
+                    2. Save to database (MongoDB/PostgreSQL)
+                    3. Send email (Nodemailer/SendGrid)
+                    4. Update form action to use own API
+                -->
+                <form id="contactForm"
+                      action="https://formspree.io/f/mqeboqzk"
+                      method="POST"
+                      class="b2b-form-grid"
+                      data-fallback-action="mailto:destek@luminex.com.tr"
+                      data-api-endpoint="/api/contact">
+
+                    <!-- 1. Sütun: Kişisel Bilgiler -->
+                    <div class="form-column">
+                        <div class="form-column-card">
+                            <div class="form-column-header">
+                                <i class="fas fa-user-tie"></i>
+                                <span data-lang="personalInfo">Kişisel Bilgiler</span>
                             </div>
-                            <div>
-                                <h4 style="margin: 0 0 3px 0; color: #b71c1c; font-size: 0.95rem; font-weight: 700;" data-lang="warningTitle"></h4>
-                                <p style="margin: 0; font-size: 0.85rem; color: #b71c1c;" data-lang="fillAllFields"></p>
-                            </div>
-                        </div>
-                        <form id="contactForm" action="https://formspree.io/f/mqeboqzk" method="POST">
+
                             <div class="form-group">
-                                <label for="contactName" data-lang="yourName">Adınız</label>
+                                <label for="contactName" data-lang="yourName">Ad Soyad *</label>
                                 <div class="input-wrapper">
-                                    <input type="text" id="contactName" name="name" class="form-control" placeholder="Adınız" required>
+                                    <input type="text" id="contactName" name="name" class="form-control" data-placeholder="namePlaceholder" placeholder="Adınız Soyadınız" autocomplete="name" required>
                                     <i class="fas fa-user"></i>
                                 </div>
                             </div>
+
                             <div class="form-group">
-                                <label for="contactEmail" data-lang="yourEmail">E-posta Adresiniz</label>
+                                <label for="contactPosition" data-lang="yourPosition">Pozisyon *</label>
                                 <div class="input-wrapper">
-                                    <input type="email" id="contactEmail" name="email" class="form-control" placeholder="E-posta Adresiniz" required>
+                                    <select id="contactPosition" name="position" class="form-control" required>
+                                        <option value="" data-lang="selectOption">Seçiniz</option>
+                                        <option value="sahibi" data-lang="positionOwner">Klinik Sahibi</option>
+                                        <option value="muduru" data-lang="positionManager">Klinik Müdürü</option>
+                                        <option value="doktor" data-lang="positionDoctor">Doktor</option>
+                                        <option value="yonetici" data-lang="positionExecutive">Yönetici</option>
+                                        <option value="calisan" data-lang="positionEmployee">Çalışan</option>
+                                        <option value="diger" data-lang="positionOther">Diğer</option>
+                                    </select>
+                                    <i class="fas fa-briefcase"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="contactEmail" data-lang="yourEmail">E-posta *</label>
+                                <div class="input-wrapper">
+                                    <input type="email" id="contactEmail" name="email" class="form-control" data-placeholder="emailPlaceholder" placeholder="ornek@klinik.com" autocomplete="email" required>
                                     <i class="fas fa-envelope"></i>
                                 </div>
                             </div>
+
+                            <div class="form-group">
+                                <label for="contactPhone" data-lang="yourPhone">Telefon *</label>
+                                <div class="input-wrapper">
+                                    <input type="tel" id="contactPhone" name="phone" class="form-control" data-placeholder="phonePlaceholder" placeholder="05XX XXX XX XX" maxlength="13" pattern="0[0-9]{3} [0-9]{3} [0-9]{2} [0-9]{2]" autocomplete="tel" required>
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Sütun: Kurumsal Bilgiler + İletişim Bilgileri -->
+                    <div class="form-column">
+                        <div class="form-column-card">
+                            <!-- Kurumsal Bilgiler -->
+                            <div class="form-column-header">
+                                <i class="fas fa-hospital"></i>
+                                <span data-lang="corporateInfo">Kurumsal Bilgiler</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="companyName" data-lang="companyName">Klinik / Hastane Adı *</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="companyName" name="company" class="form-control" data-placeholder="companyPlaceholder" placeholder="Klinik veya hastanenizin adı" autocomplete="organization" required>
+                                    <i class="fas fa-building"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="branchCount" data-lang="branchCount">Branş Sayısı *</label>
+                                <div class="input-wrapper">
+                                    <select id="branchCount" name="branchCount" class="form-control" required>
+                                        <option value="" data-lang="selectOption">Seçiniz</option>
+                                        <option value="1-5" data-lang="branches1to5">1-5 Branş</option>
+                                        <option value="6-10" data-lang="branches6to10">6-10 Branş</option>
+                                        <option value="11-20" data-lang="branches11to20">11-20 Branş</option>
+                                        <option value="20+" data-lang="branches20plus">20+ Branş</option>
+                                    </select>
+                                    <i class="fas fa-stethoscope"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dailyPatients" data-lang="dailyPatients">Günlük Hasta Sayısı *</label>
+                                <div class="input-wrapper">
+                                    <select id="dailyPatients" name="dailyPatients" class="form-control" required>
+                                        <option value="" data-lang="selectOption">Seçiniz</option>
+                                        <option value="0-50" data-lang="patientsLess50">50'den az</option>
+                                        <option value="50-100" data-lang="patients50to100">50-100</option>
+                                        <option value="100-200" data-lang="patients100to200">100-200</option>
+                                        <option value="200+" data-lang="patients200plus">200+</option>
+                                    </select>
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+
+                            <!-- İletişim Bilgileri (Orta sütunun altı) -->
+                            <div class="contact-info-mini">
+                                <div class="form-column-header" style="margin-top: 2rem;">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span data-lang="contactInfo">İletişim Bilgileri</span>
+                                </div>
+
+                                <div class="info-item-mini">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <div>
+                                        <span class="info-label" data-lang="addressLabel">Adres</span>
+                                        <span data-lang="addressText">Merkez Mah. Sağlık Sok. No:123, İstanbul</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-item-mini">
+                                    <i class="fas fa-phone"></i>
+                                    <div>
+                                        <span class="info-label" data-lang="phoneLabel">Telefon</span>
+                                        <span data-lang="phoneText">+90 (212) 555 00 00</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-item-mini">
+                                    <i class="fas fa-envelope"></i>
+                                    <div>
+                                        <span class="info-label" data-lang="emailLabel">E-posta</span>
+                                        <span data-lang="emailText">destek@luminex.com.tr</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Sütun: Talep Detayları -->
+                    <div class="form-column">
+                        <div class="form-column-card">
+                            <div class="form-column-header">
+                                <i class="fas fa-clipboard-list"></i>
+                                <span data-lang="requestDetails">Talep Detayları</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="requestType" data-lang="requestType">Talep Türü *</label>
+                                <div class="input-wrapper">
+                                    <select id="requestType" name="requestType" class="form-control" required>
+                                        <option value="" data-lang="selectOption">Seçiniz</option>
+                                        <option value="demo" data-lang="requestDemo">Demo Talebi</option>
+                                        <option value="pricing" data-lang="requestPricing">Fiyat Bilgisi</option>
+                                        <option value="technical" data-lang="requestTechnical">Teknik Sorular</option>
+                                        <option value="integration" data-lang="requestIntegration">Entegrasyon Bilgisi</option>
+                                        <option value="other" data-lang="requestOther">Diğer</option>
+                                    </select>
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                            </div>
+
                             <div class="form-group">
                                 <label for="contactMessage" data-lang="yourMessage">Mesajınız</label>
                                 <div class="input-wrapper">
-                                    <textarea id="contactMessage" name="message" class="form-control" rows="5" placeholder="Mesajınız" required></textarea>
+                                    <textarea id="contactMessage" name="message" class="form-control" rows="6" data-placeholder="messagePlaceholder" placeholder="Talebinizi detaylıca açıklayın..."></textarea>
                                     <i class="fas fa-comment-alt" style="top: 20px; transform: none;"></i>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary" data-lang="sendMessage">Gönder</button>
-                        </form>
-                    </div>
-                    <div class="contact-info-card">
-                        <h3 data-lang="contactInfoTitle">İletişim Bilgileri</h3>
-                        <div class="info-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <p data-lang="addressText">Merkez Mah. Sağlık Sok. No:123, İstanbul</p>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-phone"></i>
-                            <p data-lang="phoneText">+90 (212) 555 00 00</p>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-envelope"></i>
-                            <p data-lang="emailText">destek@luminex.com.tr</p>
-                        </div>
-                        <div class="social-links">
-                            <a href="#"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                            <a href="#"><i class="fab fa-instagram"></i></a>
-                            <a href="https://www.linkedin.com/in/haticesarlak?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3Bny60L0pCQTSNJQP3AlYKbw%3D%3D" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+
+                            <div class="form-group kvkk-check">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="kvkkApprove" name="kvkk" required>
+                                    <span data-lang="kvkkApproveText">
+                                        <a href="kvkk.html?lang=tr" style="color: var(--accent-color);" data-lang="kvkkLinkText">KVKK Aydınlatma Metni</a>'ni okudum, onaylıyorum. *
+                                    </span>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-submit-full" data-lang="sendMessage">
+                                <i class="fas fa-paper-plane"></i> Demo Talep Et
+                            </button>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         </section>
     </main>
@@ -488,12 +693,44 @@
                 </div>
             </div>
         </div>
-        
+
         <button id="scrollTopBtn" class="scroll-top-btn" title="Yukarı Çık"><i class="fas fa-arrow-up"></i></button>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <!-- Scripts -->
     <script src="js/language-manager.js"></script>
-    <script type="module" src="js/script.js"></script>
+    <script>
+        // Dil switcher'ı başlat - language-manager.js yüklendikten sonra
+        document.addEventListener('DOMContentLoaded', function() {
+            // Dil switcher'ı manuel başlat
+            if (window.initLanguageSwitcher) {
+                window.initLanguageSwitcher();
+            }
+            // Kayıtlı dili ayarla
+            if (window.setLanguage) {
+                const savedLang = localStorage.getItem('language') || 'tr';
+                window.setLanguage(savedLang);
+            }
+        });
+    </script>
+    <script type="module" src="js/script.js" defer></script>
+    <!-- SweetAlert: Lokal kopya + Fallback -->
+    <script>
+        // SweetAlert'i sadece form varsa yükle (belt + braces approach)
+        if (document.getElementById('contactForm')) {
+            // 1. Önce lokal versiyonu dene
+            const script = document.createElement('script');
+            script.src = 'node_modules/sweetalert2/dist/sweetalert2.all.min.js';
+            script.defer = true;
+
+            // 2. Yükleme hatası durumunda fallback
+            script.onerror = function() {
+                console.warn('Lokal SweetAlert yüklenemedi, form normal submit moduna geçiyor');
+                // Form SweetAlert olmadan da çalışır, native validation kullanır
+            };
+
+            document.head.appendChild(script);
+        }
+    </script>
 </body>
 </html>

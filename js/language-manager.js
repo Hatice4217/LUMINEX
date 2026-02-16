@@ -4,6 +4,7 @@ const translations = {
         features: "Özellikler",
         contact: "İletişim",
         login: "Giriş Yap",
+        loginTitle: "LUMINEX - Giriş Yap",
         heroTitle: "Sağlıkta Dijital Dönüşüm",
         heroSubtitle: "LUMINEX ile sağlık hizmetlerine tek tıkla ulaşın. Randevularınızı planlayın, sonuçlarınızı görün.",
         cardAppointmentTitle: "Randevu Al",
@@ -66,6 +67,11 @@ const translations = {
         passwordPlaceholder: "Şifrenizi girin",
         passwordConfirm: "Şifre Tekrar",
         passwordConfirmPlaceholder: "Şifrenizi tekrar girin",
+        passwordWeak: "Zayıf",
+        passwordMedium: "Orta",
+        passwordGood: "İyi",
+        passwordStrong: "Güçlü",
+        enterPassword: "Şifre girin",
         birthDate: "Doğum Tarihi",
         gender: "Cinsiyet (Opsiyonel)",
         select: "Seçiniz",
@@ -334,6 +340,16 @@ const translations = {
         enterMessageDetails: "Lütfen mesajınızı detaylıca açıklayın...",
         ourLocation: "Konumumuz",
         faqTitle: "Sıkça Sorulan Sorular",
+        // FAQ - Short keys (for HTML)
+        faq1Q: "Luminex'i mevcut hastane sistemime (HBYS) entegre edebilir miyim?",
+        faq1A: "Evet, Luminex HL7 ve FHIR standartlarını destekler. Mevcut HBYS yazılımınızla %100 uyumlu çalışarak veri kaybı olmadan çift yönlü entegrasyon sağlar.",
+        faq2Q: "Veri güvenliği ve KVKK uyumluluğu nasıl sağlanıyor?",
+        faq2A: "Tüm verileriniz 256-bit SSL ile şifrelenir ve Türkiye'deki Tier-3 veri merkezlerinde saklanır. Sistemimiz KVKK ve GDPR standartlarına tam uyumludur.",
+        faq3Q: "Kurulum ve eğitim süreci ne kadar sürüyor?",
+        faq3A: "Bulut tabanlı yapımız sayesinde kurulum gerekmez. Hesabınız 24 saat içinde aktif edilir ve personeliniz için 2 günlük online eğitim programımız ücretsizdir.",
+        faq4Q: "Teknik destek hizmetiniz neleri kapsıyor?",
+        faq4A: "Tüm paketlerimizde 7/24 e-posta desteği standarttır. Kurumsal paketlerde ise size özel atanan müşteri temsilcisi ile telefonla 7/24 destek alabilirsiniz.",
+        // FAQ - Long keys (existing)
         faq1Question: "LUMINEX ücretli mi?",
         faq1Answer: "Hayır, hastalar için randevu almak, sonuçları görüntülemek ve temel özellikleri kullanmak tamamen ücretsizdir.",
         faq2Question: "Verilerim güvende mi?",
@@ -582,6 +598,8 @@ const translations = {
         planBasic: "Başlangıç",
         planStandard: "Profesyonel",
         planPremium: "Kurumsal",
+        planSubtitlePro: "Başlangıç paketine ek olarak",
+        planSubtitleEnt: "Profesyonel pakete ek olarak",
         featAppointment: "Online Randevu Sistemi",
         featPatients: "Sınırsız Hasta Kaydı",
         featSMS: "SMS Bildirimleri (500 Adet)",
@@ -605,13 +623,64 @@ const translations = {
         genericErrorTitle: "Hata!",
         genericErrorMessageServer: "Sunucuda bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.",
         genericErrorMessageNetwork: "Bir ağ hatası oluştu. Lütfen internet bağlantınızı kontrol edip tekrar deneyiniz.",
-        okButton: "Tamam"
+        okButton: "Tamam",
+        // B2B Contact Form
+        yourPosition: "Pozisyon",
+        yourPhone: "Telefon",
+        companyName: "Klinik / Hastane Adı",
+        branchCount: "Branş Sayısı",
+        dailyPatients: "Günlük Hasta Sayısı",
+        requestType: "Talep Türü",
+        kvkkRequired: "KVKK Aydınlatma Metni'ni onaylamanız gerekmektedir.",
+        // Form Section Headers
+        personalInfo: "Kişisel Bilgiler",
+        corporateInfo: "Kurumsal Bilgiler",
+        contactInfo: "İletişim Bilgileri",
+        requestDetails: "Talep Detayları",
+        // Placeholders
+        namePlaceholder: "Adınız Soyadınız",
+        emailPlaceholder: "ornek@klinik.com",
+        phonePlaceholder: "05XX XXX XX XX",
+        companyPlaceholder: "Klinik veya hastanenizin adı",
+        messagePlaceholder: "Talebinizi detaylıca açıklayın...",
+        // Select Options
+        selectOption: "Seçiniz",
+        positionOwner: "Klinik Sahibi",
+        positionManager: "Klinik Müdürü",
+        positionDoctor: "Doktor",
+        positionExecutive: "Yönetici",
+        positionEmployee: "Çalışan",
+        positionOther: "Diğer",
+        branches1to5: "1-5 Branş",
+        branches6to10: "6-10 Branş",
+        branches11to20: "11-20 Branş",
+        branches20plus: "20+ Branş",
+        patientsLess50: "50'den az",
+        patients50to100: "50-100",
+        patients100to200: "100-200",
+        patients200plus: "200+",
+        requestDemo: "Demo Talebi",
+        requestPricing: "Fiyat Bilgisi",
+        requestTechnical: "Teknik Sorular",
+        requestIntegration: "Entegrasyon Bilgisi",
+        requestOther: "Diğer",
+        // Contact Info Labels
+        addressLabel: "Adres",
+        phoneLabel: "Telefon",
+        emailLabel: "E-posta",
+        addressText: "Merkez Mah. Sağlık Sok. No:123, İstanbul",
+        phoneText: "+90 (212) 555 00 00",
+        emailText: "destek@luminex.com.tr",
+        // KVKK
+        kvkkApproveText: "<a href=\"kvkk.html?lang=tr\" style=\"color: var(--accent-color);\" data-lang=\"kvkkLinkText\">KVKK Aydınlatma Metni</a>'ni okudum, onaylıyorum. *",
+        kvkkLinkText: "KVKK Aydınlatma Metni"
     },
     en: {
         about: "About Us",
         features: "Features",
         contact: "Contact",
         login: "Login",
+        loginTitle: "LUMINEX - Login",
         heroTitle: "Digital Transformation in Health",
         heroSubtitle: "Access healthcare services with a single click. Plan your appointments, view your results.",
         cardAppointmentTitle: "Book Appointment",
@@ -674,6 +743,11 @@ const translations = {
         passwordPlaceholder: "Enter your password",
         passwordConfirm: "Confirm Password",
         passwordConfirmPlaceholder: "Re-enter your password",
+        passwordWeak: "Weak",
+        passwordMedium: "Medium",
+        passwordGood: "Good",
+        passwordStrong: "Strong",
+        enterPassword: "Enter password",
         birthDate: "Birth Date",
         gender: "Gender (Optional)",
         select: "Select",
@@ -942,6 +1016,16 @@ const translations = {
         enterMessageDetails: "Please explain your message in detail...",
         ourLocation: "Our Location",
         faqTitle: "Frequently Asked Questions",
+        // FAQ - Short keys (for HTML)
+        faq1Q: "Can I integrate Luminex with my existing hospital system (HBYS)?",
+        faq1A: "Yes, Luminex supports HL7 and FHIR standards. It works with 100% compatibility with your existing HBYS software, providing bidirectional integration without data loss.",
+        faq2Q: "How is data security and KVKK compliance ensured?",
+        faq2A: "All your data is encrypted with 256-bit SSL and stored in Tier-3 data centers in Turkey. Our system is fully compliant with KVKK and GDPR standards.",
+        faq3Q: "How long does the setup and training process take?",
+        faq3A: "Thanks to our cloud-based infrastructure, no installation is required. Your account is activated within 24 hours, and our 2-day online training program for your staff is free.",
+        faq4Q: "What does your technical support service cover?",
+        faq4A: "7/24 email support is standard across all our packages. With enterprise packages, you can get 7/24 phone support with a dedicated customer representative.",
+        // FAQ - Long keys (existing)
         faq1Question: "Is LUMINEX paid?",
         faq1Answer: "No, booking appointments, viewing results, and using basic features are completely free for patients.",
         faq2Question: "Is my data secure?",
@@ -1182,6 +1266,8 @@ const translations = {
         planBasic: "Basic",
         planStandard: "Professional",
         planPremium: "Enterprise",
+        planSubtitlePro: "In addition to Basic plan",
+        planSubtitleEnt: "In addition to Professional plan",
         featAppointment: "Online Appointment System",
         featPatients: "Unlimited Patient Records",
         featSMS: "SMS Notifications (500 units)",
@@ -1205,7 +1291,57 @@ const translations = {
         genericErrorTitle: "Error!",
         genericErrorMessageServer: "A server error occurred. Please try again later.",
         genericErrorMessageNetwork: "A network error occurred. Please check your internet connection and try again.",
-        okButton: "OK"
+        okButton: "OK",
+        // B2B Contact Form
+        yourPosition: "Position",
+        yourPhone: "Phone",
+        companyName: "Clinic / Hospital Name",
+        branchCount: "Number of Branches",
+        dailyPatients: "Daily Patient Count",
+        requestType: "Request Type",
+        kvkkRequired: "You must approve the KVKK Clarification Text.",
+        // Form Section Headers
+        personalInfo: "Personal Information",
+        corporateInfo: "Corporate Information",
+        contactInfo: "Contact Information",
+        requestDetails: "Request Details",
+        // Placeholders
+        namePlaceholder: "Your Name",
+        emailPlaceholder: "example@clinic.com",
+        phonePlaceholder: "05XX XXX XX XX",
+        companyPlaceholder: "Your clinic or hospital name",
+        messagePlaceholder: "Please describe your request in detail...",
+        // Select Options
+        selectOption: "Select",
+        positionOwner: "Clinic Owner",
+        positionManager: "Clinic Manager",
+        positionDoctor: "Doctor",
+        positionExecutive: "Executive",
+        positionEmployee: "Employee",
+        positionOther: "Other",
+        branches1to5: "1-5 Branches",
+        branches6to10: "6-10 Branches",
+        branches11to20: "11-20 Branches",
+        branches20plus: "20+ Branches",
+        patientsLess50: "Less than 50",
+        patients50to100: "50-100",
+        patients100to200: "100-200",
+        patients200plus: "200+",
+        requestDemo: "Demo Request",
+        requestPricing: "Pricing Info",
+        requestTechnical: "Technical Questions",
+        requestIntegration: "Integration Info",
+        requestOther: "Other",
+        // Contact Info Labels
+        addressLabel: "Address",
+        phoneLabel: "Phone",
+        emailLabel: "Email",
+        addressText: "Merkez Mah. Sağlık Sok. No:123, Istanbul",
+        phoneText: "+90 (212) 555 00 00",
+        emailText: "destek@luminex.com.tr",
+        // KVKK
+        kvkkApproveText: "I have read and approve the <a href=\"kvkk.html?lang=en\" style=\"color: var(--accent-color);\" data-lang=\"kvkkLinkText\">KVKK Clarification Text</a>. *",
+        kvkkLinkText: "KVKK Clarification Text"
     }
 };
 
@@ -1217,19 +1353,39 @@ const setLanguage = (lang) => {
 };
 
 const updateTexts = (lang, rootElement = document) => {
+    // Update elements with data-lang attribute
     rootElement.querySelectorAll('[data-lang]').forEach(el => {
-        // Special handling for 'termsLabel' to preserve HTML
-        if (el.dataset.lang === 'termsLabel') {
-            if (translations[lang] && translations[lang]['termsLabel']) {
-                el.innerHTML = translations[lang]['termsLabel'];
-            }
-        } else {
-            const key = el.dataset.lang;
-            if (translations[lang] && translations[lang][key]) {
-                el.textContent = translations[lang][key];
+        const key = el.dataset.lang;
+        if (translations[lang] && translations[lang][key]) {
+            // Check if translation contains HTML (has < or >)
+            const translation = translations[lang][key];
+            if (translation.includes('<')) {
+                // Use innerHTML for translations with HTML content
+                el.innerHTML = translation;
+            } else {
+                // Use textContent for plain text
+                el.textContent = translation;
             }
         }
     });
+
+    // Update input/textarea placeholders with data-placeholder attribute
+    rootElement.querySelectorAll('[data-placeholder]').forEach(el => {
+        const key = el.dataset.placeholder;
+        if (translations[lang] && translations[lang][key]) {
+            el.placeholder = translations[lang][key];
+        }
+    });
+
+    // Update select options with data-lang attribute
+    rootElement.querySelectorAll('select option[data-lang]').forEach(el => {
+        const key = el.dataset.lang;
+        if (translations[lang] && translations[lang][key]) {
+            el.textContent = translations[lang][key];
+        }
+    });
+
+    // Legacy support for data-lang-placeholder
     rootElement.querySelectorAll('[data-lang-placeholder]').forEach(el => {
         const key = el.dataset.langPlaceholder;
         if (translations[lang] && translations[lang][key]) {

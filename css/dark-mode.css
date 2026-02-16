@@ -214,6 +214,67 @@ body.theme-dark .top-bar .logo a {
     text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
 }
 
+/* Dark mode - Yeni üst bar stilleri */
+body.theme-dark .top-bar .logo-text {
+    color: #e2e8f0;
+}
+
+body.theme-dark .top-bar .welcome-text {
+    background: linear-gradient(135deg, rgba(162, 155, 254, 0.15) 0%, rgba(129, 140, 248, 0.1) 100%);
+    border-color: rgba(162, 155, 254, 0.25);
+    color: #e2e8f0;
+}
+
+body.theme-dark .top-bar .top-bar-btn {
+    color: #94a3b8;
+}
+
+body.theme-dark .top-bar .top-bar-btn:hover {
+    background: linear-gradient(135deg, rgba(162, 155, 254, 0.2) 0%, rgba(129, 140, 248, 0.15) 100%);
+    color: #a29bfe;
+}
+
+body.theme-dark .lang-switcher .selected-lang {
+    color: #e2e8f0;
+}
+
+body.theme-dark .lang-switcher .selected-lang:hover,
+body.theme-dark .lang-switcher .lang-options li:hover {
+    background: rgba(162, 155, 254, 0.15);
+}
+
+body.theme-dark .lang-switcher .lang-options {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+/* Dark mode - Profil Pill */
+body.theme-dark .profile-pill {
+    background: linear-gradient(135deg, rgba(162, 155, 254, 0.12) 0%, rgba(129, 140, 248, 0.08) 100%);
+    border-color: rgba(162, 155, 254, 0.2);
+}
+
+body.theme-dark .profile-pill:hover {
+    background: linear-gradient(135deg, rgba(162, 155, 254, 0.18) 0%, rgba(129, 140, 248, 0.12) 100%);
+    box-shadow: 0 4px 12px rgba(162, 155, 254, 0.15);
+}
+
+body.theme-dark .profile-info .name {
+    color: #e2e8f0;
+}
+
+body.theme-dark .profile-info .role-badge {
+    color: #94a3b8;
+}
+
+body.theme-dark .profile-pill.child .profile-info .role-badge {
+    color: #a29bfe;
+}
+
+body.theme-dark .toggle-icon {
+    color: #94a3b8;
+}
+
 body.theme-dark .side-menu ul li a:hover,
 body.theme-dark .side-menu ul li a.active {
     background-color: var(--secondary-background);
@@ -251,7 +312,55 @@ body.theme-dark .ticket-footer {
 }
 
 body.theme-dark .info-panel {
-    background-color: #0f1519;
+    background-color: #000033;
+}
+
+body.theme-dark .auth-card {
+    background: rgba(15, 23, 42, 0.6) !important;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(120, 199, 199, 0.2) !important;
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        0 0 100px rgba(120, 199, 199, 0.1) !important;
+}
+
+body.theme-dark .input-wrapper {
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(120, 199, 199, 0.3) !important;
+}
+
+body.theme-dark .input-wrapper:focus-within {
+    border-color: #78C7C7 !important;
+    box-shadow: 0 0 0 4px rgba(120, 199, 199, 0.2) !important;
+}
+
+body.theme-dark .input-wrapper i {
+    color: #78C7C7 !important;
+}
+
+body.theme-dark .form-check-label {
+    color: #e0e0e0 !important;
+}
+
+body.theme-dark .forgot-password {
+    color: #78C7C7 !important;
+}
+
+body.theme-dark .forgot-password:hover {
+    color: #ffffff !important;
+}
+
+body.theme-dark .btn-home-text {
+    color: #78C7C7 !important;
+}
+
+body.theme-dark .btn-home-text:hover {
+    color: #ffffff !important;
+}
+
+body.theme-dark .info-box-gradient {
+    background: linear-gradient(135deg, rgba(120, 199, 199, 0.3) 0%, rgba(120, 199, 199, 0.1) 100%) !important;
+    border-left: 4px solid #78C7C7 !important;
 }
 
 body.theme-dark .custom-option:hover {
@@ -925,5 +1034,59 @@ body.theme-dark .lang-options li {
 body.theme-dark .lang-options li:hover {
     background: rgba(59, 130, 246, 0.15);
     color: var(--primary-color);
+}
+
+/* =====================================================
+   DARK MODE - FONT AWESOME FONT-FAMILY
+   ===================================================== */
+
+body.theme-dark i,
+body.theme-dark .top-bar-btn i,
+body.theme-dark #themeToggleButton i,
+body.theme-dark .fas,
+body.theme-dark .far,
+body.theme-dark .fab {
+    font-family: 'Font Awesome 6 Free', 'Font Awesome 5 Free', sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* =====================================================
+   DARK MODE - TEMAYA ÖZEL OUTLINE RESET
+   ===================================================== */
+
+body.theme-dark #themeToggleButton,
+body.theme-dark #themeToggleButton *,
+body.theme-dark #themeToggleButton::before,
+body.theme-dark #themeToggleButton::after {
+    outline: none !important;
+    outline-style: none !important;
+    outline-width: 0 !important;
+    outline-color: transparent !important;
+    -webkit-outline: none !important;
+    -moz-outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+body.theme-dark #themeToggleButton:focus,
+body.theme-dark #themeToggleButton:active,
+body.theme-dark #themeToggleButton:hover {
+    outline: none !important;
+    outline-style: none !important;
+    outline-width: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+/* Tüm butonlar için dark mode */
+body.theme-dark button,
+body.theme-dark button *,
+body.theme-dark button::before,
+body.theme-dark button::after {
+    outline: none !important;
+    -webkit-outline: none !important;
+    box-shadow: none !important;
 }
 

@@ -6,8 +6,7 @@
     <title>LUMINEX - Çerez Politikası</title>
     <link rel="stylesheet" href="css/landing.css">
     <link rel="stylesheet" href="css/kvkk-page.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Playfair+Display:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <style>
         body { overflow: hidden !important; }
@@ -27,18 +26,28 @@
 </head>
 <body class="theme-light">
     <div class="background-animation"></div>
-    
+
     <nav class="navbar scrolled">
         <div class="navbar-container">
             <a href="index.html" class="navbar-logo">
-                <img src="clean-logo.png" alt="Luminex Logo">
                 <span>LUMINEX</span>
             </a>
             <div class="nav-right-actions">
+                <div class="lang-switcher">
+                    <div class="selected-lang">
+                        <img src="https://flagcdn.com/tr.svg" alt="Türkçe">
+                        <span>Türkçe</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <ul class="lang-options">
+                        <li data-lang="tr"><img src="https://flagcdn.com/tr.svg" alt="Türkçe"><span>Türkçe</span></li>
+                        <li data-lang="en"><img src="https://flagcdn.com/gb.svg" alt="English"><span>English</span></li>
+                    </ul>
+                </div>
                 <button id="landingThemeToggle" class="theme-toggle-btn">
                     <i class="fas fa-moon"></i>
                 </button>
-                <a href="index.html" class="btn btn-secondary" data-lang="backToHome">Ana Sayfaya Dön</a>
+                <a href="#" onclick="history.back(); return false;" class="btn btn-secondary" data-lang="backToHome">Ana Sayfaya Dön</a>
             </div>
         </div>
     </nav>
@@ -166,5 +175,16 @@
     </script>
     <script src="js/language-manager.js"></script>
     <script type="module" src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.initLanguageSwitcher) {
+                window.initLanguageSwitcher();
+            }
+            if (window.setLanguage) {
+                const savedLang = localStorage.getItem('language') || 'tr';
+                window.setLanguage(savedLang);
+            }
+        });
+    </script>
 </body>
 </html>

@@ -18,18 +18,762 @@
     <script defer src="js/language-manager.js"></script>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* SAĞ TARAF (FORM PANEL) - MODERN TASARIM */
+
+        body {
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%);
+            min-height: 100vh;
+            overflow: hidden; /* Ana sayfa scroll engellendi */
+        }
+
+        body.theme-light {
+            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 50%, #f0f4f8 100%);
+        }
+
+        /* Auth Card Modernizasyonu */
+        .auth-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 2rem 1.5rem;
+            max-height: 90vh; /* Maksimum yükseklik */
+            overflow-y: auto; /* İçten scroll aktif */
+            transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+            /* Removed 'all' to prevent animation on modal open/close */
+        }
+
+        /* Auth Card Scrollbar Styling */
+        .auth-card::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .auth-card::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .auth-card::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #78C7C7 0%, #5ab4b4 100%);
+            border-radius: 10px;
+        }
+
+        .auth-card::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5ab4b4 0%, #78C7C7 100%);
+        }
+
+        body.theme-light .auth-card::-webkit-scrollbar-track {
+            background: rgba(0, 31, 107, 0.05);
+        }
+
+        body.theme-light .auth-card::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #001F6B 0%, #0036a8 100%);
+        }
+
+        body.theme-light .auth-card::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #0036a8 0%, #001F6B 100%);
+        }
+
+        body.theme-light .auth-card {
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(0, 31, 107, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 31, 107, 0.1);
+        }
+
+        /* Auth Header */
+        .auth-header h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #78C7C7 0%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.3rem;
+        }
+
+        body.theme-light .auth-header h2 {
+            background: linear-gradient(135deg, #001F6B 0%, #0036a8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Modern Input Wrapper */
+        .input-wrapper {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            z-index: 10;
+            pointer-events: none;
+            color: #78C7C7;
+            font-size: 1.15rem;
+            transition: color 0.3s ease;
+        }
+
+        body.theme-light .input-wrapper i {
+            color: #001F6B;
+        }
+
+        .input-wrapper input,
+        .input-wrapper select {
+            padding-left: 45px;
+            padding-right: 15px;
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #ffffff;
+        }
+
+        body.theme-light .input-wrapper input,
+        body.theme-light .input-wrapper select {
+            color: #1a1a2e;
+        }
+
+        .input-wrapper input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        body.theme-light .input-wrapper input::placeholder {
+            color: rgba(0, 0, 0, 0.35);
+        }
+
+        /* Custom Dropdown Arrow for Select */
+        .input-wrapper:has(select)::after {
+            content: '\f107';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #78C7C7;
+            pointer-events: none;
+            font-size: 1rem;
+        }
+
+        body.theme-light .input-wrapper:has(select)::after {
+            color: #001F6B;
+        }
+
+        body.theme-light .input-wrapper {
+            background: rgba(0, 31, 107, 0.02);
+            border: 1px solid rgba(0, 31, 107, 0.15);
+        }
+
+        .input-wrapper:focus-within {
+            border-color: #78C7C7;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(120, 199, 199, 0.1);
+            transform: translateY(-2px);
+        }
+
+        body.theme-light .input-wrapper:focus-within {
+            border-color: #001F6B;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 4px rgba(0, 31, 107, 0.1);
+        }
+
+        .input-wrapper:focus-within i {
+            color: #ffffff;
+        }
+
+        body.theme-light .input-wrapper:focus-within i {
+            color: #001F6B;
+        }
+
+        /* Select styling */
+        .input-wrapper select {
+            padding-right: 35px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            cursor: pointer;
+        }
+
+        .input-wrapper select::-ms-expand {
+            display: none;
+        }
+
+        .input-wrapper select option {
+            background: #1a1a2e;
+            color: #ffffff;
+        }
+
+        body.theme-light .input-wrapper select option {
+            background: #ffffff;
+            color: #1a1a2e;
+        }
+
+        .input-wrapper input,
+        .input-wrapper select {
+            color: #ffffff;
+        }
+
+        body.theme-light .input-wrapper input,
+        body.theme-light .input-wrapper select {
+            color: #1a1a2e;
+        }
+
+        .input-wrapper input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        body.theme-light .input-wrapper input::placeholder {
+            color: rgba(0, 0, 0, 0.35);
+        }
+
+        /* Select Dropdown Arrow */
+        .input-wrapper select {
+            padding-right: 35px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            cursor: pointer;
+        }
+
+        .input-wrapper select::-ms-expand {
+            display: none;
+        }
+
+        /* Custom dropdown arrow for select */
+        .input-wrapper:has(select) {
+            position: relative;
+        }
+
+        .input-wrapper:has(select)::after {
+            content: '\f107';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #78C7C7;
+            pointer-events: none;
+            font-size: 0.9rem;
+        }
+
+        body.theme-light .input-wrapper:has(select)::after {
+            color: #001F6B;
+        }
+
+        /* Gender Select Özel Stili */
+        .gender-select-wrapper {
+            position: relative;
+        }
+
+        .gender-select-wrapper .dropdown-arrow {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #78C7C7;
+            pointer-events: none;
+            font-size: 0.85rem;
+            z-index: 5;
+        }
+
+        body.theme-light .gender-select-wrapper .dropdown-arrow {
+            color: #001F6B;
+        }
+
+        .gender-select-wrapper select {
+            padding-right: 40px !important;
+        }
+
+        body.theme-light .input-wrapper input,
+        body.theme-light .input-wrapper select {
+            color: #1a1a2e;
+        }
+
+        .input-wrapper input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        body.theme-light .input-wrapper input::placeholder {
+            color: rgba(0, 0, 0, 0.35);
+        }
+
+        /* Toggle Password */
+        .toggle-password {
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-password:hover {
+            color: #78C7C7;
+        }
+
+        body.theme-light .toggle-password {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        body.theme-light .toggle-password:hover {
+            color: #001F6B;
+        }
+
+        /* Modern Button */
+        .btn-primary {
+            background: linear-gradient(135deg, #78C7C7 0%, #5ab4b4 100%) !important;
+            border: none !important;
+            color: #0a0a1a !important;
+            box-shadow: 0 10px 30px rgba(120, 199, 199, 0.3) !important;
+            transition: all 0.3s ease !important;
+            font-weight: 700 !important;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 0 15px 40px rgba(120, 199, 199, 0.5) !important;
+        }
+
+        body.theme-light .btn-primary {
+            background: linear-gradient(135deg, #001F6B 0%, #0036a8 100%) !important;
+            color: #ffffff !important;
+            box-shadow: 0 10px 30px rgba(0, 31, 107, 0.3) !important;
+        }
+
+        body.theme-light .btn-primary:hover {
+            box-shadow: 0 15px 40px rgba(0, 31, 107, 0.5) !important;
+        }
+
+        /* Form Labels */
+        .form-group label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        body.theme-light .form-group label {
+            color: #1a1a2e;
+        }
+
+        /* Checkbox */
+        .form-check-label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        body.theme-light .form-check-label {
+            color: #4a4a4a;
+        }
+
+        /* Top Right Actions - Login ile aynı stil */
+        .top-right-actions {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .lang-switcher {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .selected-lang {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px 14px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .selected-lang:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .selected-lang img {
+            width: 22px;
+            height: 16px;
+            border-radius: 2px;
+            object-fit: cover;
+        }
+
+        .selected-lang i {
+            font-size: 0.75rem;
+            margin-left: 2px;
+        }
+
+        .lang-options {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            list-style: none;
+            padding: 8px 0;
+            margin: 0;
+            min-width: 160px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.25s ease;
+        }
+
+        .lang-options.show-lang-options {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .lang-options li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .lang-options li:hover {
+            background: rgba(0, 31, 107, 0.08);
+            color: #001F6B;
+        }
+
+        .lang-options li img {
+            width: 20px;
+            height: 15px;
+            border-radius: 2px;
+            object-fit: cover;
+        }
+
+        body.theme-light .selected-lang {
+            background: rgba(0, 31, 107, 0.06);
+            color: #001F6B;
+            border: 1px solid rgba(0, 31, 107, 0.15);
+        }
+
+        body.theme-light .selected-lang:hover {
+            background: rgba(0, 31, 107, 0.12);
+        }
+
+        .btn-home-text {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-home-text:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        body.theme-light .btn-home-text {
+            background: rgba(0, 31, 107, 0.05);
+            border: 1px solid rgba(0, 31, 107, 0.15);
+            color: #001F6B;
+        }
+
+        body.theme-light .btn-home-text:hover {
+            background: #001F6B;
+            border-color: #001F6B;
+            color: #ffffff;
+        }
+
+        /* Register Link Panel */
+        .register-link-panel a {
+            color: #ffffff !important;
+            font-weight: 600;
+        }
+
+        .register-link-panel a:hover {
+            color: #ffffff !important;
+            text-decoration: underline;
+        }
+
+        /* Form Error Styles */
+        .form-group.error .input-wrapper,
+        .form-check.error .input-wrapper {
+            border-color: #ff4b2b !important;
+            box-shadow: 0 0 0 4px rgba(255, 75, 43, 0.15) !important;
+            animation: error-shake 0.4s ease;
+        }
+
+        .form-group.error .input-wrapper i,
+        .form-check.error .input-wrapper i {
+            color: #ff4b2b !important;
+        }
+
+        .form-group.error label,
+        .form-check.error label {
+            color: #ff4b2b !important;
+        }
+
+        .form-group.error input,
+        .form-group.error select,
+        .form-check.error input {
+            color: #ff4b2b !important;
+        }
+
+        .form-group.error input::placeholder,
+        .form-group.error select::placeholder {
+            color: rgba(255, 75, 43, 0.5) !important;
+        }
+
+        body.theme-light .form-group.error .input-wrapper,
+        body.theme-light .form-check.error .input-wrapper {
+            border-color: #dc2626 !important;
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.15) !important;
+        }
+
+        body.theme-light .form-group.error .input-wrapper i,
+        body.theme-light .form-check.error .input-wrapper i {
+            color: #dc2626 !important;
+        }
+
+        body.theme-light .form-group.error label,
+        body.theme-light .form-check.error label {
+            color: #dc2626 !important;
+        }
+
+        body.theme-light .form-group.error input,
+        body.theme-light .form-group.error select {
+            color: #dc2626 !important;
+        }
+
+        body.theme-light .form-group.error input::placeholder {
+            color: rgba(220, 38, 38, 0.5) !important;
+        }
+
+        .error-message {
+            display: block;
+            margin-top: 8px;
+            padding: 10px 14px;
+            background: rgba(255, 75, 43, 0.15);
+            border-left: 3px solid #ff4b2b;
+            border-radius: 8px;
+            color: #ff4b2b;
+            font-size: 0.82rem;
+            font-weight: 500;
+            animation: error-fade-in 0.3s ease;
+        }
+
+        body.theme-light .error-message {
+            background: rgba(220, 38, 38, 0.1);
+            border-left-color: #dc2626;
+            color: #dc2626;
+        }
+
+        @keyframes error-shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        @keyframes error-fade-in {
+            0% {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Şifre Güçlü Göstergesi Stilleri */
+        .password-strength-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .password-strength-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body.theme-light .password-strength-bar {
+            background: rgba(0, 31, 107, 0.1);
+        }
+
+        .password-strength-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 10px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(90deg, #ff4b2b 0%, #ff4b2b 100%);
+        }
+
+        /* Zayıf - Kırmızı */
+        .password-strength-fill.strength-weak {
+            width: 25%;
+            background: linear-gradient(90deg, #ff4b2b 0%, #ff6b4b 100%);
+            box-shadow: 0 0 10px rgba(255, 75, 43, 0.5);
+        }
+
+        /* Orta - Sarı/Turuncu */
+        .password-strength-fill.strength-medium {
+            width: 50%;
+            background: linear-gradient(90deg, #ffc107 0%, #ffb300 100%);
+            box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+        }
+
+        /* İyi - Mavi */
+        .password-strength-fill.strength-good {
+            width: 75%;
+            background: linear-gradient(90deg, #2196F3 0%, #1976D2 100%);
+            box-shadow: 0 0 10px rgba(33, 150, 243, 0.5);
+        }
+
+        /* Güçlü - Yeşil */
+        .password-strength-fill.strength-strong {
+            width: 100%;
+            background: linear-gradient(90deg, #00f260 0%, #0575e6 100%);
+            box-shadow: 0 0 15px rgba(0, 242, 96, 0.6);
+            animation: strength-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes strength-pulse {
+            0%, 100% {
+                box-shadow: 0 0 15px rgba(0, 242, 96, 0.6);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(0, 242, 96, 0.9);
+            }
+        }
+
+        .password-strength-text {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: right;
+            transition: color 0.3s ease;
+            color: #ff4b2b;
+        }
+
+        .password-strength-text.strength-weak {
+            color: #ff4b2b;
+        }
+
+        .password-strength-text.strength-medium {
+            color: #ffc107;
+        }
+
+        .password-strength-text.strength-good {
+            color: #2196F3;
+        }
+
+        .password-strength-text.strength-strong {
+            color: #00f260;
+        }
+
+        /* Şifre ipuçları */
+        .password-tips {
+            margin-top: 10px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        body.theme-light .password-tips {
+            background: rgba(0, 31, 107, 0.05);
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        .password-tips ul {
+            margin: 8px 0 0 0;
+            padding-left: 20px;
+            list-style: none;
+        }
+
+        .password-tips li {
+            margin-bottom: 4px;
+            position: relative;
+        }
+
+        .password-tips li::before {
+            content: '•';
+            position: absolute;
+            left: -15px;
+            color: var(--accent-color);
+        }
+
+        .password-tip-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .password-tip-item.valid {
+            color: #00f260;
+        }
+
+        .password-tip-item.valid i {
+            color: #00f260;
+        }
+
+        .password-tip-item i {
+            font-size: 0.7rem;
+            width: 12px;
+            text-align: center;
+        }
+    </style>
 </head>
-<body lang="tr">
+<body lang="tr" class="theme-light">
     <script>
       (function() {
         try {
-          var theme = localStorage.getItem('landingTheme') || 'light';
-          document.body.className = theme === 'dark' ? 'theme-dark' : 'theme-light';
+          var theme = localStorage.getItem('landingTheme');
+          if (theme === 'dark') {
+            document.body.classList.remove('theme-light');
+            document.body.classList.add('theme-dark');
+          } else {
+            document.body.classList.remove('theme-dark');
+            document.body.classList.add('theme-light');
+          }
         } catch (e) {
-          document.body.className = 'theme-light';
+          document.body.classList.remove('theme-dark');
+          document.body.classList.add('theme-light');
         }
       })();
     </script>
@@ -67,7 +811,7 @@
                             <li data-lang="en"><img src="https://flagcdn.com/gb.svg" alt="English"><span>English</span></li>
                         </ul>
                     </div>
-                    <a href="index.html" class="btn-home-text" title="Ana Sayfaya Dön">Ana Sayfaya Dön</a>
+                    <a href="login.html" class="btn-home-text" title="Giriş Ekranına Dön">Giriş Ekranına Dön</a>
                 </div>
                 <div class="auth-header" style="margin-top: 60px;">
                     <h2 data-lang="register"></h2>
@@ -109,6 +853,13 @@
                             <input type="password" id="passwordRegister" name="passwordRegister" placeholder="" required data-lang-placeholder="passwordPlaceholder">
                             <span class="toggle-password"><i class="fas fa-eye"></i></span>
                         </div>
+                        <!-- Şifre Güçlü Göstergesi -->
+                        <div class="password-strength-container" style="margin-top: 8px;">
+                            <div class="password-strength-bar">
+                                <div class="password-strength-fill" id="passwordStrengthFill"></div>
+                            </div>
+                            <div class="password-strength-text" id="passwordStrengthText" data-lang="enterPassword"></div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="passwordConfirm" data-lang="passwordConfirm"></label>
@@ -127,7 +878,7 @@
                     </div>
                     <div class="form-group">
                         <label for="gender" data-lang="gender"></label>
-                        <div class="input-wrapper">
+                        <div class="input-wrapper gender-select-wrapper">
                             <i class="fas fa-venus-mars"></i>
                             <select id="gender" name="gender" class="form-control">
                                 <option value="" data-lang="select"></option>
@@ -135,6 +886,7 @@
                                 <option value="female" data-lang="female"></option>
                                 <option value="other" data-lang="other"></option>
                             </select>
+                            <i class="fas fa-chevron-down dropdown-arrow"></i>
                         </div>
                     </div>
                     <div class="form-group">
@@ -150,7 +902,110 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="js/script.js"></script>
+
+    <!-- Şifre Güçlü Göstergesi Script'i -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('passwordRegister');
+            const strengthFill = document.getElementById('passwordStrengthFill');
+            const strengthText = document.getElementById('passwordStrengthText');
+
+            // Şifre gücünü hesaplama fonksiyonu
+            function calculatePasswordStrength(password) {
+                let score = 0;
+
+                if (!password) return 0;
+
+                // Uzunluk kontrolü
+                if (password.length >= 8) score += 1;
+                if (password.length >= 12) score += 1;
+
+                // Küçük harf
+                if (/[a-z]/.test(password)) score += 1;
+
+                // Büyük harf
+                if (/[A-Z]/.test(password)) score += 1;
+
+                // Rakam
+                if (/[0-9]/.test(password)) score += 1;
+
+                // Özel karakter
+                if (/[^a-zA-Z0-9]/.test(password)) score += 1;
+
+                return Math.min(score, 4);
+            }
+
+            // Güç seviyesini güncelleme
+            function updateStrengthIndicator(strength) {
+                // Mevcut sınıfları temizle
+                strengthFill.className = 'password-strength-fill';
+                strengthText.className = 'password-strength-text';
+
+                // Mevcut dili al - localStorage'dan
+                const currentLang = localStorage.getItem('language') || 'tr';
+
+                // language-manager.js'ten metinleri al
+                const texts = window.translations ? window.translations[currentLang] : null;
+
+                switch(strength) {
+                    case 0:
+                        strengthFill.style.width = '0%';
+                        strengthText.textContent = texts ? texts.enterPassword : (currentLang === 'en' ? 'Enter password' : 'Şifre girin');
+                        break;
+                    case 1:
+                        strengthFill.classList.add('strength-weak');
+                        strengthText.classList.add('strength-weak');
+                        strengthText.textContent = texts ? texts.passwordWeak : (currentLang === 'en' ? 'Weak' : 'Zayıf');
+                        break;
+                    case 2:
+                        strengthFill.classList.add('strength-medium');
+                        strengthText.classList.add('strength-medium');
+                        strengthText.textContent = texts ? texts.passwordMedium : (currentLang === 'en' ? 'Medium' : 'Orta');
+                        break;
+                    case 3:
+                        strengthFill.classList.add('strength-good');
+                        strengthText.classList.add('strength-good');
+                        strengthText.textContent = texts ? texts.passwordGood : (currentLang === 'en' ? 'Good' : 'İyi');
+                        break;
+                    case 4:
+                        strengthFill.classList.add('strength-strong');
+                        strengthText.classList.add('strength-strong');
+                        strengthText.textContent = texts ? texts.passwordStrong : (currentLang === 'en' ? 'Strong' : 'Güçlü');
+                        break;
+                }
+            }
+
+            // Input event listener
+            passwordInput.addEventListener('input', function() {
+                const strength = calculatePasswordStrength(this.value);
+                updateStrengthIndicator(strength);
+            });
+
+            // Sayfa yüklendiğinde sıfırla
+            updateStrengthIndicator(0);
+
+            // Dil değiştiğinde güncelle
+            window.addEventListener('languageChanged', function(e) {
+                // Mevcut şifre değerini al ve güncelle
+                const currentStrength = calculatePasswordStrength(passwordInput.value);
+                updateStrengthIndicator(currentStrength);
+            });
+        });
+    </script>
+
     <script type="module" src="js/register.js"></script>
+    <script>
+        // Dil switcher'ı başlat
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.initLanguageSwitcher) {
+                window.initLanguageSwitcher();
+            }
+            if (window.setLanguage) {
+                const savedLang = localStorage.getItem('language') || 'tr';
+                window.setLanguage(savedLang);
+            }
+        });
+    </script>
 </body>
 </html>
 

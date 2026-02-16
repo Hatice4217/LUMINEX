@@ -1,6 +1,8 @@
 import { generateUUID } from './utils/uuid-utils.js'; // ES modül sintaksına uygun olarak en üste taşındı.
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('Forgot password page loaded');
+
     const forgotPasswordForm = document.getElementById('forgotPasswordForm');
     const forgotPasswordTcInput = document.getElementById('forgotPasswordTc');
     const forgotPasswordFirstNameInput = document.getElementById('forgotPasswordFirstName'); // Yazım hatası düzeltildi
@@ -22,9 +24,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function showError(inputElement, message) {
+    function showError(inputElement, message, messageKey) {
         const formGroup = inputElement.closest('.form-group');
         if (!formGroup) return;
+
+        // Store the message key for language changes
+        if (messageKey) {
+            formGroup.dataset.errorKey = messageKey;
+        }
 
         // Mevcut hata mesajını güncellemek için kaldır
         const existingError = formGroup.querySelector('.error-message');
@@ -36,13 +43,33 @@ document.addEventListener('DOMContentLoaded', () => {
         formGroup.classList.remove('error');
         void formGroup.offsetWidth; // Tarayıcıyı yeniden boyamaya zorla
         formGroup.classList.add('error');
-        
+
         // Yeni mesajı oluştur ve ekle
         const errorElement = document.createElement('div');
         errorElement.className = 'error-message';
         errorElement.textContent = message;
         formGroup.appendChild(errorElement);
     }
+
+    // Update all error messages when language changes
+    function updateErrorMessages() {
+        const currentLang = localStorage.getItem('language') || 'tr';
+        document.querySelectorAll('.form-group.error').forEach(formGroup => {
+            const messageKey = formGroup.dataset.errorKey;
+            if (messageKey && window.translations && window.translations[currentLang]) {
+                const errorElement = formGroup.querySelector('.error-message');
+                if (errorElement) {
+                    const newMessage = window.translations[currentLang][messageKey] || messageKey;
+                    errorElement.textContent = newMessage;
+                }
+            }
+        });
+    }
+
+    // Listen for language changes
+    window.addEventListener('languageChanged', function(e) {
+        updateErrorMessages();
+    });
 
     function clearErrors() {
         document.querySelectorAll('.form-group.error').forEach(formGroup => {
@@ -79,19 +106,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let isValid = true;
             if (!validateTcKimlik(tc)) {
-                showError(forgotPasswordTcInput, window.getTranslation('forgotTcInvalid'));
+                showError(forgotPasswordTcInput, window.getTranslation('forgotTcInvalid'), 'forgotTcInvalid');
                 isValid = false;
             }
             if (!firstName) {
-                showError(forgotPasswordFirstNameInput, window.getTranslation('forgotFirstNameRequired'));
+                showError(forgotPasswordFirstNameInput, window.getTranslation('forgotFirstNameRequired'), 'forgotFirstNameRequired');
                 isValid = false;
             }
             if (!lastName) {
-                showError(forgotPasswordLastNameInput, window.getTranslation('forgotLastNameRequired'));
+                showError(forgotPasswordLastNameInput, window.getTranslation('forgotLastNameRequired'), 'forgotLastNameRequired');
                 isValid = false;
             }
             if (!validateEmail(email)) {
-                showError(forgotPasswordEmailInput, window.getTranslation('forgotEmailInvalid'));
+                showError(forgotPasswordEmailInput, window.getTranslation('forgotEmailInvalid'), 'forgotEmailInvalid');
                 isValid = false;
             }
 
@@ -167,6 +194,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (verifyCodeBtn) {
         verifyCodeBtn.addEventListener('click', function() {
             clearErrors();
+            const verifyResultDiv = document.getElementById('verifyResult');
+            // Önceki uyarıyı temizle
+            if(verifyResultDiv) {
+                verifyResultDiv.innerHTML = '';
+                verifyResultDiv.style.display = 'none';
+            }
             const enteredCode = verificationCodeInput.value.trim();
             const SIMULATED_CODE = '123456'; // Simüle edilmiş doğrulama kodu
 
@@ -182,32 +215,48 @@ document.addEventListener('DOMContentLoaded', () => {
                         console.error("sessionStorage'dan token verisi ayrıştırma hatası:", e);
                     }
                 }
-                
+
                 if (tokenData && tokenData.tc && tokenData.expiry && Date.now() < tokenData.expiry) {
-                    if(resetResultDiv) {
-                        resetResultDiv.innerHTML = `
+                    // Başarı mesajını aşağıda göster - Şifre Sıfırlama ile aynı stil
+                    if(verifyResultDiv) {
+                        verifyResultDiv.innerHTML = `
                             <div style="margin-top: 15px; text-align: center; font-weight: 600; color: #001F6B;">
                                 <i class="fas fa-check"></i> ${window.getTranslation('infoVerifiedRedirecting')}
                             </div>`;
+                        verifyResultDiv.style.display = 'block';
                     }
                     setTimeout(() => {
                         sessionStorage.removeItem('pendingResetToken'); // Bekleyen token'ı temizle
                         // Asıl resetToken'ı buradan henüz kaldırma, reset-password.html'de lazım olacak
                         window.location.href = `reset-password.html?token=${resetToken}`;
-                    }, 1500);
+                    }, 2000);
                 } else {
-                    // Token süresi dolmuş veya geçersiz
-                    showError(verificationCodeInput, window.getTranslation('invalidCode'));
+                    // Token süresi dolmuş veya geçersiz - hata mesajı
+                    if(verifyResultDiv) {
+                        verifyResultDiv.innerHTML = `
+                            <div style="margin-top: 15px; text-align: center; font-weight: 500; color: #dc3545;">
+                                <i class="fas fa-times"></i> ${window.getTranslation('invalidOrExpiredToken')}
+                            </div>`;
+                        verifyResultDiv.style.display = 'block';
+                    }
                     setTimeout(() => {
                         // Token geçersiz/süresi dolmuşsa temizle ve akışı baştan başlat
                         sessionStorage.removeItem('forgotPasswordVerifiedTc');
                         sessionStorage.removeItem('pendingResetToken');
                         if (resetToken) sessionStorage.removeItem(resetToken); // Geçersiz asıl token'ı kaldır
                         window.location.href = 'forgot-password.html';
-                    }, 2000);
+                    }, 2500);
                 }
             } else {
-                showError(verificationCodeInput, window.getTranslation('invalidCode'));
+                // Yanlış kod - hata mesajı
+                if(verifyResultDiv) {
+                    verifyResultDiv.innerHTML = `
+                        <div style="margin-top: 15px; text-align: center; font-weight: 500; color: #dc3545;">
+                            <i class="fas fa-times"></i> ${window.getTranslation('invalidCode')}
+                        </div>`;
+                    verifyResultDiv.style.display = 'block';
+                }
+                showError(verificationCodeInput, window.getTranslation('invalidCode'), 'invalidCode');
             }
         });
     }

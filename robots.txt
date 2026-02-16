@@ -1,0 +1,22 @@
+# robots.txt - LUMINEX
+# Google ve diğer arama motorları için talimatlar
+
+User-agent: *
+Allow: /
+
+# Sitemap konumu
+Sitemap: https://luminex.com.tr/sitemap.xml
+
+# Özel izinler
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Engellenenler (varsa)
+# Disallow: /admin/
+# Disallow: /api/
+
+# Crawl-delay (opsiyonel)
+Crawl-delay: 1

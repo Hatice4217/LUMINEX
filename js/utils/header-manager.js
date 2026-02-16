@@ -4,6 +4,7 @@ import {
     removeActiveProfile,
     getActiveProfile,
     getLoggedInUser,
+    setLoggedInUser,
     getLocalStorageItem,
     setLocalStorageItem,
     getLuminexNotifications,
@@ -179,43 +180,48 @@ function setupSidebarToggler() {
 
 function setupThemeToggler() {
     const themeToggleButton = document.getElementById('themeToggleButton');
-    
+    if (!themeToggleButton) return;
+
+    const themeIcon = themeToggleButton.querySelector('i');
+
     // Sync with global landingTheme preference on load
     const savedTheme = localStorage.getItem('landingTheme') || 'light';
-    
+
     if (savedTheme === 'dark') {
         document.body.classList.add('theme-dark');
-        if (themeToggleButton) {
-            themeToggleButton.classList.remove('fa-moon');
-            themeToggleButton.classList.add('fa-sun');
+        if (themeIcon) {
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
         }
     } else {
         document.body.classList.remove('theme-dark');
-        if (themeToggleButton) {
-            themeToggleButton.classList.remove('fa-sun');
-            themeToggleButton.classList.add('fa-moon');
+        if (themeIcon) {
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
         }
     }
-
-    if (!themeToggleButton) return;
 
     themeToggleButton.addEventListener('click', () => {
         const isCurrentlyDark = document.body.classList.contains('theme-dark');
         const newTheme = isCurrentlyDark ? 'light' : 'dark';
-        
+
         // Save to global preference
         localStorage.setItem('landingTheme', newTheme);
-        
+
         applyAdminTheme(newTheme);
 
         if (newTheme === 'dark') {
-            themeToggleButton.classList.remove('fa-moon');
-            themeToggleButton.classList.add('fa-sun');
+            if (themeIcon) {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            }
         } else {
-            themeToggleButton.classList.remove('fa-sun');
-            themeToggleButton.classList.add('fa-moon');
+            if (themeIcon) {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
         }
-        
+
         const loggedInUser = getLoggedInUser();
         if (loggedInUser) {
             loggedInUser.theme = newTheme;
@@ -240,15 +246,18 @@ export function applyAdminTheme(theme) {
     } else if (theme === 'gold') {
         document.body.classList.add('theme-gold');
     }
-    
+
     const themeToggleButton = document.getElementById('themeToggleButton');
     if (themeToggleButton) {
-        if (theme === 'dark') {
-            themeToggleButton.classList.remove('fa-moon');
-            themeToggleButton.classList.add('fa-sun');
-        } else {
-            themeToggleButton.classList.remove('fa-sun');
-            themeToggleButton.classList.add('fa-moon');
+        const themeIcon = themeToggleButton.querySelector('i');
+        if (themeIcon) {
+            if (theme === 'dark') {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
         }
     }
 }
@@ -265,7 +274,7 @@ export function setupHeader() {
     if (!currentUser) return;
 
     // --- Notification Widget Setup ---
-    const notificationBell = document.querySelector('.fa-bell');
+    const notificationBell = document.querySelector('.notification-bell');
     const notificationDropdown = document.querySelector('.notification-dropdown');
 
     if (notificationBell && notificationDropdown) {
@@ -275,27 +284,58 @@ export function setupHeader() {
         // Toggle Dropdown
         notificationBell.addEventListener('click', (e) => {
             e.stopPropagation();
-            const isActive = notificationDropdown.classList.contains('active');
-            
+            const isActive = notificationDropdown.classList.contains('show');
+
             // Close others
-            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show', 'active'));
+            document.querySelectorAll('.lang-switcher').forEach(d => d.classList.remove('active'));
 
             if (!isActive) {
                 renderNotificationDropdown();
-                notificationDropdown.classList.add('active');
+                notificationDropdown.classList.add('show');
             } else {
-                notificationDropdown.classList.remove('active');
+                notificationDropdown.classList.remove('show');
             }
         });
 
         // Listen for updates
         window.addEventListener('notificationUpdated', () => {
             updateNotificationBadge();
-            if (notificationDropdown.classList.contains('active')) {
+            if (notificationDropdown.classList.contains('show')) {
                 renderNotificationDropdown();
             }
         });
     }
+
+    // --- Language Switcher Setup ---
+    const langSwitcher = document.querySelector('.lang-switcher');
+    if (langSwitcher) {
+        const selectedLang = langSwitcher.querySelector('.selected-lang');
+
+        selectedLang.addEventListener('click', (e) => {
+            e.stopPropagation();
+            langSwitcher.classList.toggle('active');
+
+            // Close notification dropdown
+            if (notificationDropdown) {
+                notificationDropdown.classList.remove('show', 'active');
+            }
+        });
+    }
+
+    // Close dropdowns on outside click
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.notification-dropdown') && !e.target.closest('.notification-bell')) {
+            if (notificationDropdown) {
+                notificationDropdown.classList.remove('show', 'active');
+            }
+        }
+        if (!e.target.closest('.lang-switcher')) {
+            if (langSwitcher) {
+                langSwitcher.classList.remove('active');
+            }
+        }
+    });
 
     const mainLogoLink = document.getElementById('mainLogoLink');
     if (mainLogoLink) {
@@ -335,17 +375,30 @@ export function setupHeader() {
                 console.error("User name is not available to display.");
                 return;
             }
-            
+
             const isChild = currentUser.isChild || false;
-            
+
+            // Cinsiyet tespiti
+            const detectGender = (name) => {
+                const firstName = name.split(' ')[0].toLowerCase();
+                const femaleNames = ['ayşe', 'fatma', 'zeynep', 'elife', 'zeyneb', 'hatice', 'meryem', 'sultan', 'şükriye', 'safiye', 'emin', 'ümmü', 'zeynep', 'esra', 'gülşah', 'büşra', 'betül', 'nur', 'selin', 'cera', 'sude', 'ece', 'sinem', 'deniz', 'nil', 'naz', 'nazlı', 'belinay', 'elin', 'selin', 'balım', 'begüm'];
+                const maleNames = ['ahmet', 'mehmet', 'mustafa', 'ali', 'hasan', 'hüseyin', 'ibrahim', 'osman', 'murat', 'can', 'emre', 'burak', 'arda', 'serkan', 'berk', 'mert', 'kaan', 'kerem', 'yusuf', 'eyüp', 'ömer', 'abdullah', 'muhammed', 'yunus', 'veli', 'rıza', 'nuri', 'kemal', 'tamer', 'erkam'];
+
+                if (femaleNames.includes(firstName)) return 'female';
+                if (maleNames.includes(firstName)) return 'male';
+                return 'neutral';
+            };
+
+            const genderClass = isChild ? 'neutral' : detectGender(nameToDisplay);
+
             const names = nameToDisplay.split(' ');
-            const initials = names.length > 1 
-                ? (names[0][0] + names[names.length - 1][0]).toUpperCase() 
+            const initials = names.length > 1
+                ? (names[0][0] + names[names.length - 1][0]).toUpperCase()
                 : nameToDisplay[0].toUpperCase();
 
             const profilePillHtml = `
                 <div class="profile-pill ${isChild ? 'child' : ''}" onclick="Luminex.showProfileSwitcher()">
-                    <div class="profile-avatar">${initials}</div>
+                    <div class="profile-avatar ${genderClass}">${initials}</div>
                     <div class="profile-info">
                         <span class="name">${nameToDisplay}</span>
                         <span class="role-badge">${isChild ? 'Çocuk Hesabı' : 'Ana Hesap'}</span>
@@ -353,7 +406,7 @@ export function setupHeader() {
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </div>
             `;
-            
+
             welcomeMessageElement.innerHTML = profilePillHtml;
             const profilePillElement = welcomeMessageElement.querySelector('.profile-pill');
             if (profilePillElement) {

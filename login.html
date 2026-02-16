@@ -11,15 +11,223 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* SAĞ TARAF (FORM PANEL) - MODERN TASARIM */
+
+        /* Auth Card Modernizasyonu */
+        .auth-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 3rem 2.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.theme-light .auth-card {
+            background: #ffffff !important;
+            border: 1px solid rgba(0, 31, 107, 0.15) !important;
+            box-shadow: 0 20px 60px rgba(0, 31, 107, 0.15) !important;
+        }
+
+        /* Auth Header */
+        .auth-header h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #78C7C7 0%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.3rem;
+        }
+
+        body.theme-light .auth-header h2 {
+            background: linear-gradient(135deg, #001F6B 0%, #0036a8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Modern Input Wrapper */
+        .input-wrapper {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        body.theme-light .input-wrapper {
+            background: #f8f9fa !important;
+            border: 1px solid rgba(0, 31, 107, 0.2) !important;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: #78C7C7;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(120, 199, 199, 0.1);
+            transform: translateY(-2px);
+        }
+
+        body.theme-light .input-wrapper:focus-within {
+            border-color: #001F6B !important;
+            background: #ffffff !important;
+            box-shadow: 0 0 0 4px rgba(0, 31, 107, 0.15) !important;
+        }
+
+        .input-wrapper i {
+            color: #78C7C7;
+            font-size: 1.15rem;
+            transition: color 0.3s ease;
+        }
+
+        body.theme-light .input-wrapper i {
+            color: #001F6B !important;
+        }
+
+        .input-wrapper:focus-within i {
+            color: #ffffff;
+        }
+
+        body.theme-light .input-wrapper:focus-within i {
+            color: #001F6B !important;
+        }
+
+        .input-wrapper input {
+            background: transparent;
+            color: #ffffff;
+        }
+
+        body.theme-light .input-wrapper input {
+            color: #1a1a2e !important;
+        }
+
+        .input-wrapper input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        body.theme-light .input-wrapper input::placeholder {
+            color: rgba(0, 0, 0, 0.4) !important;
+        }
+
+        /* Toggle Password */
+        .toggle-password {
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-password:hover {
+            color: #78C7C7;
+        }
+
+        body.theme-light .toggle-password {
+            color: rgba(0, 0, 0, 0.5) !important;
+        }
+
+        body.theme-light .toggle-password:hover {
+            color: #001F6B !important;
+        }
+
+        /* Modern Button */
+        .btn-primary {
+            background: linear-gradient(135deg, #78C7C7 0%, #5ab4b4 100%) !important;
+            border: none !important;
+            color: #0a0a1a !important;
+            box-shadow: 0 10px 30px rgba(120, 199, 199, 0.3) !important;
+            transition: all 0.3s ease !important;
+            font-weight: 700 !important;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 0 15px 40px rgba(120, 199, 199, 0.5) !important;
+        }
+
+        body.theme-light .btn-primary {
+            background: linear-gradient(135deg, #001F6B 0%, #0036a8 100%) !important;
+            color: #ffffff !important;
+            box-shadow: 0 10px 30px rgba(0, 31, 107, 0.3) !important;
+        }
+
+        body.theme-light .btn-primary:hover {
+            box-shadow: 0 15px 40px rgba(0, 31, 107, 0.5) !important;
+        }
+
+        /* Form Labels */
+        .form-group label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        body.theme-light .form-group label {
+            color: #1a1a2e !important;
+        }
+
+        /* Forgot Password Link */
+        .forgot-password {
+            color: #78C7C7 !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none !important;
+        }
+
+        .forgot-password:hover {
+            color: #ffffff !important;
+            text-decoration: underline !important;
+        }
+
+        body.theme-light .forgot-password {
+            color: #001F6B !important;
+        }
+
+        body.theme-light .forgot-password:hover {
+            color: #0036a8 !important;
+        }
+
+        /* Checkbox */
+        .form-check-label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        body.theme-light .form-check-label {
+            color: #333333 !important;
+        }
+
+        /* Home Link */
+        .btn-home-text {
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+
+        .btn-home-text:hover {
+            color: #78C7C7;
+        }
+
+        body.theme-light .btn-home-text {
+            color: #4a4a4a;
+        }
+
+        body.theme-light .btn-home-text:hover {
+            color: #001F6B;
+        }
+    </style>
 </head>
-<body lang="tr" class="login-page">
+<body lang="tr" class="login-page theme-light">
     <script>
       (function() {
         try {
-          var theme = localStorage.getItem('landingTheme') || 'light';
-          document.body.className = 'login-page ' + (theme === 'dark' ? 'theme-dark' : 'theme-light');
+          var theme = localStorage.getItem('landingTheme');
+          if (theme === 'dark') {
+            document.body.classList.remove('theme-light');
+            document.body.classList.add('theme-dark');
+          } else {
+            document.body.classList.remove('theme-dark');
+            document.body.classList.add('theme-light');
+          }
         } catch (e) {
-          document.body.className = 'login-page theme-light';
+          document.body.classList.remove('theme-dark');
+          document.body.classList.add('theme-light');
         }
       })();
     </script>
@@ -84,7 +292,7 @@
                             <input type="checkbox" class="form-check-input" id="rememberMe">
                             <label class="form-check-label" for="rememberMe" data-lang="rememberMe"></label>
                         </div>
-                        <a href="#" class="forgot-password" data-lang="forgotPassword"></a>
+                        <a href="forgot-password.html" class="forgot-password" data-lang="forgotPassword"></a>
                     </div>
                     <button type="submit" class="btn btn-primary btn-block" style="background: #001F6B !important; border-color: #001F6B !important; color: white; box-shadow: none;" data-lang="loginButton"></button>
                 </form>
