@@ -1,0 +1,2121 @@
+document.addEventListener('DOMContentLoaded', () => {
+    // Global Elements
+    const wizardContent = document.getElementById('wizardContent');
+    let currentLanguage = localStorage.getItem('language') || 'tr';
+    
+    // State
+    let userData = {
+        gender: null,
+        ageRange: null,
+        isSenior: false,
+        symptom: null
+    };
+
+    // --- LOCALIZATION DATA ---
+    const resources = {
+        tr: {
+            greeting: (name) => `Merhaba ${name}, şikayetiniz nedir?`,
+            guestName: "Misafir",
+            letsKnowYou: "Sizi biraz tanıyalım",
+            genderLabel: "Cinsiyetiniz:",
+            ageLabel: "Yaş Aralığınız:",
+            startBtn: "Analize Başla",
+            loading: "Semptomlar yükleniyor...",
+            genderOptions: { kadin: "Kadın", erkek: "Erkek", diger: "Diğer" },
+            categories: [
+                {
+                    title: "Genel Ağrılar",
+                    icon: "fa-procedures",
+                    items: [
+                        { id: "bas_agrisi", label: "Baş Ağrısı" },
+                        { id: "eklem_agrisi", label: "Eklem/Kemik Ağrısı" },
+                        { id: "goz_agrisi", label: "Göz Ağrısı" },
+                        { id: "dis_agrisi", label: "Diş Ağrısı" }
+                    ]
+                },
+                {
+                    title: "Solunum & KBB",
+                    icon: "fa-lungs",
+                    items: [
+                        { id: "nefes_darligi", label: "Nefes Darlığı" },
+                        { id: "bogaz_agrisi", label: "Boğaz Ağrısı" },
+                        { id: "kulak_agrisi", label: "Kulak Ağrısı" },
+                        { id: "burun_tikanikligi", label: "Burun Tıkanıklığı" }
+                    ]
+                },
+                {
+                    title: "Sindirim & Karın",
+                    icon: "fa-stomach",
+                    customIcon: '<i class="fas fa-utensils"></i>',
+                    items: [
+                        { id: "karin_agrisi", label: "Karın Ağrısı" },
+                        { id: "bulanti", label: "Bulantı / Kusma" },
+                        { id: "kabizlik", label: "Kabızlık / İshal" }
+                    ]
+                },
+                {
+                    title: "Diğer Şikayetler",
+                    icon: "fa-notes-medical",
+                    items: [
+                        { id: "cilt_sorunu", label: "Cilt Problemleri" },
+                        { id: "halsizlik", label: "Aşırı Halsizlik" },
+                        { id: "carpinti", label: "Kalp Çarpıntısı" },
+                        { id: "idrar_yanmasi", label: "İdrarda Yanma" }
+                    ]
+                }
+            ],
+            symptomData: {
+                // --- BAŞ AĞRISI ---
+                'bas_agrisi': {
+                    question: "Baş ağrınız başınızın tam olarak neresinde yoğunlaşıyor?",
+                    options: [
+                        { text: "Tek taraflı (Sadece sağ veya sadece sol)", next: 'bas_tek_taraflı' },
+                        { text: "Tüm başımda, bir bant sıkıştırıyormuş gibi", next: 'bas_gerilim' },
+                        { text: "Göz çevremde ve alnımda yoğun baskı var", next: 'bas_sinüzit' },
+                        { text: "Ense kökümden yukarı doğru yayılıyor", next: 'bas_ense' }
+                    ]
+                },
+                'bas_tek_taraflı': {
+                    question: "Ağrınız hangi karakterde?",
+                    options: [
+                        { text: "Zonklayıcı (kalp atışı gibi)", next: 'bas_migren_sure' },
+                        { text: "Saplanma/bıçaklama tarzında", next: 'bas_kume' },
+                        { text: "Yanma/ağrı tarzında", next: 'bas_trigeminal' }
+                    ]
+                },
+                'bas_migren_sure': {
+                    question: "Bu ağrı atağı ne kadar süredir devam ediyor?",
+                    options: [
+                        { text: "4-72 saat arası", next: 'bas_migren_aura' },
+                        { text: "3 günden uzun süredir", result: { title: "Kronik Migren / Status Migranosus", desc: "3 günden uzun süren migren atakları acil tedavi gerektirir.", department: "Nöroloji", branchId: "noroloji", urgent: true } },
+                        { text: "4 saatten az, yeni başladı", next: 'bas_migren_baslangic' }
+                    ]
+                },
+                'bas_migren_baslangic': {
+                    question: "Ağrı aniden mi başladı yoksa yavaş yavaş mı arttı?",
+                    options: [
+                        { text: "Aniden, şiddetli başladı", result: { title: "Kanama Riski (SAH Şüphesi)", desc: "Aniden başlayan en şiddetli baş ağrısı beyin kanaması işareti olabilir!", department: "ACİL SERVİS / Nöroloji", branchId: "acil", urgent: true } },
+                        { text: "Yavaş yavaş arttı", next: 'bas_migren_aura' }
+                    ]
+                },
+                'bas_migren_aura': {
+                    question: "Ağrı başlamadan önce ışık çakması, bulanık görme, uyuşma veya koku hassasiyeti yaşıyor musunuz?",
+                    options: [
+                        { text: "Evet, aura belirtilerim var", next: 'bas_migren_tetikleyici' },
+                        { text: "Hayır, direkt ağrı başlıyor", next: 'bas_migren_tetikleyici' }
+                    ]
+                },
+                'bas_migren_tetikleyici': {
+                    question: "Ağrıyı tetikleyen bir durum var mı? (Stres, açlık, certain foods, hormonal değişim)",
+                    options: [
+                        { text: "Evet, belirtiler tetiklenince başlıyor", next: 'bas_migren_bulantı' },
+                        { text: "Hayır, belirli bir sebep yok", next: 'bas_migren_bulantı' }
+                    ]
+                },
+                'bas_migren_bulantı': {
+                    question: "Baş ağrısına eşlik eden mide bulantısı, kusma veya ışık/sese hassasiyet var mı?",
+                    options: [
+                        { text: "Evet, hepsi var", result: { title: "Migren Atağı", desc: "Belirtileriniz klasik migren kriterlerine uyuyor. Karanlık ve sessiz bir ortamda dinlenmeniz önerilir.", department: "Nöroloji", branchId: "noroloji" } },
+                        { text: "Sadece bulantı var", result: { title: "Migren Olası Baş Ağrısı", desc: "Migren benzeri baş ağrısı. Nörolojik değerlendirme önerilir.", department: "Nöroloji", branchId: "noroloji" } },
+                        { text: "Hayır, sadece ağrı var", result: { title: "Vasküler Baş Ağrısı", desc: "Damar genişlemesine bağlı baş ağrısı olabilir.", department: "Nöroloji", branchId: "noroloji" } }
+                    ]
+                },
+                'bas_trigeminal': {
+                    question: "Ağrı yüzünüzün hangi bölgesinde ve ne sıklıkla oluyor?",
+                    options: [
+                        { text: "Yüz yarısında, elektrik çarpması gibi, kısa süreli", result: { title: "Trigeminal Nevralji", desc: "Yüz sinirindeki ağrıdır. Nörolojik tedavi gerekir.", department: "Nöroloji", branchId: "noroloji" } },
+                        { text: "Göz arkasında, birkaç gün süren", result: { title: "Kluster Baş Ağrısı", desc: "Şiddetli, tekrarlayan baş ağrısı tipi.", department: "Nöroloji", branchId: "noroloji" } }
+                    ]
+                },
+                'bas_gerilim': {
+                    question: "Ağrı ne zaman ve nasıl artıyor?",
+                    options: [
+                        { text: "Günün ilerleyen saatlerinde, akşamları artıyor", next: 'bas_gerilim_stres' },
+                        { text: "Sabahları uyanınca en şiddetli", next: 'bas_gerilim_sabah' },
+                        { text: "Hafta sonları iyileşiyor, iş günlerinde artıyor", result: { title: "Gerilim Tipi Baş Ağrısı", desc: "İş stresine bağlı baş ağrısı. Gevşeme teknikleri faydalı olabilir.", department: "Nöroloji", branchId: "noroloji" } }
+                    ]
+                },
+                'bas_gerilim_stres': {
+                    question: "Ağrıyı artıran bir durum var mı? (Bilgisayar kullanımı, stres, kahve)",
+                    options: [
+                        { text: "Evet, stres veya ekran kullanınca artıyor", next: 'bas_gerilim_kas' },
+                        { text: "Hayır, sürekli aynı seviyede", next: 'bas_gerilim_sure' }
+                    ]
+                },
+                'bas_gerilim_kas': {
+                    question: "Boyun ve omuzlarınızda gerginlik veya kasılma hissediyor musunuz?",
+                    options: [
+                        { text: "Evet, kaslarım çok gergin", result: { title: "Gerilim Tipi Baş Ağrısı + Miyofasiyal Ağrı", desc: "Stres ve boyun kas gerginliğine bağlı en yaygın ağrı türü. Fizik tedavi ve gevşeme egzersizleri önerilir.", department: "Nöroloji / Fizik Tedavi", branchId: "fizik_tedavi" } },
+                        { text: "Hayır, sadece başımda ağrı var", result: { title: "Gerilim Tipi Baş Ağrısı", desc: "Strese bağlı baş ağrısı. Dinlenme ve gevşeme egzersizleri önerilir.", department: "Nöroloji", branchId: "noroloji" } }
+                    ]
+                },
+                'bas_gerilim_sure': {
+                    question: "Bu baş ağrıları ne kadar süredir devam ediyor?",
+                    options: [
+                        { text: "15 günden az", result: { title: "Epizodik Gerilim Baş Ağrısı", desc: "Kısa süreli stres kaynaklı ağrı.", department: "Nöroloji", branchId: "noroloji" } },
+                        { text: "15 günden fazla, 3 aydan az", result: { title: "Sık Görülen Gerilim Baş Ağrısı", desc: "Sık tekrarlayan gerilim tipi ağrı.", department: "Nöroloji", branchId: "noroloji" } },
+                        { text: "3 aydan uzun süredir", result: { title: "Kronik Günlük Baş Ağrısı", desc: "Uzun süreli baş ağrısı. Ağrı kesici aşırı kullanımı da olabilir.", department: "Nöroloji", branchId: "noroloji" } }
+                    ]
+                },
+                'bas_gerilim_sabah': {
+                    question: "Gece uyurken horlama veya nefes durması yaşadığınız oldu mu?",
+                    options: [
+                        { text: "Evet, horluyum / nefesim duruyor", result: { title: "Uyku Apnesi Bağlı Baş Ağrısı", desc: "Uyku bozukluğu tedavi edilmeli. Göğüs hastalıkları muayenesi önerilir.", department: "Göğüs Hastalıkları / Nöroloji", branchId: "gogus" } },
+                        { text: "Hayır, normal uyuyorum", result: { title: "Sabah Baş Ağrısı", desc: "Tansiyon sorunu veya depresyona bağlı olabilir. Dahiliye değerlendirmesi önerilir.", department: "İç Hastalıkları / Nöroloji", branchId: "dahiliye" } }
+                    ]
+                },
+                'bas_gerilim_uyku': {
+                    question: "Son zamanlarda uykusuzluk veya yoğun iş stresi yaşadınız mı?",
+                    options: [
+                        { text: "Evet, çok yoğunum", result: { title: "Gerilim Tipi Baş Ağrısı", desc: "Stres ve kas gerginliğine bağlı en yaygın ağrı türüdür. Dinlenme ve gevşeme egzersizleri önerilir.", department: "Nöroloji", branchId: "noroloji" } },
+                        { text: "Hayır, iyiyim", result: { title: "Psikosomatik Baş Ağrısı", desc: "Genel kontrol amaçlı muayene olmanızda fayda var.", department: "Nöroloji", branchId: "noroloji" } }
+                    ]
+                },
+                'bas_sinüzit': {
+                    question: "Öne doğru eğildiğinizde ağrınız ve yüzünüzdeki baskı artıyor mu?",
+                    options: [
+                        { text: "Evet, çok artıyor", next: 'bas_sinüzit_surun' },
+                        { text: "Hayır, fark etmiyor", next: 'bas_goz_test' }
+                    ]
+                },
+                'bas_sinüzit_surun': {
+                    question: "Geniz akıntınız var mı? Akıntının rengi nasıl?",
+                    options: [
+                        { text: "Evet, sarı/yeşil renkli akıntı", next: 'bas_sinüzit_ates' },
+                        { text: "Evet, şeffaf akıntı", result: { title: "Alerjik Rinit / Sinüzit", desc: "Alerjik kaynaklı yüz kemikleri rahatsızlığı.", department: "Kulak Burun Boğaz / Alerji", branchId: "kbb" } },
+                        { text: "Hayır, akıntım yok", result: { title: "Gerilim Tipi Baş Ağrısı", desc: "Yüz bölgesinde gerilim kaynaklı ağrı.", department: "Nöroloji", branchId: "noroloji" } }
+                    ]
+                },
+                'bas_sinüzit_ates': {
+                    question: "Hafif ateş, koku alma kaybı veya diş ağrısı eşlik ediyor mu?",
+                    options: [
+                        { text: "Evet, bunlardan bazıları var", result: { title: "Bakteriyel Sinüzit", desc: "Yüz kemiklerindeki boşlukların iltihabı. Antibiyotik tedavisi gerekebilir.", department: "Kulak Burun Boğaz", branchId: "kbb" } },
+                        { text: "Hayır, hiçbiri yok", result: { title: "Viral Sinüzit", desc: "Soğuk algınlığına bağlı sinüzit. Kendiliğinden geçebilir.", department: "Kulak Burun Boğaz", branchId: "kbb" } }
+                    ]
+                },
+                'bas_goz_test': {
+                    question: "Gözlerinizi sıkmak veya gözlerinizi dinlendirmek ağrıyı hafifletiyor mu?",
+                    options: [
+                        { text: "Evet, gözlerimi kapatınca geçiyor", result: { title: "Göz Yorgunluğu (Astenopi)", desc: "Göz kasları yorgunluğu. Göz muayenesi önerilir.", department: "Göz Hastalıkları", branchId: "goz" } },
+                        { text: "Hayır, fark etmiyor", result: { title: "Baş Ağrısı (Diğer)", desc: "Nörolojik değerlendirme önerilir.", department: "Nöroloji", branchId: "noroloji" } }
+                    ]
+                },
+                'bas_ense': {
+                    question: "Ağrı boyun hareketleriyle artıyor mu?",
+                    options: [
+                        { text: "Evet, boynumu çevireince ağrıyor", result: { title: "Servikal Disk Patolojisi", desc: "Boyun fıtığı veya düzleşmesi olabilir. MR değerlendirmesi gerekir.", department: "Fizik Tedavi / Nöroloji", branchId: "fizik_tedavi" } },
+                        { text: "Hayır, hareketlerle ilişkisi yok", next: 'bas_ense_tansiyon' }
+                    ]
+                },
+                'bas_ense_tansiyon': {
+                    question: "Tansiyon probleminiz var mı? Şu anda tansiyonunuzu biliyor musunuz?",
+                    options: [
+                        { text: "Evet, hipertansiyon hastasıyım", result: { title: "Hipertansif Baş Ağrısı", desc: "Tansiyon yüksekliği ense ağrısı yapabilir. Tansiyonunuzu ölçtürünüz.", department: "Kardiyoloji / Dahiliye", branchId: "kardiyoloji" } },
+                        { text: "Hayır, bilmiyorum", result: { title: "Tansiyon Ölçümü Gerekli", desc: "Ense ağrısında tansiyon kontrolü önemlidir.", department: "Kardiyoloji / Dahiliye", branchId: "dahiliye" } },
+                        { text: "Hayır, tansiyonum normal", result: { title: "Kas İsim Bozukluğu / Myofasiyal Ağrı", desc: "Boyun kas gerginliği olabilir.", department: "Fizik Tedavi", branchId: "fizik_tedavi" } }
+                    ]
+                },
+                
+                // --- KARIN AĞRISI ---
+                'karin_agrisi': {
+                    question: "Ağrı karnınızın tam olarak neresinde yoğunlaşıyor?",
+                    options: [
+                        { text: "Sağ alt tarafta (Keskin)", next: 'karin_apandisit' },
+                        { text: "Mide bölgemde (Üst orta)", next: 'karin_mide' },
+                        { text: "Karnımın tamamında şişkinlikle beraber", next: 'karin_bagirsak' },
+                        { text: "Sırtıma vuran bir ağrı (Böğür)", next: 'karin_bobrek' }
+                    ]
+                },
+                'karin_apandisit': {
+                    question: "Ağrı ne zaman başladı ve nasıl ilerliyor?",
+                    options: [
+                        { text: "Göbek çevresinde başladı, sağ alta indi", next: 'karin_apandisit_test' },
+                        { text: "Direkt sağ alt tarafta başladı", next: 'karin_apandisit_test' },
+                        { text: "Aniden, şiddetli başladı", next: 'karin_apandisit_ani' }
+                    ]
+                },
+                'karin_apandisit_test': {
+                    question: "Zıplayınca, öksürünce veya sağ tarafa yatınca sağ alt taraftaki ağrı artıyor mu?",
+                    options: [
+                        { text: "Evet, çok artıyor, bıçak gibi", next: 'karin_apandisit_ates' },
+                        { text: "Hayır, ama sürekli sızlıyor", next: 'karin_apandisit_iştah' }
+                    ]
+                },
+                'karin_apandisit_iştah': {
+                    question: "İştahınız kaçtı mı ve kabızlık var mı?",
+                    options: [
+                        { text: "Evet, yemek yiyemiyorum", result: { title: "Erken Dönem Apandisit", desc: "Apandisit şüphesi. Genel cerrahi acil değerlendirmesi önerilir.", department: "Genel Cerrahi", branchId: "genel_cerrahi", urgent: true } },
+                        { text: "Hayır, iştahım normal", result: { title: "Kas/Bağırsak Zorlanması", desc: "Bağırsak hareketlerini takip ediniz.", department: "Genel Cerrahi", branchId: "genel_cerrahi" } }
+                    ]
+                },
+                'karin_apandisit_ani': {
+                    question: "Ağrı o kadar şiddetli ki yürüyemiyor, dik duramıyor musunuz?",
+                    options: [
+                        { text: "Evet, eğilerek yürüyorum", result: { title: "Perforasyon Riski!", desc: "ACİL DURUM! Apandisit yırtılmış olabilir. Derhal hastaneye gidiniz!", department: "ACİL SERVİS", branchId: "acil", urgent: true } },
+                        { text: "Hayır, yürüyebiliyorum", next: 'karin_apandisit_ates' }
+                    ]
+                },
+                'karin_apandisit_ates': {
+                    question: "Mide bulantısı, kusma veya ateşiniz var mı?",
+                    options: [
+                        { text: "Evet, bulantı/kusma ve ateşim var", result: { title: "Akut Apandisit", desc: "ACİL DURUM! Apandisit enfekte olmuş. Hemen hastaneye başvurunuz.", department: "ACİL SERVİS", branchId: "acil", urgent: true } },
+                        { text: "Sadece hafif bulantı var", result: { title: "Apandisit Şüphesi", desc: "Acil cerrahi değerlendirme gerekli.", department: "ACİL SERVİS / Genel Cerrahi", branchId: "acil", urgent: true } },
+                        { text: "Hayır, hiçbiri yok", result: { title: "Kronik Apandisit / Diğer", desc: "Kronik apandisit veya başka bir durum olabilir. Muayene gerekli.", department: "Genel Cerrahi", branchId: "genel_cerrahi" } }
+                    ]
+                },
+                'karin_mide': {
+                    question: "Ağrının karakteri nedir ve ne zaman artıyor?",
+                    options: [
+                        { text: "Ağzıma acı su geliyor, göğsümde yanma var", next: 'karin_mide_yemek' },
+                        { text: "Sadece karın ağrısı var", next: 'karin_mide_aclik' },
+                        { text: "Yemek yerken ağırlık/ağrı hissi", next: 'karin_mide_dolu' }
+                    ]
+                },
+                'karin_mide_yemek': {
+                    question: "Yemek yedikten hemen sonra veya uzanınca şikayetleriniz artıyor mu?",
+                    options: [
+                        { text: "Yemekten hemen sonra başlıyor", next: 'karin_mide_asit' },
+                        { text: "Uyunca veya uzanınca daha kötü", result: { title: "Gastroözofageal Reflü (GERD)", desc: "Mide içeriğinin yemek borusuna kaçması. Yastık yükselterek uyuyun.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } },
+                        { text: "İkisi de oluyor", result: { title: "Gastrit + Reflü", desc: "Mide mukozası iltihabı ve reflü bir arada.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } }
+                    ]
+                },
+                'karin_mide_asit': {
+                    question: "Yiyecekler ağzınıza geri geliyor mu veya ekşimek suyu geliyor mu?",
+                    options: [
+                        { text: "Evet, geri geliyor/ekşimek suyu geliyor", result: { title: "Reflü / Gastrit", desc: "Mide asidi problemleri. Diyet ve yaşam tarzı değişikliği önerilir.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } },
+                        { text: "Hayır, sadece ağrı var", result: { title: "Fonksiyonel Dispepsi", desc: "Mide fonksiyon bozukluğu.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } }
+                    ]
+                },
+                'karin_mide_aclik': {
+                    question: "Açken midenizde 'kazınma' veya 'kemirilme' hissi oluyor mu?",
+                    options: [
+                        { text: "Evet, bir şeyler yiyince geçiyor", next: 'karin_mide_uler_diet' },
+                        { text: "Hayır, yemekle ilişkisi yok", next: 'karin_mide_stres' }
+                    ]
+                },
+                'karin_mide_uler_diet': {
+                    question: "Baharlı, asitli yiyecekler veya kahve ağrıyı tetikliyor mu?",
+                    options: [
+                        { text: "Evet, bunları yeyince ağrıyor", result: { title: "Mide Ülseri (Peptik Ülzer)", desc: "Mide mukozasında yaralar. Üre nefes testi ve endoskopi önerilir.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } },
+                        { text: "Hayır, her zaman ağrıyor", result: { title: "Kronik Gastrit", desc: "Mide mukozası iltihabı.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } }
+                    ]
+                },
+                'karin_mide_stres': {
+                    question: "Stres, kaygı veya sinir when karın ağrınız artıyor mu?",
+                    options: [
+                        { text: "Evet, stresliyken artıyor", result: { title: "Stres Bağlı Mide Problemi", desc: "Stres mide asidini artırır. Gevşeme teknikleri önerilir.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } },
+                        { text: "Hayır", result: { title: "Non-Spesifik Dispepsi", desc: "Hazımsızlık veya genel mide hassasiyeti.", department: "İç Hastalıkları", branchId: "dahiliye" } }
+                    ]
+                },
+                'karin_mide_dolu': {
+                    question: "Az yiyince bile doyuluyor mu veya erken doyma hissi var mı?",
+                    options: [
+                        { text: "Evet, çok az yiyince doyuyorum", result: { title: "Gastroparezi / Mide Tembelliği", desc: "Midenin yavaş boşalması. Diyabet veya nörolojik sebep olabilir.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } },
+                        { text: "Hayır, normal yiyorum ama ağrı var", result: { title: "Mide Kapakçığı Sorunu (Pilor Stenozu)", desc: "Midenin çıkışında daralık olabilir.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } }
+                    ]
+                },
+                'karin_bagirsak': {
+                    question: "Son zamanlarda tuvalet alışkanlığınızda nasıl bir değişiklik oldu?",
+                    options: [
+                        { text: "İshal var, sulu dışkılama", next: 'karin_bagirsak_ishal' },
+                        { text: "Kabızlık var, zor dışkılama", next: 'karin_bagirsak_kabizlik' },
+                        { text: "İkisi de sırayla oluyor", result: { title: "İrritabl Bağırsak Sendromu (Karma Tip)", desc: "Bağırsak hareket bozukluğu. Stresle artar.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } },
+                        { text: "Değişiklik yok, sadece şişkinlik", result: { title: "Fonksiyonel Şişkinlik", desc: "Yediklerinize bağlı gaz birikmesi.", department: "Dahiliye", branchId: "dahiliye" } }
+                    ]
+                },
+                'karin_bagirsak_ishal': {
+                    question: "İshale ateş, kan veya mide bulantısı eşlik ediyor mu?",
+                    options: [
+                        { text: "Evet, ateşim de var", result: { title: "Bakteriyel Gastroenterit", desc: "Bağırsak enfeksiyonu. Dışkı örneği gerekli.", department: "Gastroenteroloji / Enfeksiyon", branchId: "dahiliye" } },
+                        { text: "Evet, gizli kan var", result: { title: "Enfeksiyöz Kolit / İltihaplı Bağırsak", desc: "ACİL değerlendirme gerekli.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } },
+                        { text: "Hayır, sadece ishal var", result: { title: "Akut İshal", desc: "Besin zehirlenmesi veya viral enfeksiyon olabilir.", department: "Dahiliye", branchId: "dahiliye" } }
+                    ]
+                },
+                'karin_bagirsak_kabizlik': {
+                    question: "Kabızlık ne kadar süredir devam ediyor?",
+                    options: [
+                        { text: "Birkaç gündür", result: { title: "Geçici Kabızlık", desc: "Beslenme değişikliği veya az su içmeye bağlı olabilir.", department: "Beslenme / Diyet", branchId: "diyetisyen" } },
+                        { text: "Haftalardır / Aylardır", result: { title: "Kronik Kabızlık", desc: "Bağırsak tembelliği veya başka bir sorun araştırılmalı.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } },
+                        { text: "Yıllardır, ara ara", result: { title: "İrritabl Bağırsak (Kabızlık Ağırlıklı)", desc: "Kronik bağırsak sorunları olabilir.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } }
+                    ]
+                },
+                'karin_bobrek': {
+                    question: "Ağrının karakteri nasıl?",
+                    options: [
+                        { text: "Bıçak saplanır gibi, şiddetli", next: 'karin_bobrek_tas' },
+                        { text: "Sızlayan, devamlı ağrı", next: 'karin_bobrek_enfeksiyon' },
+                        { text: "Kramp şeklinde geliyor geçiyor", result: { title: "Üreter Kolisi (Taş Düşürme)", desc: "Böbrek taşı düşüyor olabilir.", department: "Üroloji", branchId: "uroloji", urgent: true } }
+                    ]
+                },
+                'karin_bobrek_tas': {
+                    question: "İdrarınızda kan var mı veya idrar renginiz koyulaştı mı?",
+                    options: [
+                        { text: "Evet, idrarım koyu / kanlı", result: { title: "Böbrek Taşı", desc: "Taş varlığını gösterir. Ultrason ile değerlendirme gerekli.", department: "Üroloji", branchId: "uroloji" } },
+                        { text: "Hayır, sadece ağrı var", next: 'karin_bobrek_yanma' }
+                    ]
+                },
+                'karin_bobrek_yanma': {
+                    question: "İdrar yaparken yanma veya sıkışma hissi var mı?",
+                    options: [
+                        { text: "Evet, yanma var", result: { title: "Böbrek Taşı + İdrar Yolu Enfeksiyonu", desc: "Her iki durum da bir arada olabilir.", department: "Üroloji", branchId: "uroloji" } },
+                        { text: "Hayır", result: { title: "Böbrek Taşı / Sıtma", desc: "Taş düşürme veya böbrek kumu olabilir.", department: "Üroloji", branchId: "uroloji" } }
+                    ]
+                },
+                'karin_bobrek_enfeksiyon': {
+                    question: "Yüksek ateş, titreme veya üşüme nöbeti var mı?",
+                    options: [
+                        { text: "Evet, yüksek ateş ve titremem var", result: { title: "Piyelonefrit (Böbrek Enfeksiyonu)", desc: "CİDDİ enfeksiyon! Hastane yatışı gerekebilir.", department: "Üroloji / Enfeksiyon", branchId: "uroloji", urgent: true } },
+                        { text: "Hafif ateş var", result: { title: "Böbrek Enfeksiyonu (Erken Dönem)", desc: "Antibiyotik tedavisi gerekli.", department: "Üroloji", branchId: "uroloji" } },
+                        { text: "Ateş yok", result: { title: "Kas Ağrısı / Bel Ağrısı", desc: "Ters hareket veya kas spazmı olabilir.", department: "Fizik Tedavi", branchId: "fizik_tedavi" } }
+                    ]
+                },
+
+                // --- NEFES DARLIĞI ---
+                'nefes_darligi': {
+                    question: "Nefes darlığınız ne zaman ve nasıl başladı?",
+                    options: [
+                        { text: "Aniden başladı (Birkaç dakika içinde)", next: 'nefes_ani' },
+                        { text: "Günlerdir var, hareket ettikçe artıyor", next: 'nefes_kronik' },
+                        { text: "Toz, polen veya bir koku sonrası başladı", next: 'nefes_alerji' }
+                    ]
+                },
+                'nefes_ani': {
+                    question: "Göğsünüzde şiddetli baskı, sol kola veya çeneye vuran ağrı var mı?",
+                    options: [
+                        { text: "Evet, göğsümde sıkışma ve kola yayılan ağrı var", result: { title: "KALP KRİZİ (MİYOKARD ENFARKTÜSÜ) RİSKİ", desc: "HAYATİ TEHLİKE! DERHAL 112'Yİ ARAYIN! Her dakika önemlidir!", department: "ACİL SERVİS / Kardiyoloji", branchId: "acil", urgent: true } },
+                        { text: "Göğüste baskı var ama kola vurmadı", next: 'nefes_ani_akciğer' },
+                        { text: "Hayır, sadece nefesim daralıyor", next: 'nefes_ani_carpıntı' }
+                    ]
+                },
+                'nefes_ani_akciğer': {
+                    question: "Göğüs ağrısı nefes alırken artıyor mu veya hırıltı var mı?",
+                    options: [
+                        { text: "Evet, nefes alırken batıyor", result: { title: "Akut Pulmoner Emboli", desc: "Akciğer damarlarında pıhtı şüphesi! ACİL!", department: "ACİL SERVİS / Göğüs Hastalıkları", branchId: "acil", urgent: true } },
+                        { text: "Hayır, sadece baskı hissi var", result: { title: "Anjina Pektoris", desc: "Kalp kası yetersiz kan alıyor. Kardiyoloji acil.", department: "Kardiyoloji", branchId: "kardiyoloji", urgent: true } }
+                    ]
+                },
+                'nefes_ani_carpıntı': {
+                    question: "Kalbiniz küt küt atıyor mu, terleme veya ölecekmişsiniz gibi hissediyor musunuz?",
+                    options: [
+                        { text: "Evet, kalbim çarpıyor, fenalık hissi var", next: 'nefes_ani_trigger' },
+                        { text: "Hayır, sadece nefesim dar", next: 'nefes_ani_solunum' }
+                    ]
+                },
+                'nefes_ani_trigger': {
+                    question: "Bu durum ne zaman başladı?",
+                    options: [
+                        { text: "Beklenmedik aniden, hiçbir sebep yokken", result: { title: "Panik Atak", desc: "Anksiyete bozukluğu olabilir ama kalp sorunu eklenmeli. Kardiyoloji + Psikiyatri gerekli.", department: "Kardiyoloji / Psikiyatri", branchId: "kardiyoloji" } },
+                        { text: "Korku, stres veya heyecan anında", result: { title: "Panik Atak / Anksiyete Atağı", desc: "Psikolojik nefes darlığı. Kardiyoloji kontrolü sonrası psikiyatri.", department: "Psikiyatri / Kardiyoloji", branchId: "psikiyatri" } }
+                    ]
+                },
+                'nefes_ani_solunum': {
+                    question: "Nefes alırken hırıltı, ıslık sesi veya göğüste çekilme var mı?",
+                    options: [
+                        { text: "Evet, hırıltı/şıngırtı var", result: { title: "Akut Astım Atağı / Bronşospazm", desc: "Bronşlar daralmış. Acil solunum tedavisi gerekli.", department: "ACİL SERVİS / Göğüs Hastalıkları", branchId: "acil", urgent: true } },
+                        { text: "Evet, göğüsüm içeri çekiliyor", result: { title: "Şiddetli Solunum Distresi", desc: "CİDDİ akciğer sorunu! ACİL SERVİS!", department: "ACİL SERVİS", branchId: "acil", urgent: true } },
+                        { text: "Hayır, nefes alamıyorum", result: { title: "Akut Solunum Sıkıntısı", desc: "Acil müdahale gerektiren bir durum.", department: "ACİL SERVİS", branchId: "acil", urgent: true } }
+                    ]
+                },
+                'nefes_kronik': {
+                    question: "Nefes darlığınız ne zaman oluyor?",
+                    options: [
+                        { text: "Geceleri yatınca artıyor, yastık yükseltmek zorundayım", next: 'nefes_kronik_gece' },
+                        { text: "Yürürken, merdiven çıkar eforla artıyor", next: 'nefes_kronik_efor' },
+                        { text: "Sürekli, hiç dinlenmiyorum", next: 'nefes_kronik_surekli' }
+                    ]
+                },
+                'nefes_kronik_gece': {
+                    question: "Gündüz bacaklarınızda veya ayaklarınızda ödem (şişme) var mı?",
+                    options: [
+                        { text: "Evet, bacaklarım/ayaklarım şişiyor", result: { title: "Kalp Yetmezliği (Dekompansasyon)", desc: "Kalp vücuda su toplamış. Acil tedavi gerekli!", department: "Kardiyoloji", branchId: "kardiyoloji", urgent: true } },
+                        { text: "Hayır, şişme yok", result: { title: "Pulmoner Hipertansiyon / Uyku Apnesi", desc: "Akciğer tansiyonu yüksek veya uyku bozukluğu olabilir.", department: "Kardiyoloji / Göğüs Hastalıkları", branchId: "kardiyoloji" } }
+                    ]
+                },
+                'nefes_kronik_efor': {
+                    question: "Öksürük, balgam veya sigara kullanım öyküsü var mı?",
+                    options: [
+                        { text: "Evet, öksürüyorum/balgam geliyorum", result: { title: "KOAH (Kronik Obstrüktif Akciğer Hastalığı)", desc: "Akciğer kapasitesi azalmış. Spirometri testi gerekli.", department: "Göğüs Hastalıkları", branchId: "gogus" } },
+                        { text: "Evet, sigara kullanıyorum", result: { title: "Erken Dönem KOAH / Sigara Hasarı", desc: "Sigara bırakma ve akciğer testi gerekli.", department: "Göğüs Hastalıkları", branchId: "gogus" } },
+                        { text: "Hayır, sadece nefesim dar", result: { title: "Efor Kapasitesi Azalması / Kondisyon Eksikliği", desc: "Kalp veya akciğer sorunları eklenmeli.", department: "Kardiyoloji / Göğüs Hastalıkları", branchId: "kardiyoloji" } }
+                    ]
+                },
+                'nefes_kronik_surekli': {
+                    question: "Bu sürekli nefes darlığı ne kadar süredir devam ediyor?",
+                    options: [
+                        { text: "Birkaç haftadır / Yeni başladı", result: { title: "Akut/Subakut Nefes Darlığı", desc: "Yeni başlayan bir akciğer veya kalp sorunu olabilir.", department: "Göğüs Hastalıkları / Kardiyoloji", branchId: "gogus" } },
+                        { text: "Aylardır / Yıllardır var", result: { title: "Kronik Nefes Darlığı", desc: "KOAH, pulmoner fibrozis veya kalp yetmezliği olabilir.", department: "Göğüs Hastalıkları / Kardiyoloji", branchId: "gogus" } }
+                    ]
+                },
+                'nefes_alerji': {
+                    question: "Bu nefes darlığı ne zaman artıyor?",
+                    options: [
+                        { text: "Bahar aylarında, çiçekler açınca", next: 'nefes_alerji_bahar' },
+                        { text: "Tozlu ortamlarda veya ev tozuyla", next: 'nefes_alerji_toz' },
+                        { text: "Evcil hayvanla temas edince", result: { title: "Evcil Hayvan Alerjisi", desc: "Kedi/köpek tüyü alerjisi kaynaklı astım.", department: "Göğüs Hastalıkları / Alerji", branchId: "gogus" } },
+                        { text: "Sürekli, mevsimsel fark yok", result: { title: "Kalıcı Alerjik Astım", desc: "Yıl boyu devam eden alerjik astım.", department: "Göğüs Hastalıkları", branchId: "gogus" } }
+                    ]
+                },
+                'nefes_alerji_bahar': {
+                    question: "Hapşırma, burun akıntısı, göz kaşıntısı eşlik ediyor mu?",
+                    options: [
+                        { text: "Evet, tüm alerjik belirtilerim var", result: { title: "Mevsimsel Alerjik Rinit + Astım", desc: "Pollen alerjisi. Alerji testi önerilir.", department: "Göğüs Hastalıkları / KBB / Alerji", branchId: "gogus" } },
+                        { text: "Sadece nefes darlığım var", result: { title: "Alerjik Astım", desc: "Pollen kaynaklı astım.", department: "Göğüs Hastalıkları", branchId: "gogus" } }
+                    ]
+                },
+                'nefes_alerji_toz': {
+                    question: "Evinizi temizlerken veya tozlu yerdeyken mi artıyor?",
+                    options: [
+                        { text: "Evet, tozla temasla artıyor", result: { title: "Ev Tozu Alerjisi", desc: "Akarlar kaynaklı alerjik reaksiyon.", department: "Göğüs Hastalıkları / Alerji", branchId: "gogus" } },
+                        { text: "Hayır, sürekli tıkalı", result: { title: "Vazomotor Rinit / Nazal Polip", desc: "Burun içi et veya sinirsel rinit olabilir.", department: "Kulak Burun Boğaz", branchId: "kbb" } }
+                    ]
+                },
+
+                // --- DİĞERLERİ (GENİŞLETİLMİŞ) ---
+                'halsizlik': {
+                    question: "Halsizliğiniz ne zaman ve nasıl başladı?",
+                    options: [
+                        { text: "Aniden, ateşle başladı", next: 'halsizlik_atesli' },
+                        { text: "Yavaş yavaş, haftalardır artıyor", next: 'halsizlik_kronik' },
+                        { text: "Sabahları uyanınca bile yorgunum", next: 'halsizlik_sabah' },
+                        { text: "Yemek yedikten sonra uyuklama", next: 'halsizlik_yemek' }
+                    ]
+                },
+                'halsizlik_atesli': {
+                    question: "Ateş kaç derece? Başka şikayetiniz var mı?",
+                    options: [
+                        { text: "38°C üzeri, boğaz ağrım da var", result: { title: "Viral Enfeksiyon (Grip/Covid/Boğaz Enfeksiyonu)", desc: "İstirahat ve bol sıvı tüketimi önerilir. PCR testi düşünülebilir.", department: "İç Hastalıkları / Enfeksiyon", branchId: "dahiliye" } },
+                        { text: "37-38°C arası, hafif", result: { title: "Hafif Viral Enfeksiyon", desc: "Soğuk algınlığı veya hafif viral enfeksiyon olabilir.", department: "İç Hastalıkları", branchId: "dahiliye" } },
+                        { text: "Ateş yok ama vücut ağrım var", result: { title: "Yaygın Kas Ağrısı / Fibromiyalji", desc: "Stres, fiziksel zorlanma veya viral enfeksiyon başlangıcı olabilir.", department: "Fizik Tedavi / Dahiliye", branchId: "fizik_tedavi" } }
+                    ]
+                },
+                'halsizlik_kronik': {
+                    question: "Yorgunluğunuz ne sıklıkla oluyor?",
+                    options: [
+                        { text: "Her gün, hiç bitmiyor", next: 'halsizlik_kronik_sebep' },
+                        { text: "Ara sıra, haftada birkaç gün", next: 'halsizlik_kronik_diyet' },
+                        { text: "Sadece regl döneminde", result: { title: "Premenstrüel Sendrom (PMS)", desc: "Hormonal değişikliklere bağlı yorgunluk.", department: "Kadın Doğum", branchId: "kadin_dogum" } }
+                    ]
+                },
+                'halsizlik_kronik_sebep': {
+                    question: "Son zamanlarda kilo değişimi, saç dökülmesi veya üşüme hissi yaşadınız mı?",
+                    options: [
+                        { text: "Evet, kilo aldım/verdim, saç dökülüyor", result: { title: "Tiroid Bozukluğu (Hipotiroidi/Hipertiroidi)", desc: "Tiroid fonksiyon testleri (TSH, T3, T4) yapılmalı.", department: "Dahiliye / Endokrinoloji", branchId: "endokrinoloji" } },
+                        { text: "Evet, üşüyorum, saçım dökülüyor", result: { title: "Hipotiroidi / Anemi", desc: "Tiroid yetmezliği veya kansızlık olabilir.", department: "Dahiliye / Endokrinoloji", branchId: "endokrinoloji" } },
+                        { text: "Hayır", next: 'halsizlik_kronik_diyet' }
+                    ]
+                },
+                'halsizlik_kronik_diyet': {
+                    question: "Ne kadar uyuyorsunuz ve beslenmeniz nasıl?",
+                    options: [
+                        { text: "6 saatten az uyuyorum", result: { title: "Kronik Uyku Yoksunluğu", desc: "Uyku süresi artırılmalı.", department: "Dahiliye", branchId: "dahiliye" } },
+                        { text: "Düzenli yiyorum ama halsizim", result: { title: "Anemi (Kansızlık) / D Vitamini Eksikliği", desc: "Kan tahlili önerilir (Hemoglobin, Ferritin, D Vitamini).", department: "Dahiliye", branchId: "dahiliye" } },
+                        { text: "Düzensiz besleniyorum", result: { title: "Beslenme Bozukluğu / Vitamin Eksikliği", desc: "Dengeli beslenme ve multivitamin önerilir.", department: "Dahiliye / Diyetisyen", branchId: "diyetisyen" } }
+                    ]
+                },
+                'halsizlik_sabah': {
+                    question: "Uyandığınızda dinlenmiş mi yoksa yorgun mu uyanıyorsunuz?",
+                    options: [
+                        { text: "Hiç dinlenemedim, 8 saat uyumama rağmen", result: { title: "Uyku Apnesi / Kaliteli Uyku Sorunu", desc: "Uyku kaliteniz bozuluyor olabilir. Polisomnografi gerekebilir.", department: "Göğüs Hastalıkları / Nöroloji", branchId: "gogus" } },
+                        { text: "Sabahları zor uyanıyorum", result: { title: "Kronik Yorgunluk Sendromu / Depresyon", desc: "Psikolojik faktörler veya hormonal sorun olabilir.", department: "Psikiyatri / Dahiliye", branchId: "psikiyatri" } }
+                    ]
+                },
+                'halsizlik_yemek': {
+                    question: "Yemekten sonra ne kadar sonra uyuklama hissi başlıyor?",
+                    options: [
+                        { text: "Hemen, 30 dakika içinde", result: { title: "İnsülin Direnci / Diyabet Başlangıcı", desc: "Kan şekeri dalgalanmaları olabilir. Açlık kan şekeri bakılmalı.", department: "Dahiliye / Endokrinoloji", branchId: "endokrinoloji" } },
+                        { text: "1-2 saat sonra", result: { title: "Gastrit / Mide Yorgunluğu", desc: "Yemek sonrası kan akışının mideye toplanması.", department: "Dahiliye", branchId: "dahiliye" } },
+                        { text: "Tüm gün yorgunum", result: { title: "Genel Yorgunluk", desc: "Dahiliye muayenesi önerilir.", department: "Dahiliye", branchId: "dahiliye" } }
+                    ]
+                },
+
+                'bulanti': {
+                    question: "Bulantınız ne zaman oluyor?",
+                    options: [
+                        { text: "Yemek yedikten sonra", next: 'bulanti_yemek' },
+                        { text: "Sabahları, özellikle uyanınca", next: 'bulanti_sabah' },
+                        { text: "Hareket ederken (araba, otobüs)", result: { title: "Hareket Hastalığı (Kinetoz)", desc: "Yol tutması. Seyahat öncesi önlem alınabilir.", department: "KBB", branchId: "kbb" } },
+                        { text: "Belirli bir zamanı yok", next: 'bulanti_surekli' }
+                    ]
+                },
+                'bulanti_yemek': {
+                    question: "Kusma eşlik ediyor mu? Yediklerinizi mi kusuyorsunuz?",
+                    options: [
+                        { text: "Evet, durmadan kusuyorum", result: { title: "Gastroenterit / Zehirlenme", desc: "Mide-bağırsak enfeksiyonu veya gıda zehirlenmesi. Sıvı kaybına dikkat!", department: "Dahiliye / Acil", branchId: "dahiliye" } },
+                        { text: "Sadece bulantı var, kusmuyorum", next: 'bulanti_mide' }
+                    ]
+                },
+                'bulanti_mide': {
+                    question: "Ağzınıza acı su geliyor veya mide yanmanız var mı?",
+                    options: [
+                        { text: "Evet, acı su geliyor", result: { title: "Gastrit / Reflü", desc: "Mide asidi problemleri.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } },
+                        { text: "Hayır, sadece bulantı", result: { title: "Dyspepsi (Hazımsızlık)", desc: "Mide yorgunluğu.", department: "Dahiliye", branchId: "dahiliye" } }
+                    ]
+                },
+                'bulanti_sabah': {
+                    question: "Kadın mısınız? Regl gecikmeniz var mı?",
+                    options: [
+                        { text: "Evet, reglim gecikti", result: { title: "Gebelik Şüphesi", desc: "Hamilelik testi yapılmalı.", department: "Kadın Doğum", branchId: "kadin_dogum" } },
+                        { text: "Evet ama reglim normal", result: { title: "PMS / Hormonal Bulantı", desc: "Hormonal dalgalanmalara bağlı.", department: "Kadın Doğum", branchId: "kadin_dogum" } },
+                        { text: "Hayır, erkeğim", next: 'bulanti_sabah_erkek' }
+                    ]
+                },
+                'bulanti_sabah_erkek': {
+                    question: "Aşırı alkol kullanımı veya mide sorunu öyküsü var mı?",
+                    options: [
+                        { text: "Evet, alkol kullanıyorum", result: { title: "Alkole Bağlı Mide Tahrişi", desc: "Alkol kullanımı azaltılmalı.", department: "Dahiliye", branchId: "dahiliye" } },
+                        { text: "Hayır", result: { title: "Mide Sorunu / Reflü", desc: "Sabah bulantısında mide sorunları düşünülmeli.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } }
+                    ]
+                },
+                'bulanti_surekli': {
+                    question: "Baş dönmesi, denge kaybı veya baş ağrısı eşlik ediyor mu?",
+                    options: [
+                        { text: "Evet, başım dönüyor, denge sorunum var", result: { title: "Vertigo / Vestibüler Neurit", desc: "İç kulak veya denge merkezi sorunu olabilir.", department: "KBB / Nöroloji", branchId: "kbb" } },
+                        { text: "Evet, baş ağrım da var", result: { title: "Migren / Baş Ağrılı Bulantı", desc: "Nörolojik kaynaklı bulantı.", department: "Nöroloji", branchId: "noroloji" } },
+                        { text: "Hayır, sadece bulantı", result: { title: "Kronik Gastrit / Fonksiyonel Dispepsi", desc: "Mide mukozası iltihabı veya fonksiyonel bozukluk.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } }
+                    ]
+                },
+
+                // --- YENİ & GELİŞTİRİLMİŞ KATEGORİLER ---
+
+                // 1. Cilt Sorunları (Geliştirilmiş)
+                'cilt_sorunu': {
+                    question: "Cilt sorununuz nedir?",
+                    options: [
+                        { text: "Kaşıntı", next: 'cilt_kasinti' },
+                        { text: "Kızarıklık/döküntü", next: 'cilt_dokuntu' },
+                        { text: "Leke/ben değişikliği", next: 'cilt_leke' },
+                        { text: "Kuru/pullu cilt", next: 'cilt_kuruluk' }
+                    ]
+                },
+                'cilt_kasinti': {
+                    question: "Kaşıntınız nedir?",
+                    options: [
+                        { text: "Gece artıyor, bacaklarımda yoğun", result: { title: "Uyuz / Skabies", desc: "Paraziter enfeksiyon olabilir. Kaşıntıyı yayabilir.", department: "Dermatoloji", branchId: "dermatoloji" } },
+                        { text: "Vücudumun her yerinde", next: 'cilt_kasinti_alerji' },
+                        { text: "Sadece belli bölgelerde", next: 'cilt_kasinti_bolge' },
+                        { text: "Yüzümde, saç derimde", result: { title: "Seboreik Dermatit / Sedef", desc: "Yağ bezleri hastalığı veya sedef olabilir.", department: "Dermatoloji", branchId: "dermatoloji" } }
+                    ]
+                },
+                'cilt_kasinti_alerji': {
+                    question: "Kaşıntıyla kızarıklık, kabarma veya şişlik oluyor mu?",
+                    options: [
+                        { text: "Evet, kabarıklar oluşuyor", result: { title: "Ürtiker (Kurdeşen)", desc: "Alerjik reaksiyon. Neden araştırılmalı.", department: "Dermatoloji / Alerji", branchId: "dermatoloji" } },
+                        { text: "Hayır, sadece kaşıntı", result: { title: "Generalize Kaşıntı", desc: "Kansızlık, tiroid veya böbrek sorunlarına bağlı olabilir.", department: "Dermatoloji / Dahiliye", branchId: "dahiliye" } }
+                    ]
+                },
+                'cilt_kasinti_bolge': {
+                    question: "Hangi bölgelerde kaşıntı var?",
+                    options: [
+                        { text: "Koltuk altı, kasık, meme başı", result: { title: "Fungal Enfeksiyon (Mantar)", desc: "Nemli bölgelerde mantar enfeksiyonu.", department: "Dermatoloji", branchId: "dermatoloji" } },
+                        { text: "Ellerimde/ayaklarımda", result: { title: "Kontakt Dermatit / Egzama", desc: "Alerjik veya tahriş kaynaklı deri iltihabı.", department: "Dermatoloji", branchId: "dermatoloji" } },
+                        { text: "Sadece güneş gören yerlerde", result: { title: "Güneş Alerjisi / Fotodermatit", desc: "Güneş ışığına karşı duyarlılık.", department: "Dermatoloji", branchId: "dermatoloji" } }
+                    ]
+                },
+                'cilt_dokuntu': {
+                    question: "Döküntünün karakteri nedir?",
+                    options: [
+                        { text: "Kabarıklar, su toplamış", result: { title: "Kontakt Dermatit / Viral Döküntü", desc: "Alerjik reaksiyon veya viral enfeksiyon.", department: "Dermatoloji", branchId: "dermatoloji" } },
+                        { text: "Kırmızı pullu lezyonlar", result: { title: "Psoriasis (Sedef)", desc: "Otoimmun deri hastalığı.", department: "Dermatoloji", branchId: "dermatoloji" } },
+                        { text: "İri kırmızı lekeler", result: { title: "Eritema / Egzema", desc: "Deri iltihabı veya alerjik reaksiyon.", department: "Dermatoloji", branchId: "dermatoloji" } },
+                        { text: "Küçük kırmızı noktalar", result: { title: "Peteşi / Döküntülü Hastalık", desc: "Kanama odakları veya enfeksiyöz döküntü.", department: "Dermatoloji / Dahiliye", branchId: "dahiliye" } }
+                    ]
+                },
+                'cilt_leke': {
+                    question: "Leke hakkında detay verir misiniz?",
+                    options: [
+                        { text: "Var olan ben değişti (renk, boyut, şekil)", result: { title: "DİKKAT: Melanoma Şüphesi", desc: "Ben değişiklikleri CİDDİ! Dermatoloji acil!", department: "Dermatoloji", branchId: "dermatoloji", urgent: true } },
+                        { text: "Yeni çıkan ben/varoluşlu leke", result: { title: "Yeni Lezyon", desc: "Yeni çıkılan lezyon değerlendirilmeli.", department: "Dermatoloji", branchId: "dermatoloji" } },
+                        { text: "Kahverengi lekeler", result: { title: "Lentigo / Güneş Lekesi", desc: "Güneş hasarı veya yaşlanma lekeleri.", department: "Dermatoloji", branchId: "dermatoloji" } },
+                        { text: "Beyaz/kırmızı lekeler", result: { title: "Vitiligo / Diğer", desc: "Pigment kaybı veya deri hastalığı.", department: "Dermatoloji", branchId: "dermatoloji" } }
+                    ]
+                },
+                'cilt_kuruluk': {
+                    question: "Cilt kuruluğunuz nasıl?",
+                    options: [
+                        { text: "Sadece kuru, pul pul", result: { title: "Kserozis (Cilt Kuruluğu)", desc: "Nemlendirici kullanımı önerilir.", department: "Dermatoloji", branchId: "dermatoloji" } },
+                        { text: "Çatlı, kanayan", result: { title: "Ağır Kserozis / Egzama", desc: "Cilt bariyeri bozulmuş. Tedavi gerekli.", department: "Dermatoloji", branchId: "dermatoloji" } },
+                        { text: "Kaşıntılı da", result: { title: "Atritik Dermatit", desc: "Yaşlılık cilt kuruluğu.", department: "Dermatoloji", branchId: "dermatoloji" } }
+                    ]
+                },
+                // 2. Çarpıntı (Geliştirilmiş)
+                'carpinti': {
+                    question: "Çarpıntınız nasıl oluyor ve ne zaman?",
+                    options: [
+                        { text: "Aniden başlıyor, kalbim hızla/carpıyor", next: 'carpinti_aniden' },
+                        { text: "Yürürken, merdiven çıkar eforla oluyor", next: 'carpinti_efor' },
+                        { text: "Dinlenirken de oluyor, sürekli", next: 'carpinti_surekli' },
+                        { text: "Gece yatınca oluyor", next: 'carpinti_gece' }
+                    ]
+                },
+                'carpinti_aniden': {
+                    question: "Bu ani çarpıntıya eşlik eden başka belirti var mı?",
+                    options: [
+                        { text: "Göğüs ağrısı/sıkışma, terleme, nefes darlığı", result: { title: "Aritmi / Kalp Ritim Bozukluğu", desc: "ACİL! EKG çekilmeli, kardiyoloji acil!", department: "Kardiyoloji / ACİL", branchId: "kardiyoloji", urgent: true } },
+                        { text: "Bayılma hissi, fenalık, gözlerim kararıyor", result: { title: "Senkop Riski / Aritmi", desc: "Bayılma riski var. Kardiyoloji acil değerlendirme!", department: "Kardiyoloji", branchId: "kardiyoloji", urgent: true } },
+                        { text: "Sadece kalp hızlı atıyor", next: 'carpinti_sure' }
+                    ]
+                },
+                'carpinti_sure': {
+                    question: "Çarpıntınız ne kadar sürüyor?",
+                    options: [
+                        { text: "Birkaç saniye/dakika, kendiliğinden geçiyor", result: { title: "Ekstrasistol / Ekstra Vuru", desc: "Kalpten gelen ekstra vuruşlar. Genellikle benign.", department: "Kardiyoloji", branchId: "kardiyoloji" } },
+                        { text: "Saatlerce sürüyor", result: { title: "Supraventriküler Taşikardi", desc: "Kalp ritim bozukluğu. EKG gerekli.", department: "Kardiyoloji", branchId: "kardiyoloji" } },
+                        { text: "Geçmiyor, sürekli", result: { title: "Atriyal Fibrilasyon / Kalp Yetmezliği", desc: "Kalp ritim bozukluğu olabilir. Acil değerlendirme!", department: "Kardiyoloji", branchId: "kardiyoloji", urgent: true } }
+                    ]
+                },
+                'carpinti_efor': {
+                    question: "Eforla çarpıntıya ne eşlik ediyor?",
+                    options: [
+                        { text: "Nefes darlığı da oluyor", result: { title: "Kalp Yetmezliği / Kapak Hastalığı", desc: "Kalp yüksebilmesi veya ekokardiyografi gerekli.", department: "Kardiyoloji", branchId: "kardiyoloji" } },
+                        { text: "Göğüs ağrısı oluyor", result: { title: "Koroner Arter Hastalığı / Anjina", desc: "Kalp damarları tıkalı olabilir. Efor testi gerekli.", department: "Kardiyoloji", branchId: "kardiyoloji" } },
+                        { text: "Sadece kondisyon eksikliği gibi", result: { title: "Kondisyon Eksikliği / Anemi", desc: "Sporla artırılabilir veya kansızlık araştırılmalı.", department: "Kardiyoloji / Dahiliye", branchId: "dahiliye" } }
+                    ]
+                },
+                'carpinti_surekli': {
+                    question: "Sürekli çarpıntınız varsa, başka belirtiniz var mı?",
+                    options: [
+                        { text: "Kilo kaybı, titreme, sinirlilik de var", result: { title: "Hipertiroidi (Tiroid Hiperaktivitesi)", desc: "Tiroid bezinin fazla çalışması. TSH testi gerekli.", department: "Endokrinoloji", branchId: "endokrinoloji" } },
+                        { text: "Halsizlik, solukluk var", result: { title: "Anemi (Kansızlık)", desc: "Hemoglobin eksikliği. Kan tahlili gerekli.", department: "Dahiliye", branchId: "dahiliye" } },
+                        { text: "Hiçbiri yok", result: { title: "Fonksiyonel Çarpıntı / Anksiyete", desc: "Stres veya anksiyete kaynaklı olabilir.", department: "Kardiyoloji / Psikiyatri", branchId: "kardiyoloji" } }
+                    ]
+                },
+                'carpinti_gece': {
+                    question: "Gece yatınca çarpıntı oluyor mu?",
+                    options: [
+                        { text: "Evet, sol tarafa yatınca oluyor", result: { title: "Mitral Valve Prolapsu / Kalp Sorunu", desc: "Kalp kapakçığı sorunu olabilir. Eko gerekli.", department: "Kardiyoloji", branchId: "kardiyoloji" } },
+                        { text: "Yastık yükseltmek zorundayım", result: { title: "Kalp Yetmezliği Belirtisi", desc: "Gece nefes darlığı ve çarpıntı kalp yetmezliğini düşündürür.", department: "Kardiyoloji", branchId: "kardiyoloji", urgent: true } },
+                        { text: "Sadece uyku öncesi stres", result: { title: "Stres / Anksiyete", desc: "Gece yatarken artan çarpıntı stres kaynaklı olabilir.", department: "Psikiyatri", branchId: "psikiyatri" } }
+                    ]
+                },
+
+                // 3. İdrar Yanması (Geliştirilmiş)
+                'idrar_yanmasi': {
+                    question: "İdrar şikayetiniz nedir?",
+                    options: [
+                        { text: "İdrar yaparken yanma/batma", next: 'idrar_yanma_detay' },
+                        { text: "Sık sık tuvalete gidiyorum", next: 'idrar_siklik' },
+                        { text: "İdrar yapamıyorum/tıkanıklık", result: { title: "Üriner Retansiyon", desc: "ACİL! Mesane boşalamıyor sorun ciddi!", department: "Üroloji / ACİL", branchId: "uroloji", urgent: true } },
+                        { text: "İdrarımda kan var", result: { title: "Hematuri (İdrarda Kan)", desc: "CİDDİ! Üroloji acil değerlendirmesi gerekli.", department: "Üroloji", branchId: "uroloji", urgent: true } }
+                    ]
+                },
+                'idrar_yanma_detay': {
+                    question: "Yanmaya başka belirti eşlik ediyor mu?",
+                    options: [
+                        { text: "Yüksek ateş, titremem de var", result: { title: "Piyelonefrit (Böbrek Enfeksiyonu)", desc: "Böbreklere yayılmış enfeksiyon. ACİL!", department: "Üroloji / Enfeksiyon", branchId: "uroloji", urgent: true } },
+                        { text: "Bel/böğür ağrım var", result: { title: "Böbrek Taşı / Üriner Enfeksiyon", desc: "Taş veya enfeksiyon olabilir.", department: "Üroloji", branchId: "uroloji" } },
+                        { text: "Sadece idrar yaparken yanıyor", next: 'idrar_yanma_cinsiyet' }
+                    ]
+                },
+                'idrar_yanma_cinsiyet': {
+                    question: "Cinsiyetiniz ve akıntı var mı?",
+                    options: [
+                        { text: "Kadınım, akıntı yok", result: { title: "Sistit (Mesane Enfeksiyonu)", desc: "Kadınlarda en yaygın alt idrar yolu enfeksiyonu.", department: "Üroloji", branchId: "uroloji" } },
+                        { text: "Kadınım, akıntı var", result: { title: "Vajinit / Üretrit", desc: "Vajinal veya idrar yolu enfeksiyonu.", department: "Kadın Doğum / Üroloji", branchId: "kadin_dogum" } },
+                        { text: "Erkeğim, akıntı var", result: { title: "Üretrit / Cinsel Yolla Bulaşan Enfeksiyon", desc: "Cinsel yolla bulaşan enfeksiyon olabilir.", department: "Üroloji", branchId: "uroloji" } },
+                        { text: "Erkeğim, akıntı yok", result: { title: "Prostatit / Üretrit", desc: "Prostat iltihabı veya idrar yolu enfeksiyonu.", department: "Üroloji", branchId: "uroloji" } }
+                    ]
+                },
+                'idrar_siklik': {
+                    question: "Sık idrara çıkma nasıl oluyor?",
+                    options: [
+                        { text: "Gündüz ve gece sürekli", next: 'idrar_siklik_gece' },
+                        { text: "Ani sıkışma hissi, tutamıyorum", result: { title: "Overaktif Mesane (OAB)", desc: "Mesane kası aşırı çalışıyor.", department: "Üroloji", branchId: "uroloji" } },
+                        { text: "Sadece gündüz", result: { title: "Polidipsi / Diyabet Şüphesi", desc: "Şeker hastalığı veya çok su içme olabilir.", department: "Dahiliye / Endokrinoloji", branchId: "dahiliye" } }
+                    ]
+                },
+                'idrar_siklik_gece': {
+                    question: "Gece uyurken tuvalete kalkıyor musunuz?",
+                    options: [
+                        { text: "Evet, 2+ kez kalkıyorum", result: { title: "Noktüri / BPH / Diyabet", desc: "Prostat büyümesi, diyabet veya kalp yetmezliği olabilir.", department: "Üroloji / Dahiliye", branchId: "uroloji" } },
+                        { text: "Hayır, gündüz sıkışma", result: { title: "Overaktif Mesane / Anksiyete", desc: "Mesane sorunu veya stres kaynaklı.", department: "Üroloji / Psikiyatri", branchId: "uroloji" } }
+                    ]
+                },
+
+                // 4. Eklem Ağrısı (Geliştirilmiş)
+                'eklem_agrisi': {
+                    question: "Ağrı nasıl ve nerede?",
+                    options: [
+                        { text: "Tek bir eklemde (Diz, omuz, bilek vs.)", next: 'eklem_tek' },
+                        { text: "Birden fazla eklemde, simetrik", next: 'eklem_coklu' },
+                        { text: "Kaslarımda, yumuşak dokuda", next: 'eklem_kas' }
+                    ]
+                },
+                'eklem_tek': {
+                    question: "Tek eklem ağrısının karakteri nedir?",
+                    options: [
+                        { text: "Kırmızı, şiş, çok sıcak ve hareket ettiremiyorum", result: { title: "Septik Artrit (Eklem İltihabı)", desc: "ACİL! Enfeksiyöz eklem iltihabı. Acil tedavi!", department: "Ortopedi / Romatoloji", branchId: "ortopedi", urgent: true } },
+                        { text: "Ani, şiddetli, gece oluyor", result: { title: "Gut Atağı", desc: "Ürik asit kristalleri. Diyet ve ilaç tedavisi.", department: "Romatoloji", branchId: "romatoloji" } },
+                        { text: "Hareketle artıyor, dinlenince geçiyor", next: 'eklem_tek_travma' }
+                    ]
+                },
+                'eklem_tek_travma': {
+                    question: "Daha önce o eklemi burktunuz/darbe aldınız mı?",
+                    options: [
+                        { text: "Evet, geçmişte travma oldu", result: { title: "Menisküs / Ligament / Kıkırdak Hasarı", desc: "Eski travmaya bağlı dejenerasyon. MR gerekli.", department: "Ortopedi", branchId: "ortopedi" } },
+                        { text: "Hayır", result: { title: "Kireçlenme (Osteoartrit)", desc: "Eklem kireçlenmesi. Fizik tedavi ve ağrı kesici.", department: "Ortopedi / FTR", branchId: "fizik_tedavi" } }
+                    ]
+                },
+                'eklem_coklu': {
+                    question: "Çoklu eklem ağrısında sabah tutukluk var mı?",
+                    options: [
+                        { text: "Evet, sabahları 30+ dakika tutuk", result: { title: "Romatoid Artrit", desc: "İltihaplı romatizma. Kan testleri (RF, CRP) gerekli.", department: "Romatoloji", branchId: "romatoloji" } },
+                        { text: "Evet ama 30 dk'dan az", result: { title: "Spondiloartropati / Psoriatik Artrit", desc: "Seronegatif romatizma olabilir.", department: "Romatoloji", branchId: "romatoloji" } },
+                        { text: "Hayır, tutukluk yok", result: { title: "Polimiyalji / Fibromiyalji", desc: "Yumuşak doku romatizması veya yaygın kas ağrı.", department: "Romatoloji / FTR", branchId: "fizik_tedavi" } }
+                    ]
+                },
+                'eklem_kas': {
+                    question: "Kas ağrınız nasıl?",
+                    options: [
+                        { text: "Yorgunluk, stres, uykusuzluk sonrası", result: { title: "Fibromiyalji / Kronik Yorgunluk", desc: "Yumuşak doku romatizması. Stres yönetimi önemli.", department: "Fizik Tedavi / Psikiyatri", branchId: "fizik_tedavi" } },
+                        { text: "Efor sonrası, laktik asit birikimi", result: { title: "Efor Sonrası Kas Ağrısı", desc: "Normal kas yorgunluğu. Dinlenin.", department: "Fizik Tedavi", branchId: "fizik_tedavi" } },
+                        { text: "İlaç kullanıyorum (statin vb)", result: { title: "İlağa Bağlı Kas Ağrısı", desc: "Kullandığınız ilaçların yan etkisi olabilir.", department: "Dahiliye", branchId: "dahiliye" } }
+                    ]
+                },
+
+                // 5. Göz Ağrısı (Geliştirilmiş)
+                'goz_agrisi': {
+                    question: "Göz ağrınız nasıl ve ne zaman?",
+                    options: [
+                        { text: "Görme kaybı, bulanık görme var", result: { title: "Göz Tansiyonu / Akut Durum", desc: "Görme kaybı ACİL! Derhal göz hekimi!", department: "Göz Hastalıkları", branchId: "goz", urgent: true } },
+                        { text: "Işığa hassasiyet var", next: 'goz_isik' },
+                        { text: "Hareket ederken artıyor", next: 'goz_hareket' },
+                        { text: "Yorgunluk, batma hissi", next: 'goz_batma' }
+                    ]
+                },
+                'goz_isik': {
+                    question: "Baş ağrınız da var mı?",
+                    options: [
+                        { text: "Evet, başım da ağrıyor", result: { title: "Migren / Baş Ağrılı Göz Ağrısı", desc: "Migren atağı olabilir.", department: "Nöroloji / Göz", branchId: "noroloji" } },
+                        { text: "Hayır, sadece gözlerim", result: { title: "Keratokonjunktivit / Göz Enfeksiyonu", desc: "Kornea veya konjonktiva iltihabı.", department: "Göz Hastalıkları", branchId: "goz" } }
+                    ]
+                },
+                'goz_hareket': {
+                    question: "Gözünüzü hareket ettirince mi ağrıyor?",
+                    options: [
+                        { text: "Evet, bakınca ağrıyor", result: { title: "Orbit / Göz Çevresi İltihabı", desc: "Göz çevresi dokularda iltihap.", department: "Göz Hastalıkları", branchId: "goz" } },
+                        { text: "Sinüzit gibi, arkadan ağrıyor", result: { title: "Sinüzit Bağlı Göz Ağrısı", desc: "Sinüzit basısı yapıyor olabilir.", department: "KBB", branchId: "kbb" } }
+                    ]
+                },
+                'goz_batma': {
+                    question: "Çapaklanma, kızarıklık veya sulanma var mı?",
+                    options: [
+                        { text: "Evet, çapaklanıyor, kırmızı", result: { title: "Konjonktivit", desc: "Göz nezlesi/mikrobu. Bulaşıcıdır.", department: "Göz Hastalıkları", branchId: "goz" } },
+                        { text: "Evet, çok sulanıyorum", result: { title: "Göz Kuruluğu / Alerjik Konjonktivit", desc: "Göz kuruluğu veya alerji.", department: "Göz Hastalıkları", branchId: "goz" } },
+                        { text: "Hayır, sadece kum gibi batma", result: { title: "Göz Yorgunluğu / Kserozis", desc: "Ekran kullanımı veya göz kuruluğu.", department: "Göz Hastalıkları", branchId: "goz" } }
+                    ]
+                },
+
+                // 6. Diş Ağrısı (Geliştirilmiş)
+                'dis_agrisi': {
+                    question: "Diş ağrınız nasıl?",
+                    options: [
+                        { text: "Yüzümde şişlik var", result: { title: "Diş Apsesi / Selülit", desc: "Enfeksiyon yayılmış olabilir. ACİL diş hekimi!", department: "Diş Hekimliği", branchId: "dis", urgent: true } },
+                        { text: "Gece zonkluyor, dayanılması zor", next: 'dis_zonklama' },
+                        { text: "Yerken, sıcak/soğukken oluyor", next: 'dis_hassasiyet' },
+                        { text: "Sadece diş etim ağrıyor", result: { title: "Diş Eti Enfeksiyonu / Gingivit", desc: "Diş eti iltihabı. Diş temizliği gerekli.", department: "Diş Hekimliği", branchId: "dis" } }
+                    ]
+                },
+                'dis_zonklama': {
+                    question: "Ağrı sizi uykudan uyandırıyor mu?",
+                    options: [
+                        { text: "Evet, gece uyuyamıyorum", result: { title: "Akut Pulpitis", desc: "Diş siniri iltihabı. Kanal tedavisi gerekebilir.", department: "Diş Hekimliği", branchId: "dis", urgent: true } },
+                        { text: "Hayır, ama gündüz zonkluyor", result: { title: "Pulpitis / Apse Başlangıcı", desc: "Diş siniri sorunlu. Muayene gerekli.", department: "Diş Hekimliği", branchId: "dis" } }
+                    ]
+                },
+                'dis_hassasiyet': {
+                    question: "Soğuk veya sıcak bir şey yiyince ne oluyor?",
+                    options: [
+                        { text: "Sıcak/soğuk sızlıyor ama geçiyor", result: { title: "Diş Hassasiyeti / Çürük", desc: "Mine hassasiyeti veya çürük başlangıcı.", department: "Diş Hekimliği", branchId: "dis" } },
+                        { text: "Sıcakla geçmiyor, kötüleşiyor", result: { title: "İleri Pulpitis", desc: "Sinir iltihabı ileri. Kanal tedavisi gerekli.", department: "Diş Hekimliği", branchId: "dis" } },
+                        { text: "Sadece tat alma bitti", result: { title: "Sinir Hasarı / Eski Dolgu", desc: "Sinir ölümü veya dolgu sorunu olabilir.", department: "Diş Hekimliği", branchId: "dis" } }
+                    ]
+                },
+
+                // 7. Boğaz Ağrısı (Geliştirilmiş)
+                'bogaz_agrisi': {
+                    question: "Boğaz ağrınız nasıl?",
+                    options: [
+                        { text: "Yutkunurken zorlanıyorum", next: 'bogaz_yutkunma' },
+                        { text: "Boğazım gıcık gıcık oluyor", next: 'bogaz_gicik' },
+                        { text: "Sesim kısıldı / Kayboldu", result: { title: "Larenjit / Ses Teli İltihabı", desc: "Ses telleri iltihabı. Konuşma dinlenmesi gerekli.", department: "KBB", branchId: "kbb" } }
+                    ]
+                },
+                'bogaz_yutkunma': {
+                    question: "Ağrının şiddeti ve ateş durumu nedir?",
+                    options: [
+                        { text: "Ateşim 38°C üzeri, hiç yutamiyorum", result: { title: "Akut Tonsillit / Farenjit", desc: "Bademcik veya boğaz iltihabı. Antibiyotik olabilir.", department: "KBB / Dahiliye", branchId: "kbb" } },
+                        { text: "Hafif ateş var", result: { title: "Viral Farenjit", desc: "Soğuk algınlığı. İstirahat önerilir.", department: "KBB", branchId: "kbb" } },
+                        { text: "Ateş yok ama ağrı çok", result: { title: "Bakteriyel Farenjit / Streptokok", desc: "Boğaz kültürü önerilir.", department: "KBB", branchId: "kbb" } }
+                    ]
+                },
+                'bogaz_gicik': {
+                    question: "Öksürük var mı?",
+                    options: [
+                        { text: "Evet, kuru öksürüğüm var", result: { title: "Üst Solunum Yolu Enfeksiyonu", desc: "Soğuk algınlığı başlangıcı.", department: "KBB / Dahiliye", branchId: "kbb" } },
+                        { text: "Evet, balgam geliyor", result: { title: "Bronşit / Farenjit", desc: "Alt solunum yolu enfeksiyonu olabilir.", department: "Göğüs Hastalıkları / KBB", branchId: "gogus" } },
+                        { text: "Hayır, sadece gıcık", result: { title: "Alerjik Farenjit / Reflü", desc: "Alerji veya mide asidi boğazı tahriş ediyor.", department: "KBB / Gastroenteroloji", branchId: "kbb" } }
+                    ]
+                },
+
+                // 8. Kulak Ağrısı (Geliştirilmiş)
+                'kulak_agrisi': {
+                    question: "Kulak ağrınız nasıl?",
+                    options: [
+                        { text: "Çok şiddetli, dayanamıyorum", result: { title: "Akut Otitis Media / Dış Kulak İltihabı", desc: "ACİL! Şiddetli kulak iltihabı olabilir.", department: "KBB", branchId: "kbb", urgent: true } },
+                        { text: "Kulaktan akıntı geliyor", next: 'kulak_akinti' },
+                        { text: "İşitmem azaldı", next: 'kulak_isitme' },
+                        { text: "Çenemi hareket ettirince oluyor", result: { title: "Temporomandibular Eklem (Çene Eklemi)", desc: "Çene eklemi sorunları. KBB ve diş hekimi.", department: "KBB / Diş", branchId: "kbb" } }
+                    ]
+                },
+                'kulak_akinti': {
+                    question: "Akıntı nasıl ve kokusu var mı?",
+                    options: [
+                        { text: "Kötü kokulu, irin akıyor", result: { title: "Kronik Otitis Media / Kolesteatom", desc: "Ciddi kulak sorunu. Cerrahi gerekebilir.", department: "KBB", branchId: "kbb" } },
+                        { text: "Berrak akıntı", result: { title: "Dış Kulak Yolu Enfeksiyonu / Zar Delinmesi", desc: "Kulak zarı delinmiş veya iltihap.", department: "KBB", branchId: "kbb" } }
+                    ]
+                },
+                'kulak_isitme': {
+                    question: "İşitme kaybı nasıl oldu?",
+                    options: [
+                        { text: "Aniden oldu", result: { title: "Ani İşitme Kaybı", desc: "ACİL! 72 saat içinde tedavi edilmezse kalıcı olabilir.", department: "KBB", branchId: "kbb", urgent: true } },
+                        { text: "Yavaş yavaş azaldı", result: { title: "İleri İşitme Kaybı / Kulak Kirimi", desc: "Kulak kiri veya sinirsel işitme kaybı. Odyometri gerekli.", department: "KBB", branchId: "kbb" } }
+                    ]
+                },
+
+                // 9. Burun Tıkanıklığı (Geliştirilmiş)
+                'burun_tikanikligi': {
+                    question: "Burun tıkanıklığınız nasıl?",
+                    options: [
+                        { text: "Tek taraflı, sürekli", next: 'burun_tek' },
+                        { text: "İki taraf da tıkalı", next: 'burun_akinti' },
+                        { text: "Alerjik, hapşıyorum", result: { title: "Alerjik Rinit", desc: "Alerjik nezle. Alerji testi önerilir.", department: "KBB / Alerji", branchId: "kbb" } }
+                    ]
+                },
+                'burun_tek': {
+                    question: "Tek taraflı tıkanıklıkta akıntı veya kanama var mı?",
+                    options: [
+                        { text: "Kanlı akıntı geliyor", result: { title: "Nazal Polip / Allerjik Rinit / Tümör", desc: "ACİL! Burun içi patoloji araştırılmalı.", department: "KBB", branchId: "kbb", urgent: true } },
+                        { text: "Sarı/yeşil akıntı", result: { title: "Kronik Sinüzit", desc: "Tek taraflı sinüzit veya polip.", department: "KBB", branchId: "kbb" } },
+                        { text: "Sadece tıkanıklık", result: { title: "Konka Hipertrofisi / Deviasyon", desc: "Burun eti büyümesi veya kemik eğriliği.", department: "KBB", branchId: "kbb" } }
+                    ]
+                },
+                'burun_akinti': {
+                    question: "Akıntının rengi ve karakteri nedir?",
+                    options: [
+                        { text: "Sarı/yeşil, koyu", result: { title: "Sinüzit / Bakteriyel Rinit", desc: "Bakteriyel enfeksiyon. Antibiyotik düşünülebilir.", department: "KBB", branchId: "kbb" } },
+                        { text: "Şeffaf, sulu", result: { title: "Viral Rinit / Alerjik Rinit", desc: "Soğuk algınlığı veya alerji.", department: "KBB", branchId: "kbb" } },
+                        { text: "Akıntı yok, sadece şişkinlik", result: { title: "Vazomotor Rinit", desc: "Sinirsel kaynaklı burun şişkinliği.", department: "KBB", branchId: "kbb" } }
+                    ]
+                },
+                'kabizlik': {
+                    question: "Kabızlık süresi ve eşlik eden durum nedir?",
+                    options: [
+                        { text: "Birkaç gündür", result: { title: "Geçici Kabızlık", desc: "Beslenme değişikliği veya az su içme. Lifli gıda önerilir.", department: "Beslenme / Diyetisyen", branchId: "diyetisyen" } },
+                        { text: "Haftalardır, lavman da işe yaramıyor", result: { title: "İnatçı Kabızlık / Mega Kolon", desc: "Ciddi bağırsak sorunu. Gastroenteroloji gerekli.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } },
+                        { text: "Yıllardır ara ara", result: { title: "İrritabl Bağırsak (Kabızlık Tipi)", desc: "Kronik bağırsak fonksiyon bozukluğu.", department: "Gastroenteroloji", branchId: "gastroenteroloji" } }
+                    ]
+                }
+            }
+        },
+        en: {
+            greeting: (name) => `Hello ${name}, what is your complaint?`,
+            guestName: "Guest",
+            letsKnowYou: "Let's get to know you",
+            genderLabel: "Gender:",
+            ageLabel: "Age Range:",
+            startBtn: "Start Analysis",
+            loading: "Loading symptoms...",
+            genderOptions: { kadin: "Female", erkek: "Male", diger: "Other" },
+            categories: [
+                {
+                    title: "General Pain",
+                    icon: "fa-procedures",
+                    items: [
+                        { id: "bas_agrisi", label: "Headache" },
+                        { id: "eklem_agrisi", label: "Joint/Bone Pain" },
+                        { id: "goz_agrisi", label: "Eye Pain" },
+                        { id: "dis_agrisi", label: "Toothache" }
+                    ]
+                },
+                {
+                    title: "Respiratory & ENT",
+                    icon: "fa-lungs",
+                    items: [
+                        { id: "nefes_darligi", label: "Shortness of Breath" },
+                        { id: "bogaz_agrisi", label: "Sore Throat" },
+                        { id: "kulak_agrisi", label: "Earache" },
+                        { id: "burun_tikanikligi", label: "Nasal Congestion" }
+                    ]
+                },
+                {
+                    title: "Digestion & Abdomen",
+                    icon: "fa-stomach",
+                    customIcon: '<i class="fas fa-utensils"></i>',
+                    items: [
+                        { id: "karin_agrisi", label: "Abdominal Pain" },
+                        { id: "bulanti", label: "Nausea / Vomiting" },
+                        { id: "kabizlik", label: "Constipation / Diarrhea" }
+                    ]
+                },
+                {
+                    title: "Other Complaints",
+                    icon: "fa-notes-medical",
+                    items: [
+                        { id: "cilt_sorunu", label: "Skin Problems" },
+                        { id: "halsizlik", label: "Excessive Fatigue" },
+                        { id: "carpinti", label: "Heart Palpitations" },
+                        { id: "idrar_yanmasi", label: "Burning Urination" }
+                    ]
+                }
+            ],
+            symptomData: {
+                // --- HEADACHE ---
+                'bas_agrisi': {
+                    question: "Where exactly is your headache concentrated?",
+                    options: [
+                        { text: "Unilateral (Right or Left side only)", next: 'bas_tek_taraflı' },
+                        { text: "All over my head, like a band squeezing", next: 'bas_gerilim' },
+                        { text: "Intense pressure around eyes and forehead", next: 'bas_sinüzit' },
+                        { text: "Spreading upwards from the nape of neck", next: 'bas_ense' }
+                    ]
+                },
+                'bas_tek_taraflı': {
+                    question: "What is the character of your pain?",
+                    options: [
+                        { text: "Throbbing (like heartbeat)", next: 'bas_migren_sure' },
+                        { text: "Stabbing/boring", next: 'bas_kume' },
+                        { text: "Burning/aching", next: 'bas_trigeminal' }
+                    ]
+                },
+                'bas_migren_sure': {
+                    question: "How long has this pain attack been going on?",
+                    options: [
+                        { text: "4-72 hours", next: 'bas_migren_aura' },
+                        { text: "More than 3 days", result: { title: "Chronic Migraine / Status Migranosus", desc: "Migraine attacks lasting more than 3 days require urgent treatment.", department: "Neurology", branchId: "noroloji", urgent: true } },
+                        { text: "Less than 4 hours, just started", next: 'bas_migren_baslangic' }
+                    ]
+                },
+                'bas_migren_baslangic': {
+                    question: "Did the pain start suddenly or gradually increase?",
+                    options: [
+                        { text: "Suddenly, very severe", result: { title: "Bleeding Risk (SAH Suspicion)", desc: "Sudden severe headache can be a sign of brain bleeding!", department: "EMERGENCY / Neurology", branchId: "acil", urgent: true } },
+                        { text: "Gradually increased", next: 'bas_migren_aura' }
+                    ]
+                },
+                'bas_migren_aura': {
+                    question: "Do you experience flashing lights, blurred vision, numbness, or smell sensitivity before the pain starts?",
+                    options: [
+                        { text: "Yes, I have aura symptoms", next: 'bas_migren_tetikleyici' },
+                        { text: "No, the pain starts directly", next: 'bas_migren_tetikleyici' }
+                    ]
+                },
+                'bas_migren_tetikleyici': {
+                    question: "Is there something that triggers the pain? (Stress, hunger, certain foods, hormonal changes)",
+                    options: [
+                        { text: "Yes, symptoms start when triggered", next: 'bas_migren_bulantı' },
+                        { text: "No, specific cause", next: 'bas_migren_bulantı' }
+                    ]
+                },
+                'bas_migren_bulantı': {
+                    question: "Is there nausea, vomiting, or sensitivity to light/sound accompanying the headache?",
+                    options: [
+                        { text: "Yes, all of them", result: { title: "Migraine Attack", desc: "Your symptoms match classical migraine criteria. Rest in a dark and quiet room is recommended.", department: "Neurology", branchId: "noroloji" } },
+                        { text: "Only nausea", result: { title: "Probable Migraine Headache", desc: "Migraine-like headache. Neurological evaluation is recommended.", department: "Neurology", branchId: "noroloji" } },
+                        { text: "No, only pain", result: { title: "Vascular Headache", desc: "Could be headache due to vessel dilation.", department: "Neurology", branchId: "noroloji" } }
+                    ]
+                },
+                'bas_trigeminal': {
+                    question: "Where is the pain and how often does it occur?",
+                    options: [
+                        { text: "Half of face, electric shock-like, short duration", result: { title: "Trigeminal Neuralgia", desc: "Pain in the facial nerve. Neurological treatment required.", department: "Neurology", branchId: "noroloji" } },
+                        { text: "Behind eye, lasts several days", result: { title: "Cluster Headache", desc: "Severe, recurring headache type.", department: "Neurology", branchId: "noroloji" } }
+                    ]
+                },
+                'bas_gerilim': {
+                    question: "When and how does the pain increase?",
+                    options: [
+                        { text: "Later in the day, evenings", next: 'bas_gerilim_stres' },
+                        { text: "More severe in mornings", next: 'bas_gerilim_sabah' },
+                        { text: "Improves on weekends, worse on workdays", result: { title: "Tension Type Headache", desc: "Headache related to work stress. Relaxation techniques may help.", department: "Neurology", branchId: "noroloji" } }
+                    ]
+                },
+                'bas_gerilim_stres': {
+                    question: "Is there something that increases the pain? (Computer use, stress, coffee)",
+                    options: [
+                        { text: "Yes, increases with stress/screen use", next: 'bas_gerilim_kas' },
+                        { text: "No, stays the same level", next: 'bas_gerilim_sure' }
+                    ]
+                },
+                'bas_gerilim_kas': {
+                    question: "Do you feel tension or spasm in your neck and shoulders?",
+                    options: [
+                        { text: "Yes, muscles are very tense", result: { title: "Tension Headache + Myofascial Pain", desc: "Most common pain due to stress and neck muscle tension. Physical therapy and relaxation exercises recommended.", department: "Neurology / Physical Therapy", branchId: "fizik_tedavi" } },
+                        { text: "No, only headache", result: { title: "Tension Type Headache", desc: "Headache due to stress. Rest and relaxation exercises recommended.", department: "Neurology", branchId: "noroloji" } }
+                    ]
+                },
+                'bas_gerilim_sure': {
+                    question: "How long have these headaches been going on?",
+                    options: [
+                        { text: "Less than 15 days", result: { title: "Episodic Tension Headache", desc: "Short-term stress-related pain.", department: "Neurology", branchId: "noroloji" } },
+                        { text: "More than 15 days, less than 3 months", result: { title: "Frequent Tension Headache", desc: "Frequently recurring tension-type pain.", department: "Neurology", branchId: "noroloji" } },
+                        { text: "More than 3 months", result: { title: "Chronic Daily Headache", desc: "Long-term headache. Medication overuse may be possible.", department: "Neurology", branchId: "noroloji" } }
+                    ]
+                },
+                'bas_gerilim_sabah': {
+                    question: "Do you snore or experience breathing pauses while sleeping at night?",
+                    options: [
+                        { text: "Yes, I snore / breathing stops", result: { title: "Sleep Apnea Related Headache", desc: "Sleep disorder needs to be treated. Chest diseases evaluation recommended.", department: "Chest Diseases / Neurology", branchId: "gogus" } },
+                        { text: "No, I sleep normally", result: { title: "Morning Headache", desc: "Could be related to blood pressure or depression. Internal medicine evaluation recommended.", department: "Internal Medicine / Neurology", branchId: "dahiliye" } }
+                    ]
+                },
+                'bas_gerilim_uyku': {
+                    question: "Have you experienced insomnia or intense work stress recently?",
+                    options: [
+                        { text: "Yes, very busy", result: { title: "Tension Type Headache", desc: "Most common type of pain due to stress and muscle tension. Rest and relaxation exercises are recommended.", department: "Neurology", branchId: "noroloji" } },
+                        { text: "No, I am fine", result: { title: "Psychosomatic Headache", desc: "A general check-up might be beneficial.", department: "Neurology", branchId: "noroloji" } }
+                    ]
+                },
+                'bas_sinüzit': {
+                    question: "Does your pain and facial pressure increase when you lean forward?",
+                    options: [
+                        { text: "Yes, increases a lot", next: 'bas_sinüzit_surun' },
+                        { text: "No, doesn't change", next: 'bas_goz_test' }
+                    ]
+                },
+                'bas_sinüzit_surun': {
+                    question: "Do you have nasal discharge? What color is it?",
+                    options: [
+                        { text: "Yes, yellow/green discharge", next: 'bas_sinüzit_ates' },
+                        { text: "Yes, clear discharge", result: { title: "Allergic Rhinitis / Sinusitis", desc: "Facial cavity discomfort due to allergies.", department: "ENT / Allergy", branchId: "kbb" } },
+                        { text: "No, no discharge", result: { title: "Tension Type Headache", desc: "Tension pain in the facial region.", department: "Neurology", branchId: "noroloji" } }
+                    ]
+                },
+                'bas_sinüzit_ates': {
+                    question: "Is there loss of smell, mild fever, or toothache accompanying?",
+                    options: [
+                        { text: "Yes, some of these exist", result: { title: "Bacterial Sinusitis", desc: "Inflammation of facial cavities. Antibiotic treatment may be required.", department: "ENT", branchId: "kbb" } },
+                        { text: "No, none of these", result: { title: "Viral Sinusitis", desc: "Sinus inflammation due to cold. May pass on its own.", department: "ENT", branchId: "kbb" } }
+                    ]
+                },
+                'bas_goz_test': {
+                    question: "Does squinting or resting your eyes relieve the pain?",
+                    options: [
+                        { text: "Yes, goes away when I close my eyes", result: { title: "Eye Strain (Asthenopia)", desc: "Eye muscle fatigue. Eye exam recommended.", department: "Ophthalmology", branchId: "goz" } },
+                        { text: "No, doesn't help", result: { title: "Headache (Other)", desc: "Neurological evaluation recommended.", department: "Neurology", branchId: "noroloji" } }
+                    ]
+                },
+                'bas_ense': {
+                    question: "Does the pain increase with neck movements?",
+                    options: [
+                        { text: "Yes, hurts when I turn my neck", result: { title: "Cervical Disc Pathology", desc: "Could be neck flattening or hernia. MR evaluation needed.", department: "Physical Therapy / Neurology", branchId: "fizik_tedavi" } },
+                        { text: "No, not related to movement", next: 'bas_ense_tansiyon' }
+                    ]
+                },
+                'bas_ense_tansiyon': {
+                    question: "Do you have blood pressure problems? Do you know your current blood pressure?",
+                    options: [
+                        { text: "Yes, I have hypertension", result: { title: "Hypertensive Headache", desc: "High blood pressure can cause neck pain. Get your blood pressure checked.", department: "Cardiology / Internal Medicine", branchId: "kardiyoloji" } },
+                        { text: "No, I don't know", result: { title: "Blood Pressure Check Needed", desc: "Blood pressure control is important for neck pain.", department: "Cardiology / Internal Medicine", branchId: "dahiliye" } },
+                        { text: "No, my blood pressure is normal", result: { title: "Muscle Spasm Disorder / Myofascial Pain", desc: "Could be neck muscle tension.", department: "Physical Therapy", branchId: "fizik_tedavi" } }
+                    ]
+                },
+                // --- ABDOMINAL PAIN ---
+                'karin_agrisi': {
+                    question: "Where exactly is the pain concentrated in your abdomen?",
+                    options: [
+                        { text: "Lower right side (Sharp)", next: 'karin_apandisit' },
+                        { text: "Stomach area (Upper middle)", next: 'karin_mide' },
+                        { text: "All over abdomen with bloating", next: 'karin_bagirsak' },
+                        { text: "Pain radiating to back (Flank)", next: 'karin_bobrek' }
+                    ]
+                },
+                'karin_apandisit': {
+                    question: "When did the pain start and how is it progressing?",
+                    options: [
+                        { text: "Started around navel, moved to lower right", next: 'karin_apandisit_test' },
+                        { text: "Started directly in lower right", next: 'karin_apandisit_test' },
+                        { text: "Started suddenly, very severe", next: 'karin_apandisit_ani' }
+                    ]
+                },
+                'karin_apandisit_test': {
+                    question: "Does the pain in lower right side stab like a knife when you jump, cough, or lie on your left side?",
+                    options: [
+                        { text: "Yes, increases a lot, like stabbing", next: 'karin_apandisit_ates' },
+                        { text: "No, but aches constantly", next: 'karin_apandisit_iştah' }
+                    ]
+                },
+                'karin_apandisit_iştah': {
+                    question: "Has your appetite decreased and do you have constipation?",
+                    options: [
+                        { text: "Yes, I can't eat", result: { title: "Early Appendicitis", desc: "Appendicitis suspected. Urgent general surgery evaluation recommended.", department: "General Surgery", branchId: "genel_cerrahi", urgent: true } },
+                        { text: "No, my appetite is normal", result: { title: "Muscle/Bowel Strain", desc: "Monitor bowel movements.", department: "General Surgery", branchId: "genel_cerrahi" } }
+                    ]
+                },
+                'karin_apandisit_ani': {
+                    question: "Is the pain so severe that you cannot walk or stand straight?",
+                    options: [
+                        { text: "Yes, I walk bent over", result: { title: "Perforation Risk!", desc: "EMERGENCY! Appendix may have ruptured. Go to hospital immediately!", department: "EMERGENCY SERVICE", branchId: "acil", urgent: true } },
+                        { text: "No, I can walk", next: 'karin_apandisit_ates' }
+                    ]
+                },
+                'karin_apandisit_ates': {
+                    question: "Do you have nausea, vomiting, or fever?",
+                    options: [
+                        { text: "Yes, nausea/vomiting and fever", result: { title: "Acute Appendicitis", desc: "EMERGENCY! Appendix is infected. Go to hospital immediately.", department: "EMERGENCY SERVICE", branchId: "acil", urgent: true } },
+                        { text: "Only mild nausea", result: { title: "Appendicitis Suspicion", desc: "Urgent surgical evaluation required.", department: "EMERGENCY / General Surgery", branchId: "acil", urgent: true } },
+                        { text: "No, none of these", result: { title: "Chronic Appendicitis / Other", desc: "Chronic appendicitis or another condition. Examination required.", department: "General Surgery", branchId: "genel_cerrahi" } }
+                    ]
+                },
+                'karin_mide': {
+                    question: "What is the character of your pain and when does it increase?",
+                    options: [
+                        { text: "Bitter water in mouth, burning in chest", next: 'karin_mide_yemek' },
+                        { text: "Only abdominal pain", next: 'karin_mide_aclik' },
+                        { text: "Heaviness/pain while eating", next: 'karin_mide_dolu' }
+                    ]
+                },
+                'karin_mide_yemek': {
+                    question: "Do symptoms increase immediately after eating or when lying down?",
+                    options: [
+                        { text: "Starts right after eating", next: 'karin_mide_asit' },
+                        { text: "Worse when lying down", result: { title: "GERD", desc: "Stomach contents flowing back into esophagus. Sleep with elevated pillow.", department: "Gastroenterology", branchId: "gastroenteroloji" } },
+                        { text: "Both happen", result: { title: "Gastritis + Reflux", desc: "Stomach mucosa inflammation and reflux together.", department: "Gastroenterology", branchId: "gastroenteroloji" } }
+                    ]
+                },
+                'karin_mide_asit': {
+                    question: "Does food come back up to your mouth or do you taste sour water?",
+                    options: [
+                        { text: "Yes, comes back/tastes sour", result: { title: "Reflux / Gastritis", desc: "Stomach acid problems. Diet and lifestyle changes recommended.", department: "Gastroenterology", branchId: "gastroenteroloji" } },
+                        { text: "No, only pain", result: { title: "Functional Dyspepsia", desc: "Stomach function disorder.", department: "Gastroenterology", branchId: "gastroenteroloji" } }
+                    ]
+                },
+                'karin_mide_aclik': {
+                    question: "Do you feel 'gnawing' or 'burning' sensation in your stomach when hungry?",
+                    options: [
+                        { text: "Yes, goes away when I eat", next: 'karin_mide_uler_diet' },
+                        { text: "No, not related to meals", next: 'karin_mide_stres' }
+                    ]
+                },
+                'karin_mide_uler_diet': {
+                    question: "Does spicy, acidic food, or coffee trigger the pain?",
+                    options: [
+                        { text: "Yes, hurts when I eat these", result: { title: "Stomach Ulcer (Peptic Ulcer)", desc: "Ulcers in stomach mucosa. Urea breath test and endoscopy recommended.", department: "Gastroenterology", branchId: "gastroenteroloji" } },
+                        { text: "No, always hurts", result: { title: "Chronic Gastritis", desc: "Inflammation of stomach mucosa.", department: "Gastroenterology", branchId: "gastroenteroloji" } }
+                    ]
+                },
+                'karin_mide_stres': {
+                    question: "Does your abdominal pain increase with stress, anxiety, or nervousness?",
+                    options: [
+                        { text: "Yes, increases when stressed", result: { title: "Stress-Related Stomach Problem", desc: "Stress increases stomach acid. Relaxation techniques recommended.", department: "Gastroenterology", branchId: "gastroenteroloji" } },
+                        { text: "No", result: { title: "Non-Specific Dyspepsia", desc: "Indigestion or general stomach sensitivity.", department: "Internal Medicine", branchId: "dahiliye" } }
+                    ]
+                },
+                'karin_mide_dolu': {
+                    question: "Do you feel full quickly or have early satiety?",
+                    options: [
+                        { text: "Yes, full after very little food", result: { title: "Gastroparesis / Stomach Laziness", desc: "Stomach emptying slowly. Could be diabetes or neurological.", department: "Gastroenterology", branchId: "gastroenteroloji" } },
+                        { text: "No, eat normally but pain", result: { title: "Pyloric Stenosis", desc: "Narrowing at stomach exit possible.", department: "Gastroenterology", branchId: "gastroenteroloji" } }
+                    ]
+                },
+                'karin_bagirsak': {
+                    question: "What changes in your toilet habits have you noticed recently?",
+                    options: [
+                        { text: "Diarrhea, watery stool", next: 'karin_bagirsak_ishal' },
+                        { text: "Constipation, difficult bowel movement", next: 'karin_bagirsak_kabizlik' },
+                        { text: "Both happening in sequence", result: { title: "Irritable Bowel Syndrome (Mixed Type)", desc: "Bowel movement disorder. Increases with stress.", department: "Gastroenterology", branchId: "gastroenteroloji" } },
+                        { text: "No change, just bloating", result: { title: "Functional Bloating", desc: "Gas accumulation due to food eaten.", department: "Internal Medicine", branchId: "dahiliye" } }
+                    ]
+                },
+                'karin_bagirsak_ishal': {
+                    question: "Is diarrhea accompanied by fever, blood, or nausea?",
+                    options: [
+                        { text: "Yes, also have fever", result: { title: "Bacterial Gastroenteritis", desc: "Intestinal infection. Stool sample required.", department: "Gastroenterology / Infection", branchId: "dahiliye" } },
+                        { text: "Yes, hidden blood", result: { title: "Infectious Colitis / Inflammatory Bowel", desc: "ACİL evaluation required.", department: "Gastroenterology", branchId: "gastroenteroloji" } },
+                        { text: "No, only diarrhea", result: { title: "Acute Diarrhea", desc: "Food poisoning or viral infection possible.", department: "Internal Medicine", branchId: "dahiliye" } }
+                    ]
+                },
+                'karin_bagirsak_kabizlik': {
+                    question: "How long has the constipation been going on?",
+                    options: [
+                        { text: "A few days", result: { title: "Temporary Constipation", desc: "Could be due to diet change or low water intake.", department: "Nutrition / Diet", branchId: "diyetisyen" } },
+                        { text: "Weeks / Months", result: { title: "Chronic Constipation", desc: "Bowel laziness or another issue should be investigated.", department: "Gastroenterology", branchId: "gastroenteroloji" } },
+                        { text: "Years, intermittent", result: { title: "Irritable Bowel (Constipation Predominant)", desc: "Chronic bowel problems possible.", department: "Gastroenterology", branchId: "gastroenteroloji" } }
+                    ]
+                },
+                'karin_bobrek': {
+                    question: "What is the character of your pain?",
+                    options: [
+                        { text: "Stabbing, very severe", next: 'karin_bobrek_tas' },
+                        { text: "Aching, continuous", next: 'karin_bobrek_enfeksiyon' },
+                        { text: "Cramping, comes and goes", result: { title: "Ureter Colic (Passing Stone)", desc: "Could be kidney stone passing.", department: "Urology", branchId: "uroloji", urgent: true } }
+                    ]
+                },
+                'karin_bobrek_tas': {
+                    question: "Is there blood in your urine or has your urine color darkened?",
+                    options: [
+                        { text: "Yes, urine is dark/bloody", result: { title: "Kidney Stone", desc: "Indicates stone presence. Ultrasound evaluation needed.", department: "Urology", branchId: "uroloji" } },
+                        { text: "No, only pain", next: 'karin_bobrek_yanma' }
+                    ]
+                },
+                'karin_bobrek_yanma': {
+                    question: "Is there burning or urgency when urinating?",
+                    options: [
+                        { text: "Yes, burning", result: { title: "Kidney Stone + Urinary Tract Infection", desc: "Both conditions may exist together.", department: "Urology", branchId: "uroloji" } },
+                        { text: "No", result: { title: "Kidney Stone / Sand", desc: "Passing stone or kidney sand possible.", department: "Urology", branchId: "uroloji" } }
+                    ]
+                },
+                'karin_bobrek_enfeksiyon': {
+                    question: "Do you have high fever, chills, or shaking?",
+                    options: [
+                        { text: "Yes, high fever and chills", result: { title: "Pyelonephritis (Kidney Infection)", desc: "SERIOUS infection! Hospitalization may be required.", department: "Urology / Infection", branchId: "uroloji", urgent: true } },
+                        { text: "Mild fever", result: { title: "Kidney Infection (Early Stage)", desc: "Antibiotic treatment required.", department: "Urology", branchId: "uroloji" } },
+                        { text: "No fever", result: { title: "Muscle Pain / Back Pain", desc: "Could be due to wrong movement or muscle spasm.", department: "Physical Therapy", branchId: "fizik_tedavi" } }
+                    ]
+                },
+                // --- SHORTNESS OF BREATH ---
+                'nefes_darligi': {
+                    question: "When and how did your shortness of breath start?",
+                    options: [
+                        { text: "Started suddenly (Within minutes)", next: 'nefes_ani' },
+                        { text: "Present for days, increases with movement", next: 'nefes_kronik' },
+                        { text: "Started after dust, pollen or smell", next: 'nefes_alerji' }
+                    ]
+                },
+                'nefes_ani': {
+                    question: "Is there severe pressure in chest, pain radiating to left arm or jaw?",
+                    options: [
+                        { text: "Yes, chest pressure and pain radiating to arm", result: { title: "HEART ATTACK (MYOCARDIAL INFARCTION) RISK", desc: "LIFE THREATENING! CALL 112 IMMEDIATELY! Every minute counts!", department: "EMERGENCY / Cardiology", branchId: "acil", urgent: true } },
+                        { text: "Chest pressure but not radiating to arm", next: 'nefes_ani_akciğer' },
+                        { text: "No, just short of breath", next: 'nefes_ani_carpıntı' }
+                    ]
+                },
+                'nefes_ani_akciğer': {
+                    question: "Does chest pain increase when breathing or is there wheezing?",
+                    options: [
+                        { text: "Yes, stabs when breathing", result: { title: "Acute Pulmonary Embolism", desc: "Suspected blood clot in lung vessels! EMERGENCY!", department: "EMERGENCY / Chest Diseases", branchId: "acil", urgent: true } },
+                        { text: "No, just pressure", result: { title: "Angina Pectoris", desc: "Heart muscle not getting enough blood. Urgent cardiology.", department: "Cardiology", branchId: "kardiyoloji", urgent: true } }
+                    ]
+                },
+                'nefes_ani_carpıntı': {
+                    question: "Is your heart pounding, sweating, or do you feel like dying?",
+                    options: [
+                        { text: "Yes, heart pounding, fainting feeling", next: 'nefes_ani_trigger' },
+                        { text: "No, just short of breath", next: 'nefes_ani_solunum' }
+                    ]
+                },
+                'nefes_ani_trigger': {
+                    question: "When did this condition start?",
+                    options: [
+                        { text: "Unexpectedly, no apparent reason", result: { title: "Panic Attack", desc: "Could be anxiety disorder but heart issue should be ruled out. Cardiology + Psychiatry required.", department: "Cardiology / Psychiatry", branchId: "kardiyoloji" } },
+                        { text: "During fear, stress or excitement", result: { title: "Panic Attack / Anxiety Attack", desc: "Psychological shortness of breath. Cardiology check then psychiatry.", department: "Psychiatry / Cardiology", branchId: "psikiyatri" } }
+                    ]
+                },
+                'nefes_ani_solunum': {
+                    question: "Is there wheezing, whistling, or chest retraction when breathing?",
+                    options: [
+                        { text: "Yes, wheezing/whistling", result: { title: "Acute Asthma Attack / Bronchospasm", desc: "Bronchi constricted. Urgent respiratory treatment needed.", department: "EMERGENCY / Chest Diseases", branchId: "acil", urgent: true } },
+                        { text: "Yes, chest retracting", result: { title: "Severe Respiratory Distress", desc: "SERIOUS lung problem! EMERGENCY!", department: "EMERGENCY", branchId: "acil", urgent: true } },
+                        { text: "No, just can't breathe", result: { title: "Acute Respiratory Distress", desc: "Urgent intervention required.", department: "EMERGENCY", branchId: "acil", urgent: true } }
+                    ]
+                },
+                'halsizlik': {
+                    question: "When and how did your fatigue start?",
+                    options: [
+                        { text: "Started suddenly, with fever", next: 'halsizlik_atesli' },
+                        { text: "Increasing slowly, for weeks", next: 'halsizlik_kronik' },
+                        { text: "Tired even when waking in morning", next: 'halsizlik_sabah' },
+                        { text: "Sleepy after eating", next: 'halsizlik_yemek' }
+                    ]
+                },
+                'halsizlik_atesli': {
+                    question: "Do you have fever and what is your temperature?",
+                    options: [
+                        { text: "Above 38°C, sore throat too", result: { title: "Viral Infection (Flu/Covid/Sore Throat)", desc: "Rest and plenty of fluids recommended. PCR test可以考虑.", department: "Internal Medicine / Infection", branchId: "dahiliye" } },
+                        { text: "37-38°C, mild", result: { title: "Mild Viral Infection", desc: "Could be common cold or mild viral infection.", department: "Internal Medicine", branchId: "dahiliye" } },
+                        { text: "No fever but body aches", result: { title: "Widespread Muscle Pain / Fibromyalgia", desc: "Could be stress, physical strain, or viral infection onset.", department: "Physical Therapy / Internal Medicine", branchId: "fizik_tedavi" } }
+                    ]
+                },
+                'halsizlik_kronik': {
+                    question: "How often do you feel tired?",
+                    options: [
+                        { text: "Every day, never ending", next: 'halsizlik_kronik_sebep' },
+                        { text: "Intermittent, a few days a week", next: 'halsizlik_kronik_diyet' },
+                        { text: "Only during period", result: { title: "Premenstrual Syndrome (PMS)", desc: "Fatigue related to hormonal changes.", department: "Obstetrics", branchId: "kadin_dogum" } }
+                    ]
+                },
+                'halsizlik_kronik_sebep': {
+                    question: "Have you experienced weight changes, hair loss, or feeling cold?",
+                    options: [
+                        { text: "Yes, weight change, hair falling out", result: { title: "Thyroid Disorder (Hypothyroidism/Hyperthyroidism)", desc: "Thyroid function tests (TSH, T3, T4) should be done.", department: "Internal Medicine / Endocrinology", branchId: "endokrinoloji" } },
+                        { text: "Yes, feel cold, hair loss", result: { title: "Hypothyroidism / Anemia", desc: "Thyroid deficiency or anemia possible.", department: "Internal Medicine / Endocrinology", branchId: "endokrinoloji" } },
+                        { text: "No", next: 'halsizlik_kronik_diyet' }
+                    ]
+                },
+                'halsizlik_kronik_diyet': {
+                    question: "How much do you sleep and how is your nutrition?",
+                    options: [
+                        { text: "Less than 6 hours", result: { title: "Chronic Sleep Deprivation", desc: "Sleep duration should be increased.", department: "Internal Medicine", branchId: "dahiliye" } },
+                        { text: "Eat regularly but still tired", result: { title: "Anemia / Vitamin D Deficiency", desc: "Blood test recommended (Hemoglobin, Ferritin, Vitamin D).", department: "Internal Medicine", branchId: "dahiliye" } },
+                        { text: "Irregular eating", result: { title: "Nutrition Disorder / Vitamin Deficiency", desc: "Balanced diet and multivitamin recommended.", department: "Internal Medicine / Dietitian", branchId: "diyetisyen" } }
+                    ]
+                },
+                'halsizlik_sabah': {
+                    question: "Do you wake up rested or tired?",
+                    options: [
+                        { text: "Never rested, even after 8 hours", result: { title: "Sleep Apnea / Poor Sleep Quality", desc: "Your sleep quality is disturbed. Polysomnography may be needed.", department: "Chest Diseases / Neurology", branchId: "gogus" } },
+                        { text: "Hard to wake up", result: { title: "Chronic Fatigue Syndrome / Depression", desc: "Psychological factors or hormonal issue possible.", department: "Psychiatry / Internal Medicine", branchId: "psikiyatri" } }
+                    ]
+                },
+                'halsizlik_yemek': {
+                    question: "How soon after eating do you feel sleepy?",
+                    options: [
+                        { text: "Immediately, within 30 minutes", result: { title: "Insulin Resistance / Diabetes Onset", desc: "Blood sugar fluctuations possible. Fasting blood sugar check.", department: "Internal Medicine / Endocrinology", branchId: "endokrinoloji" } },
+                        { text: "1-2 hours later", result: { title: "Gastritis / Stomach Fatigue", desc: "Blood flow to stomach after eating.", department: "Internal Medicine", branchId: "dahiliye" } },
+                        { text: "Tired all day", result: { title: "General Fatigue", desc: "Internal medicine examination recommended.", department: "Internal Medicine", branchId: "dahiliye" } }
+                    ]
+                },
+                    options: [
+                        { text: "Yes, I have fever", next: 'halsizlik_enfeksiyon' },
+                        { text: "No, just exhausted", next: 'halsizlik_kronik' }
+                    ]
+                },
+                'halsizlik_enfeksiyon': {
+                    question: "Do you have widespread body and joint pain?",
+                    options: [
+                        { text: "Yes, aching all over", result: { title: "Viral Infection (Flu/Covid)", desc: "Rest and plenty of fluids recommended.", department: "Internal Medicine / Infection", branchId: "dahiliye" } },
+                        { text: "No, just weak", result: { title: "General Infection", desc: "Could be an inflammatory condition.", department: "Internal Medicine", branchId: "dahiliye" } }
+                    ]
+                },
+                'bulanti': {
+                    question: "When does your nausea occur?",
+                    options: [
+                        { text: "After eating", next: 'bulanti_yemek' },
+                        { text: "In mornings, especially when waking up", next: 'bulanti_sabah' },
+                        { text: "When moving (car, bus)", result: { title: "Motion Sickness", desc: "Travel sickness. Prevention possible before travel.", department: "ENT", branchId: "kbb" } },
+                        { text: "No specific time", next: 'bulanti_surekli' }
+                    ]
+                },
+                'bulanti_yemek': {
+                    question: "Is vomiting accompanying? Are you vomiting what you eat?",
+                    options: [
+                        { text: "Yes, vomiting constantly", result: { title: "Gastroenteritis / Poisoning", desc: "Intestinal infection or food poisoning. Watch for fluid loss.", department: "Internal Medicine / Emergency", branchId: "dahiliye" } },
+                        { text: "Only nausea, not vomiting", next: 'bulanti_mide' }
+                    ]
+                },
+                'bulanti_mide': {
+                    question: "Do you have bitter water coming to mouth or stomach burning?",
+                    options: [
+                        { text: "Yes, bitter water", result: { title: "Gastritis / Reflux", desc: "Stomach acid problems.", department: "Gastroenterology", branchId: "gastroenteroloji" } },
+                        { text: "No, just nausea", result: { title: "Dyspepsia (Indigestion)", desc: "Stomach fatigue.", department: "Internal Medicine", branchId: "dahiliye" } }
+                    ]
+                },
+                'bulanti_sabah': {
+                    question: "Are you female? Do you have missed period?",
+                    options: [
+                        { text: "Yes, period missed", result: { title: "Pregnancy Suspicion", desc: "Pregnancy test should be done.", department: "Obstetrics", branchId: "kadin_dogum" } },
+                        { text: "Yes but period normal", result: { title: "PMS / Hormonal Nausea", desc: "Related to hormonal fluctuations.", department: "Obstetrics", branchId: "kadin_dogum" } },
+                        { text: "No, I'm male", next: 'bulanti_sabah_erkek' }
+                    ]
+                },
+                'bulanti_sabah_erkek': {
+                    question: "Do you have excessive alcohol use or stomach problem history?",
+                    options: [
+                        { text: "Yes, I drink alcohol", result: { title: "Alcohol-Related Stomach Irritation", desc: "Alcohol use should be reduced.", department: "Internal Medicine", branchId: "dahiliye" } },
+                        { text: "No", result: { title: "Stomach Issue / Reflux", desc: "Morning nausea suggests stomach issues.", department: "Gastroenterology", branchId: "gastroenteroloji" } }
+                    ]
+                },
+                'bulanti_surekli': {
+                    question: "Is dizziness, balance loss, or headache accompanying?",
+                    options: [
+                        { text: "Yes, dizzy, balance problem", result: { title: "Vertigo / Vestibular Neuritis", desc: "Could be inner ear or balance center issue.", department: "ENT / Neurology", branchId: "kbb" } },
+                        { text: "Yes, also headache", result: { title: "Migraine / Headache Nausea", desc: "Nausea of neurological origin.", department: "Neurology", branchId: "noroloji" } },
+                        { text: "No, just nausea", result: { title: "Chronic Gastritis / Functional Dyspepsia", desc: "Stomach mucosa inflammation or functional disorder.", department: "Gastroenterology", branchId: "gastroenteroloji" } }
+                    ]
+                },
+                'carpinti': {
+                    question: "How and when does your palpitation occur?",
+                    options: [
+                        { text: "Starts suddenly, heart racing", next: 'carpinti_aniden' },
+                        { text: "When walking, climbing stairs", next: 'carpinti_efor' },
+                        { text: "Even when resting, constantly", next: 'carpinti_surekli' },
+                        { text: "When lying down at night", next: 'carpinti_gece' }
+                    ]
+                },
+                'carpinti_aniden': {
+                    question: "Is there chest pain, sweating, or shortness of breath accompanying the sudden palpitation?",
+                    options: [
+                        { text: "Yes, chest pain, sweating, shortness of breath", result: { title: "Arrhythmia / Heart Rhythm Disorder", desc: "URGENT! EKG must be done, cardiology emergency!", department: "Cardiology / EMERGENCY", branchId: "kardiyoloji", urgent: true } },
+                        { text: "Fainting feeling, eyes darkening", result: { title: "Syncope Risk / Arrhythmia", desc: "Risk of fainting. Urgent cardiology evaluation!", department: "Cardiology", branchId: "kardiyoloji", urgent: true } },
+                        { text: "Only heart beating fast", next: 'carpinti_sure' }
+                    ]
+                },
+                'carpinti_sure': {
+                    question: "How long does the palpitation last?",
+                    options: [
+                        { text: "Few seconds/minutes, passes on its own", result: { title: "Extrasystole / Extra Beat", desc: "Extra beats from heart. Usually benign.", department: "Cardiology", branchId: "kardiyoloji" } },
+                        { text: "Lasts for hours", result: { title: "Supraventricular Tachycardia", desc: "Heart rhythm disorder. EKG required.", department: "Cardiology", branchId: "kardiyoloji" } },
+                        { text: "Doesn't pass, constant", result: { title: "Atrial Fibrillation / Heart Failure", desc: "Could be heart rhythm disorder. Urgent evaluation!", department: "Cardiology", branchId: "kardiyoloji", urgent: true } }
+                    ]
+                },
+                'carpinti_efor': {
+                    question: "What accompanies exertion palpitation?",
+                    options: [
+                        { text: "Also shortness of breath", result: { title: "Heart Failure / Valve Disease", desc: "Heart elevation or echocardiography needed.", department: "Cardiology", branchId: "kardiyoloji" } },
+                        { text: "Also chest pain", result: { title: "Coronary Artery Disease / Angina", desc: "Heart arteries may be blocked. Stress test needed.", department: "Cardiology", branchId: "kardiyoloji" } },
+                        { text: "Just feels like poor conditioning", result: { title: "Poor Conditioning / Anemia", desc: "Can be improved with sports or anemia investigated.", department: "Cardiology / Internal Medicine", branchId: "dahiliye" } }
+                    ]
+                },
+                'carpinti_surekli': {
+                    question: "Do you have other symptoms with constant palpitation?",
+                    options: [
+                        { text: "Weight loss, tremors, irritability", result: { title: "Hyperthyroidism (Thyroid Overactivity)", desc: "Thyroid gland working too much. TSH test needed.", department: "Endocrinology", branchId: "endokrinoloji" } },
+                        { text: "Fatigue, paleness", result: { title: "Anemia", desc: "Hemoglobin deficiency. Blood test needed.", department: "Internal Medicine", branchId: "dahiliye" } },
+                        { text: "None", result: { title: "Functional Palpitation / Anxiety", desc: "Could be stress or anxiety related.", department: "Cardiology / Psychiatry", branchId: "kardiyoloji" } }
+                    ]
+                },
+                'carpinti_gece': {
+                    question: "Does palpitation occur when lying down at night?",
+                    options: [
+                        { text: "Yes, when lying on left side", result: { title: "Mitral Valve Prolapse / Heart Problem", desc: "Could be heart valve problem. Echo needed.", department: "Cardiology", branchId: "kardiyoloji" } },
+                        { text: "Need to elevate pillow", result: { title: "Heart Failure Sign", desc: "Night shortness of breath and palpitation suggest heart failure.", department: "Cardiology", branchId: "kardiyoloji", urgent: true } },
+                        { text: "Only stress before sleep", result: { title: "Stress / Anxiety", desc: "Increased palpitation when lying down could be stress related.", department: "Psychiatry", branchId: "psikiyatri" } }
+                    ]
+                },
+                'idrar_yanmasi': {
+                    question: "What is your urinary complaint?",
+                    options: [
+                        { text: "Burning/stinging when urinating", next: 'idrar_yanma_detay' },
+                        { text: "Frequent urination", next: 'idrar_siklik' },
+                        { text: "Cannot urinate / blockage", result: { title: "Urinary Retention", desc: "EMERGENCY! Bladder not emptying is serious!", department: "Urology / EMERGENCY", branchId: "uroloji", urgent: true } },
+                        { text: "Blood in urine", result: { title: "Hematuria (Blood in Urine)", desc: "SERIOUS! Urgent urology evaluation required.", department: "Urology", branchId: "uroloji", urgent: true } }
+                    ]
+                },
+                'idrar_yanma_detay': {
+                    question: "Is there high fever, chills, or back/groin pain accompanying?",
+                    options: [
+                        { text: "Yes, fever and chills", result: { title: "Pyelonephritis (Kidney Infection)", desc: "Infection spread to kidneys. EMERGENCY!", department: "Urology / Infection", branchId: "uroloji", urgent: true } },
+                        { text: "Back/groin pain", result: { title: "Kidney Stone / Urinary Infection", desc: "Could be stone or infection.", department: "Urology", branchId: "uroloji" } },
+                        { text: "Only burns when urinating", next: 'idrar_yanma_cinsiyet' }
+                    ]
+                },
+                'idrar_yanma_cinsiyet': {
+                    question: "What is your gender and is there discharge?",
+                    options: [
+                        { text: "Female, no discharge", result: { title: "Cystitis (Bladder Infection)", desc: "Most common urinary tract infection in women.", department: "Urology", branchId: "uroloji" } },
+                        { text: "Female, with discharge", result: { title: "Vaginitis / Urethritis", desc: "Vaginal or urinary tract infection.", department: "Obstetrics / Urology", branchId: "kadin_dogum" } },
+                        { text: "Male, with discharge", result: { title: "Urethritis / STD", desc: "Could be sexually transmitted infection.", department: "Urology", branchId: "uroloji" } },
+                        { text: "Male, no discharge", result: { title: "Prostatitis / Urethritis", desc: "Prostate inflammation or urinary tract infection.", department: "Urology", branchId: "uroloji" } }
+                    ]
+                },
+                'idrar_siklik': {
+                    question: "How is the frequent urination?",
+                    options: [
+                        { text: "Day and night constantly", next: 'idrar_siklik_gece' },
+                        { text: "Sudden urge, cannot hold", result: { title: "Overactive Bladder (OAB)", desc: "Bladder muscle overworking.", department: "Urology", branchId: "uroloji" } },
+                        { text: "Only during day", result: { title: "Polydipsia / Diabetes Suspicion", desc: "Could be diabetes or high water intake.", department: "Internal Medicine / Endocrinology", branchId: "dahiliye" } }
+                    ]
+                },
+                'idrar_siklik_gece': {
+                    question: "Do you wake up at night to urinate?",
+                    options: [
+                        { text: "Yes, 2+ times", result: { title: "Nocturia / BPH / Diabetes", desc: "Could be prostate enlargement, diabetes, or heart failure.", department: "Urology / Internal Medicine", branchId: "uroloji" } },
+                        { text: "No, only daytime", result: { title: "Overactive Bladder / Anxiety", desc: "Bladder issue or stress related.", department: "Urology / Psychiatry", branchId: "uroloji" } }
+                    ]
+                },
+                'cilt_sorunu': {
+                    question: "What is your skin problem?",
+                    options: [
+                        { text: "Itching", next: 'cilt_kasinti' },
+                        { text: "Redness/rash", next: 'cilt_dokuntu' },
+                        { text: "Spot/mole change", next: 'cilt_leke' },
+                        { text: "Dry/flaky skin", next: 'cilt_kuruluk' }
+                    ]
+                },
+                'cilt_kasinti': {
+                    question: "What is your itching like?",
+                    options: [
+                        { text: "Increases at night, intense in legs", result: { title: "Scabies", desc: "Possible parasitic infection. Can spread itching.", department: "Dermatology", branchId: "dermatoloji" } },
+                        { text: "All over body", next: 'cilt_kasinti_alerji' },
+                        { text: "Only in certain areas", next: 'cilt_kasinti_bolge' },
+                        { text: "On face, scalp", result: { title: "Seborrheic Dermatitis / Psoriasis", desc: "Sebaceous gland disease or psoriasis.", department: "Dermatology", branchId: "dermatoloji" } }
+                    ]
+                },
+                'cilt_kasinti_alerji': {
+                    question: "Is there redness, bumps, or swelling with itching?",
+                    options: [
+                        { text: "Yes, bumps forming", result: { title: "Urticaria (Hives)", desc: "Allergic reaction. Cause should be investigated.", department: "Dermatology / Allergy", branchId: "dermatoloji" } },
+                        { text: "No, just itching", result: { title: "Generalized Itching", desc: "Could be anemia, thyroid, or kidney issues.", department: "Dermatology / Internal Medicine", branchId: "dahiliye" } }
+                    ]
+                },
+                'cilt_kasinti_bolge': {
+                    question: "Where is the itching?",
+                    options: [
+                        { text: "Armpit, groin, nipple", result: { title: "Fungal Infection", desc: "Fungal infection in moist areas.", department: "Dermatology", branchId: "dermatoloji" } },
+                        { text: "Hands/feet", result: { title: "Contact Dermatitis / Eczema", desc: "Allergic or irritation-induced skin inflammation.", department: "Dermatology", branchId: "dermatoloji" } },
+                        { text: "Only sun-exposed areas", result: { title: "Sun Allergy / Photodermatitis", desc: "Sensitivity to sunlight.", department: "Dermatology", branchId: "dermatoloji" } }
+                    ]
+                },
+                'cilt_dokuntu': {
+                    question: "What is the character of the rash?",
+                    options: [
+                        { text: "Bumps, fluid-filled", result: { title: "Contact Dermatitis / Viral Rash", desc: "Allergic reaction or viral infection.", department: "Dermatology", branchId: "dermatoloji" } },
+                        { text: "Red, scaly lesions", result: { title: "Psoriasis", desc: "Autoimmune skin disease.", department: "Dermatology", branchId: "dermatoloji" } },
+                        { text: "Large red patches", result: { title: "Erythema / Eczema", desc: "Skin inflammation or allergic reaction.", department: "Dermatology", branchId: "dermatoloji" } },
+                        { text: "Small red dots", result: { title: "Petechiae / Rash Disease", desc: "Bleeding foci or infectious rash.", department: "Dermatology / Internal Medicine", branchId: "dahiliye" } }
+                    ]
+                },
+                'cilt_leke': {
+                    question: "Can you give details about the spot?",
+                    options: [
+                        { text: "Existing mole changed (color, size, shape)", result: { title: "ATTENTION: Melanoma Suspicion", desc: "Mole changes are SERIOUS! Urgent dermatology!", department: "Dermatology", branchId: "dermatoloji", urgent: true } },
+                        { text: "New mole/lesion appeared", result: { title: "New Lesion", desc: "New lesion should be evaluated.", department: "Dermatology", branchId: "dermatoloji" } },
+                        { text: "Brown spots", result: { title: "Lentigo / Sun Spots", desc: "Sun damage or age spots.", department: "Dermatology", branchId: "dermatoloji" } },
+                        { text: "White/red spots", result: { title: "Vitiligo / Other", desc: "Pigment loss or skin disease.", department: "Dermatology", branchId: "dermatoloji" } }
+                    ]
+                },
+                'cilt_kuruluk': {
+                    question: "How is your skin dryness?",
+                    options: [
+                        { text: "Just dry, flaky", result: { title: "Xerosis (Dry Skin)", desc: "Moisturizer use recommended.", department: "Dermatology", branchId: "dermatoloji" } },
+                        { text: "Cracked, bleeding", result: { title: "Severe Xerosis / Eczema", desc: "Skin barrier compromised. Treatment needed.", department: "Dermatology", branchId: "dermatoloji" } },
+                        { text: "Also itchy", result: { title: "Atopic Dermatitis", desc: "Age-related skin dryness.", department: "Dermatology", branchId: "dermatoloji" } }
+                    ]
+                },
+                // --- JOINT PAIN ---
+                'eklem_agrisi': {
+                    question: "Where and what is the character of your pain?",
+                    options: [
+                        { text: "Single joint (Knee, shoulder, wrist etc.)", next: 'eklem_tek' },
+                        { text: "Multiple joints, symmetrical", next: 'eklem_coklu' },
+                        { text: "In muscles, soft tissue", next: 'eklem_kas' }
+                    ]
+                },
+                'eklem_tek': {
+                    question: "What is the character of single joint pain?",
+                    options: [
+                        { text: "Red, swollen, very hot, can't move", result: { title: "Septic Arthritis", desc: "EMERGENCY! Infectious joint inflammation. Urgent treatment!", department: "Orthopedics / Rheumatology", branchId: "ortopedi", urgent: true } },
+                        { text: "Sudden, severe, at night", result: { title: "Gout Attack", desc: "Uric acid crystals. Diet and drug treatment.", department: "Rheumatology", branchId: "romatoloji" } },
+                        { text: "Increases with movement, better with rest", next: 'eklem_tek_travma' }
+                    ]
+                },
+                'eklem_tek_travma': {
+                    question: "Have you previously sprained or injured that joint?",
+                    options: [
+                        { text: "Yes, had trauma before", result: { title: "Meniscus / Ligament / Cartilage Damage", desc: "Degeneration due to past trauma. MR needed.", department: "Orthopedics", branchId: "ortopedi" } },
+                        { text: "No", result: { title: "Osteoarthritis", desc: "Joint wear. Physical therapy and pain relievers.", department: "Orthopedics / PT", branchId: "fizik_tedavi" } }
+                    ]
+                },
+                'eklem_coklu': {
+                    question: "Is there morning stiffness with multiple joint pain?",
+                    options: [
+                        { text: "Yes, 30+ minutes of stiffness", result: { title: "Rheumatoid Arthritis", desc: "Inflammatory rheumatism. Blood tests (RF, CRP) needed.", department: "Rheumatology", branchId: "romatoloji" } },
+                        { text: "Yes but less than 30 min", result: { title: "Spondyloarthropathy / Psoriatic Arthritis", desc: "Could be seronegative rheumatism.", department: "Rheumatology", branchId: "romatoloji" } },
+                        { text: "No stiffness", result: { title: "Polymyalgia / Fibromyalgia", desc: "Soft tissue rheumatism or widespread muscle pain.", department: "Rheumatology / PT", branchId: "fizik_tedavi" } }
+                    ]
+                },
+                'eklem_kas': {
+                    question: "What is your muscle pain like?",
+                    options: [
+                        { text: "After fatigue, stress, sleeplessness", result: { title: "Fibromyalgia / Chronic Fatigue", desc: "Soft tissue rheumatism. Stress management important.", department: "PT / Psychiatry", branchId: "fizik_tedavi" } },
+                        { text: "After exertion, lactic acid buildup", result: { title: "Post-Exertion Muscle Pain", desc: "Normal muscle fatigue. Rest.", department: "PT", branchId: "fizik_tedavi" } },
+                        { text: "Using medication (statin etc)", result: { title: "Drug-Induced Muscle Pain", desc: "Could be side effect of medications.", department: "Internal Medicine", branchId: "dahiliye" } }
+                    ]
+                },
+                // --- EYE PAIN ---
+                'goz_agrisi': {
+                    question: "What is your eye pain like and when?",
+                    options: [
+                        { text: "Vision loss, blurred vision", result: { title: "Eye Pressure / Acute Condition", desc: "Vision loss is EMERGENCY! See eye doctor immediately!", department: "Ophthalmology", branchId: "goz", urgent: true } },
+                        { text: "Light sensitivity", next: 'goz_isik' },
+                        { text: "Increases when moving", next: 'goz_hareket' },
+                        { text: "Fatigue, stinging", next: 'goz_batma' }
+                    ]
+                },
+                'goz_isik': {
+                    question: "Do you also have headache?",
+                    options: [
+                        { text: "Yes, also headache", result: { title: "Migraine / Headache Eye Pain", desc: "Could be migraine attack.", department: "Neurology / Eye", branchId: "noroloji" } },
+                        { text: "No, just eyes", result: { title: "Keratoconjunctivitis / Eye Infection", desc: "Cornea or conjunctiva inflammation.", department: "Ophthalmology", branchId: "goz" } }
+                    ]
+                },
+                'goz_hareket': {
+                    question: "Does it hurt when you move your eyes?",
+                    options: [
+                        { text: "Yes, hurts when looking", result: { title: "Orbital / Periocular Inflammation", desc: "Inflammation of tissues around eye.", department: "Ophthalmology", branchId: "goz" } },
+                        { text: "Like sinusitis, from behind", result: { title: "Sinusitis Related Eye Pain", desc: "Sinus pressure could be causing.", department: "ENT", branchId: "kbb" } }
+                    ]
+                },
+                'goz_batma': {
+                    question: "Is there crusting, redness, or watering?",
+                    options: [
+                        { text: "Yes, crusting, red", result: { title: "Conjunctivitis", desc: "Eye cold/microbe. Contagious.", department: "Ophthalmology", branchId: "goz" } },
+                        { text: "Yes, very watery", result: { title: "Dry Eye / Allergic Conjunctivitis", desc: "Dryness or allergy.", department: "Ophthalmology", branchId: "goz" } },
+                        { text: "No, just sandy stinging", result: { title: "Eye Strain / Xerosis", desc: "Screen use or dryness.", department: "Ophthalmology", branchId: "goz" } }
+                    ]
+                },
+                // --- TOOTHACHE ---
+                'dis_agrisi': {
+                    question: "What is your tooth pain like?",
+                    options: [
+                        { text: "Face is swollen", result: { title: "Tooth Abscess / Cellulitis", desc: "Infection may have spread. Urgent dentist!", department: "Dentistry", branchId: "dis", urgent: true } },
+                        { text: "Throbbing at night, unbearable", next: 'dis_zonklama' },
+                        { text: "Hurts when eating, hot/cold", next: 'dis_hassasiyet' },
+                        { text: "Only gums hurt", result: { title: "Gum Infection / Gingivitis", desc: "Gum inflammation. Dental cleaning needed.", department: "Dentistry", branchId: "dis" } }
+                    ]
+                },
+                'dis_zonklama': {
+                    question: "Does pain wake you from sleep?",
+                    options: [
+                        { text: "Yes, can't sleep at night", result: { title: "Acute Pulpitis", desc: "Tooth nerve inflammation. Root canal may be needed.", department: "Dentistry", branchId: "dis", urgent: true } },
+                        { text: "No, but throbs during day", result: { title: "Pulpitis / Abscess Onset", desc: "Tooth nerve issue. Examination needed.", department: "Dentistry", branchId: "dis" } }
+                    ]
+                },
+                'dis_hassasiyet': {
+                    question: "What happens when you eat something hot or cold?",
+                    options: [
+                        { text: "Hot/cold stings but passes", result: { title: "Tooth Sensitivity / Cavity", desc: "Enamel sensitivity or cavity starting.", department: "Dentistry", branchId: "dis" } },
+                        { text: "Heat doesn't pass, gets worse", result: { title: "Advanced Pulpitis", desc: "Nerve inflammation advanced. Root canal needed.", department: "Dentistry", branchId: "dis" } },
+                        { text: "Just taste is gone", result: { title: "Nerve Damage / Old Filling", desc: "Nerve death or filling issue possible.", department: "Dentistry", branchId: "dis" } }
+                    ]
+                },
+                // --- SORE THROAT ---
+                'bogaz_agrisi': {
+                    question: "What is your sore throat like?",
+                    options: [
+                        { text: "Hard to swallow", next: 'bogaz_yutkunma' },
+                        { text: "Tickle in throat", next: 'bogaz_gicik' },
+                        { text: "Voice hoarse / gone", result: { title: "Laryngitis / Vocal Cord Inflammation", desc: "Vocal cord inflammation. Voice rest needed.", department: "ENT", branchId: "kbb" } }
+                    ]
+                },
+                'bogaz_yutkunma': {
+                    question: "What is pain severity and fever status?",
+                    options: [
+                        { text: "Fever 38°C+, can't swallow", result: { title: "Acute Tonsillitis / Pharyngitis", desc: "Tonsil or throat inflammation. Antibiotics possible.", department: "ENT / Internal Medicine", branchId: "kbb" } },
+                        { text: "Mild fever", result: { title: "Viral Pharyngitis", desc: "Common cold. Rest recommended.", department: "ENT", branchId: "kbb" } },
+                        { text: "No fever but severe pain", result: { title: "Bacterial Pharyngitis / Strep", desc: "Throat culture recommended.", department: "ENT", branchId: "kbb" } }
+                    ]
+                },
+                'bogaz_gicik': {
+                    question: "Is there cough?",
+                    options: [
+                        { text: "Yes, dry cough", result: { title: "Upper Respiratory Infection", desc: "Common cold onset.", department: "ENT / Internal Medicine", branchId: "kbb" } },
+                        { text: "Yes, with phlegm", result: { title: "Bronchitis / Pharyngitis", desc: "Lower respiratory infection possible.", department: "Chest Diseases / ENT", branchId: "gogus" } },
+                        { text: "No, just tickle", result: { title: "Allergic Pharyngitis / Reflux", desc: "Allergy or stomach acid irritating throat.", department: "ENT / Gastroenterology", branchId: "kbb" } }
+                    ]
+                },
+                // --- EARACHE ---
+                'kulak_agrisi': {
+                    question: "What is your ear pain like?",
+                    options: [
+                        { text: "Very severe, unbearable", result: { title: "Acute Otitis Media / Outer Ear Inflammation", desc: "EMERGENCY! Severe ear inflammation possible.", department: "ENT", branchId: "kbb", urgent: true } },
+                        { text: "Discharge from ear", next: 'kulak_akinti' },
+                        { text: "Hearing decreased", next: 'kulak_isitme' },
+                        { text: "When moving jaw", result: { title: "TMJ (Jaw Joint)", desc: "Jaw joint issues. ENT and dentist.", department: "ENT / Dentist", branchId: "kbb" } }
+                    ]
+                },
+                'kulak_akinti': {
+                    question: "What is discharge like and odor?",
+                    options: [
+                        { text: "Foul-smelling, pus", result: { title: "Chronic Otitis Media / Cholesteatoma", desc: "Serious ear problem. Surgery may be needed.", department: "ENT", branchId: "kbb" } },
+                        { text: "Clear discharge", result: { title: "Outer Ear Canal Infection / Perforation", desc: "Eardrum perforated or inflamed.", department: "ENT", branchId: "kbb" } }
+                    ]
+                },
+                'kulak_isitme': {
+                    question: "How did hearing loss occur?",
+                    options: [
+                        { text: "Suddenly", result: { title: "Sudden Hearing Loss", desc: "EMERGENCY! Can become permanent if not treated within 72 hours!", department: "ENT", branchId: "kbb", urgent: true } },
+                        { text: "Gradually decreased", result: { title: "Advanced Hearing Loss / Earwax", desc: "Earwax or nerve hearing loss. Audiometry needed.", department: "ENT", branchId: "kbb" } }
+                    ]
+                },
+                // --- NASAL CONGESTION ---
+                'burun_tikanikligi': {
+                    question: "What is your nasal congestion like?",
+                    options: [
+                        { text: "One-sided, constant", next: 'burun_tek' },
+                        { text: "Both sides blocked", next: 'burun_akinti' },
+                        { text: "Allergic, sneezing", result: { title: "Allergic Rhinitis", desc: "Allergic rhinitis. Allergy test recommended.", department: "ENT / Allergy", branchId: "kbb" } }
+                    ]
+                },
+                'burun_tek': {
+                    question: "Is there discharge or bleeding with one-sided congestion?",
+                    options: [
+                        { text: "Bloody discharge", result: { title: "Nasal Polyp / Allergic Rhinitis / Tumor", desc: "EMERGENCY! Nasal pathology should be investigated.", department: "ENT", branchId: "kbb", urgent: true } },
+                        { text: "Yellow/green discharge", result: { title: "Chronic Sinusitis", desc: "One-sided sinusitis or polyp.", department: "ENT", branchId: "kbb" } },
+                        { text: "Just congestion", result: { title: "Concha Hypertrophy / Deviation", desc: "Nasal turbinate enlargement or bone curvature.", department: "ENT", branchId: "kbb" } }
+                    ]
+                },
+                'burun_akinti': {
+                    question: "What is color and character of discharge?",
+                    options: [
+                        { text: "Yellow/green, dark", result: { title: "Sinusitis / Bacterial Rhinitis", desc: "Bacterial infection. Antibiotics considered.", department: "ENT", branchId: "kbb" } },
+                        { text: "Clear, watery", result: { title: "Viral Rhinitis / Allergic Rhinitis", desc: "Common cold or allergy.", department: "ENT", branchId: "kbb" } },
+                        { text: "No discharge, just swelling", result: { title: "Vasomotor Rhinitis", desc: "Nerve-related nasal swelling.", department: "ENT", branchId: "kbb" } }
+                    ]
+                },
+                // --- CONSTIPATION ---
+                'kabizlik': {
+                    question: "Duration of constipation and accompanying condition?",
+                    options: [
+                        { text: "Few days", result: { title: "Temporary Constipation", desc: "Diet change or low water intake. High fiber food recommended.", department: "Nutrition / Dietitian", branchId: "diyetisyen" } },
+                        { text: "Weeks, enemas don't work", result: { title: "Stubborn Constipation / Megacolon", desc: "Serious bowel problem. Gastroenterology needed.", department: "Gastroenterology", branchId: "gastroenteroloji" } },
+                        { text: "Years, intermittent", result: { title: "Irritable Bowel (Constipation Type)", desc: "Chronic bowel function disorder.", department: "Gastroenterology", branchId: "gastroenteroloji" } }
+                    ]
+                }
+            }
+        }
+    };
+
+    // Helper to get current resources
+    const getRes = () => resources[currentLanguage];
+
+    // Listen for Language Changes
+    window.addEventListener('languageChanged', (e) => {
+        currentLanguage = e.detail.language;
+        // Reload current view
+        if (userData.symptom) {
+            // If already started flow, maybe reset or try to stay? 
+            // Resetting is safer to avoid data mismatch
+            // But if just at demographics, we can re-render demographics
+            if (document.querySelector('.gender-grid')) {
+                renderDemographics();
+            } else {
+                // If deep in questions, reset or re-render current step?
+                // Re-rendering current step might be tricky if structure differs, but keys are same.
+                // Let's try to re-render current step if symptom is selected.
+                initSmartAnalysis();
+            }
+        } else {
+            renderSymptomSelector();
+        }
+    });
+
+    // Check URL Params
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialSymptom = urlParams.get('symptom');
+
+    // Init
+    if (initialSymptom) {
+        userData.symptom = initialSymptom;
+        renderDemographics();
+    } else {
+        renderSymptomSelector();
+    }
+
+    function renderSymptomSelector() {
+        const res = getRes();
+        const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+        const userName = loggedInUser ? loggedInUser.name : res.guestName;
+
+        wizardContent.innerHTML = '';
+        const container = document.createElement('div');
+        container.style.width = '100%';
+        container.style.maxWidth = '1200px';
+        container.style.animation = "fadeIn 0.5s ease";
+
+        let html = `
+            <h2 class="question-text">${res.greeting(userName)}</h2>
+            <div class="symptom-selector-grid">
+        `;
+
+        res.categories.forEach(cat => {
+            html += `
+                <div class="symptom-category-card">
+                    <h3>
+                        ${cat.customIcon || `<i class="fas ${cat.icon}"></i>`} ${cat.title}
+                    </h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px; flex: 1;">
+            `;
+            cat.items.forEach(item => {
+                html += `
+                    <button class="symptom-btn" onclick="selectSymptom('${item.id}')">
+                        ${item.label} <i class="fas fa-chevron-right"></i>
+                    </button>
+                `;
+            });
+            html += `</div></div>`;
+        });
+
+        html += `</div>`;
+        container.innerHTML = html;
+        wizardContent.appendChild(container);
+
+        // Add Styles if not exists (checked by class or just add)
+        if (!document.getElementById('symptom-styles')) {
+            const style = document.createElement('style');
+            style.id = 'symptom-styles';
+            style.textContent = `
+                .symptom-selector-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 100%; }
+                @media (max-width: 1100px) { .symptom-selector-grid { grid-template-columns: repeat(2, 1fr); } }
+                @media (max-width: 600px) { .symptom-selector-grid { grid-template-columns: 1fr; } }
+                .symptom-btn:hover { background: #001F6B !important; color: white !important; border-color: #001F6B !important; transform: translateX(5px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+                .symptom-btn:hover i { opacity: 1 !important; }
+            `;
+            document.head.appendChild(style);
+        }
+
+        window.selectSymptom = function(id) {
+            userData.symptom = id;
+            renderDemographics();
+        };
+    }
+
+    function renderDemographics() {
+        const res = getRes();
+        wizardContent.innerHTML = '';
+
+        const container = document.createElement('div');
+        container.style.width = '100%';
+        container.style.maxWidth = '500px';
+        container.style.animation = "fadeIn 0.5s ease";
+
+        container.innerHTML = `
+            <h2 class="question-text">${res.letsKnowYou}</h2>
+            
+            <div style="margin-bottom: 30px;">
+                <label style="display:block; margin-bottom: 10px; font-weight:600; color:#555;">${res.genderLabel}</label>
+                <div class="gender-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                    <div class="gender-option" data-value="kadin">
+                        <i class="fas fa-venus" style="color: #e91e63;"></i> ${res.genderOptions.kadin}
+                    </div>
+                    <div class="gender-option" data-value="erkek">
+                        <i class="fas fa-mars" style="color: #2196f3;"></i> ${res.genderOptions.erkek}
+                    </div>
+                    <div class="gender-option" data-value="diger">
+                        <i class="fas fa-genderless" style="color: #9c27b0;"></i> ${res.genderOptions.diger}
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 25px;">
+                <label style="display:block; margin-bottom: 12px; font-weight:600; color:#555;">${res.ageLabel}</label>
+                <div class="age-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                    <div class="age-option" data-value="child" style="padding: 10px 5px; font-size: 0.9rem;">0-12</div>
+                    <div class="age-option" data-value="young" style="padding: 10px 5px; font-size: 0.9rem;">13-18</div>
+                    <div class="age-option" data-value="adult" style="padding: 10px 5px; font-size: 0.9rem;">19-40</div>
+                    <div class="age-option" data-value="middle" style="padding: 10px 5px; font-size: 0.9rem;">41-65</div>
+                    <div class="age-option" data-value="senior" style="padding: 10px 5px; font-size: 0.9rem;">65+</div>
+                </div>
+            </div>
+
+            <button id="startBtn" class="action-btn" style="width: 100%; opacity: 0.5; cursor: not-allowed; padding: 12px;" disabled>${res.startBtn}</button>
+        `;
+
+        wizardContent.appendChild(container);
+
+        // Add Styles
+        if (!document.getElementById('demo-styles')) {
+            const style = document.createElement('style');
+            style.id = 'demo-styles';
+            style.textContent = `
+                .gender-option, .age-option {
+                    border: 2px solid #eee;
+                    border-radius: 10px;
+                    padding: 15px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    font-weight: 500;
+                    color: #555;
+                    text-align: center;
+                }
+                .gender-option:hover, .age-option:hover { background: #f9f9f9; border-color: #ddd; }
+                .gender-option.selected, .age-option.selected {
+                    border-color: #001F6B !important;
+                    background: rgba(0, 31, 107, 0.1) !important;
+                    color: #001F6B !important;
+                    font-weight: 700;
+                    box-shadow: 0 0 0 3px rgba(0, 31, 107, 0.2);
+                }
+                .gender-option i { display: block; font-size: 1.5rem; margin-bottom: 5px; }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Restore selection if exists
+        const genderOptions = container.querySelectorAll('.gender-option');
+        if (userData.gender) {
+            genderOptions.forEach(opt => {
+                if (opt.dataset.value === userData.gender) opt.classList.add('selected');
+            });
+        }
+        
+        const ageOptions = container.querySelectorAll('.age-option');
+        if (userData.ageRange) {
+            ageOptions.forEach(opt => {
+                if (opt.dataset.value === userData.ageRange) opt.classList.add('selected');
+            });
+        }
+        
+        validateForm();
+
+        // Listeners
+        genderOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                genderOptions.forEach(el => el.classList.remove('selected'));
+                option.classList.add('selected');
+                userData.gender = option.dataset.value;
+                validateForm();
+            });
+        });
+
+        ageOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                ageOptions.forEach(el => el.classList.remove('selected'));
+                option.classList.add('selected');
+                userData.ageRange = option.dataset.value;
+                userData.isSenior = (option.dataset.value === 'senior');
+                validateForm();
+            });
+        });
+
+        function validateForm() {
+            const btn = document.getElementById('startBtn');
+            if (userData.gender && userData.ageRange) {
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+                btn.disabled = false;
+            }
+        }
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            if (userData.gender && userData.ageRange) {
+                initSmartAnalysis();
+            }
+        });
+    }
+
+    function initSmartAnalysis() {
+        let startNode = userData.symptom;
+        if (!startNode) return;
+        renderStep(startNode);
+    }
+
+    function transitionContent(renderCallback) {
+        const currentContent = wizardContent.firstElementChild;
+        if (currentContent) {
+            currentContent.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+            currentContent.style.opacity = "0";
+            currentContent.style.transform = "translateX(-20px)";
+            
+            setTimeout(() => {
+                wizardContent.innerHTML = '';
+                renderCallback();
+                const newContent = wizardContent.firstElementChild;
+                if(newContent) {
+                    newContent.style.opacity = "0";
+                    newContent.style.transform = "translateX(20px)";
+                    newContent.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+                    void newContent.offsetWidth;
+                    newContent.style.opacity = "1";
+                    newContent.style.transform = "translateX(0)";
+                }
+            }, 300);
+        } else {
+            wizardContent.innerHTML = '';
+            renderCallback();
+        }
+    }
+
+    function renderStep(key) {
+        const res = getRes();
+        const data = res.symptomData[key];
+        
+        // If data not found in current lang (maybe key mismatch), fallback
+        if (!data) {
+            console.warn("Symptom step data not found for key:", key);
+            transitionContent(() => {
+                _buildResultCard({
+                    title: (currentLanguage === 'en' ? "Guidance" : "Yönlendirme"),
+                    desc: (currentLanguage === 'en' ? "Please consult a specialist for detailed evaluation." : "Detaylı değerlendirme için lütfen bir uzmana danışınız."),
+                    department: (currentLanguage === 'en' ? "Internal Medicine" : "İç Hastalıkları"),
+                    branchId: "dahiliye"
+                });
+            });
+            return;
+        }
+        
+        transitionContent(() => {
+            if (data.result) {
+                _buildResultCard(data.result);
+            } else {
+                const wrapper = document.createElement('div');
+                wrapper.style.width = '100%';
+                wrapper.style.display = 'flex';
+                wrapper.style.flexDirection = 'column';
+                wrapper.style.alignItems = 'center';
+                wrapper.style.margin = 'auto';
+
+                const q = document.createElement('div'); 
+                q.className = 'question-text'; 
+                q.textContent = data.question;
+                
+                const grid = document.createElement('div'); 
+                grid.className = 'options-grid';
+                
+                data.options.forEach(opt => {
+                    const b = document.createElement('button'); 
+                    b.className = 'option-btn'; 
+                    b.innerHTML = `<span>${opt.text}</span> <i class="fas fa-chevron-right"></i>`;
+                    b.onclick = () => opt.next ? renderStep(opt.next) : renderResult(opt.result);
+                    grid.appendChild(b);
+                });
+                
+                wrapper.appendChild(q); 
+                wrapper.appendChild(grid);
+                wizardContent.appendChild(wrapper);
+            }
+        });
+    }
+
+    function renderResult(res) {
+        transitionContent(() => {
+            _buildResultCard(res);
+        });
+    }
+
+    function _buildResultCard(res) {
+        const card = document.createElement('div'); 
+        card.className = `premium-result-card ${res.urgent ? 'urgent' : ''}`;
+        
+        // Button text based on lang
+        const bookBtnText = currentLanguage === 'en' ? "Book Appointment Now" : "Hemen Randevu Al";
+        const recLabel = currentLanguage === 'en' ? "Recommended Department" : "Önerilen Poliklinik";
+        const iconClass = res.urgent ? 'fa-ambulance' : 'fa-clipboard-check';
+
+        card.innerHTML = `
+            <div class="result-header">
+                <div class="result-icon-wrapper">
+                    <i class="fas ${iconClass}"></i>
+                </div>
+                <h3>${res.title}</h3>
+            </div>
+            <div class="result-body">
+                <p class="result-desc">${res.desc || (currentLanguage === 'en' ? "Symptoms evaluated." : "Belirtileriniz değerlendirildi.")}</p>
+                
+                <div class="recommendation-box">
+                    <span class="rec-label">${recLabel}</span>
+                    <h2 class="rec-dept">${res.department}</h2>
+                </div>
+            </div>
+            <div class="result-footer">
+                <button class="premium-action-btn" onclick="
+                    sessionStorage.setItem('recommendedBranch', '${res.branchId}');
+                    sessionStorage.setItem('recommendedBranchName', '${res.department}');
+                    sessionStorage.setItem('lastAiDiagnosis', '${res.title}');
+                    sessionStorage.setItem('lastAiDescription', '${res.desc}');
+                    window.location.href='appointment.html?branch=${res.branchId}&dep=${encodeURIComponent(res.department)}'
+                ">
+                    ${bookBtnText} <i class="fas fa-arrow-right"></i>
+                </button>
+                
+                <div class="ai-disclaimer">
+                    <i class="fas fa-info-circle"></i>
+                    <p>${currentLanguage === 'en' ? 
+                        "This result is an AI-assisted preliminary assessment. It does not replace a professional medical diagnosis. Please consult a specialist." : 
+                        "Bu sonuç yapay zeka destekli bir ön değerlendirmedir. Kesin tıbbi teşhis yerine geçmez. Lütfen panik yapmadan bir uzmana danışınız."}
+                    </p>
+                </div>
+            </div>
+        `;
+        wizardContent.appendChild(card);
+    }
+});

@@ -3,12 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Security Headers (Meta tags for CSP) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.jsdelivr.net https://flagcdn.com https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;">
-    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <!-- Security Headers (Meta tags for CSP) - Improved for Production -->
+    <!-- Note: frame-ancestors, X-Frame-Options should be set via server headers, not meta tags -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.jsdelivr.net https://flagcdn.com https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com https://plausible.io; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https://flagcdn.com; connect-src 'self' https://formspree.io https://plausible.io https://*.plausible.io;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta name="robots" content="index, follow">
     <title>LUMINEX - Sağlıkta Dijital Dönüşüm ve Akıllı Randevu Sistemi</title>
+    <!-- DNS Prefetch & Preconnect for External Resources -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="dns-prefetch" href="https://flagcdn.com">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Analytics: Plausible (Privacy-Friendly, GDPR/KVKK Compliant) -->
+    <!-- Note: May be blocked by ad blockers - this is expected behavior -->
+    <script defer data-domain="luminex.com.tr" src="https://plausible.io/js/script.js" onerror="console.warn('Analytics blocked by ad blocker')"></script>
+
     <!-- SEO & Social Media Meta Tags -->
     <link rel="canonical" href="https://luminex.com.tr">
     <meta name="description" content="LUMINEX: Yapay zeka destekli triyaj, kolay randevu ve kurumsal klinik çözümleri sunan modern sağlık platformu.">
@@ -20,16 +34,19 @@
     <meta name="twitter:card" content="summary_large_image">
 
     <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" sizes="32x32" href="favicon-32x32.ico">
+    <link rel="icon" type="image/x-icon" sizes="16x16" href="favicon-16x16.ico">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
-    <link rel="manifest" href="site.webmanifest">
+    <!-- Manifest removed - will be created when deploying to production -->
 
     <!-- SEO: Sitemap -->
     <link rel="sitemap" type="application/xml" title="Sitemap" href="https://luminex.com.tr/sitemap.xml">
 
     <link rel="stylesheet" href="css/landing.css?v=3">
     <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="css/loading.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&family=Playfair+Display:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
 
@@ -58,16 +75,7 @@
     </script>
 </head>
 <body>
-    <script>
-      (function() {
-        try {
-          var theme = localStorage.getItem('landingTheme') || 'light';
-          document.body.classList.add(theme === 'dark' ? 'theme-dark' : 'theme-light');
-        } catch (e) {
-          document.body.classList.add('theme-light');
-        }
-      })();
-    </script>
+    <script src="js/theme-init.js"></script>
     <div class="background-animation"></div>
     
     <nav class="navbar">
@@ -431,7 +439,8 @@
                       method="POST"
                       class="b2b-form-grid"
                       data-fallback-action="mailto:destek@luminex.com.tr"
-                      data-api-endpoint="/api/contact">
+                      data-api-endpoint="/api/contact"
+                      novalidate>
 
                     <!-- 1. Sütun: Kişisel Bilgiler -->
                     <div class="form-column">
@@ -476,7 +485,7 @@
                             <div class="form-group">
                                 <label for="contactPhone" data-lang="yourPhone">Telefon *</label>
                                 <div class="input-wrapper">
-                                    <input type="tel" id="contactPhone" name="phone" class="form-control" data-placeholder="phonePlaceholder" placeholder="05XX XXX XX XX" maxlength="13" pattern="0[0-9]{3} [0-9]{3} [0-9]{2} [0-9]{2]" autocomplete="tel" required>
+                                    <input type="tel" id="contactPhone" name="phone" class="form-control" data-placeholder="phonePlaceholder" placeholder="5XX XXX XX XX" value="0" autocomplete="tel" required>
                                     <i class="fas fa-phone"></i>
                                 </div>
                             </div>
@@ -714,22 +723,51 @@
         });
     </script>
     <script type="module" src="js/script.js" defer></script>
-    <!-- SweetAlert: Lokal kopya + Fallback -->
+    <!-- SweetAlert: Enhanced Loading with Better Error Handling -->
     <script>
-        // SweetAlert'i sadece form varsa yükle (belt + braces approach)
+        // SweetAlert'i sadece form varsa yükle (production-ready approach)
         if (document.getElementById('contactForm')) {
-            // 1. Önce lokal versiyonu dene
-            const script = document.createElement('script');
-            script.src = 'node_modules/sweetalert2/dist/sweetalert2.all.min.js';
-            script.defer = true;
+            function loadSweetAlert() {
+                return new Promise((resolve, reject) => {
+                    // 1. Önce lokal versiyonu dene
+                    const script = document.createElement('script');
+                    script.src = 'node_modules/sweetalert2/dist/sweetalert2.all.min.js';
+                    script.defer = true;
 
-            // 2. Yükleme hatası durumunda fallback
-            script.onerror = function() {
-                console.warn('Lokal SweetAlert yüklenemedi, form normal submit moduna geçiyor');
+                    script.onload = function() {
+                        console.log('SweetAlert yüklendi (lokal)');
+                        resolve();
+                    };
+
+                    script.onerror = function() {
+                        console.warn('Lokal SweetAlert yüklenemedi, CDN deneniyor');
+                        // 2. Fallback to CDN
+                        const cdnScript = document.createElement('script');
+                        cdnScript.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js';
+                        cdnScript.defer = true;
+
+                        cdnScript.onload = function() {
+                            console.log('SweetAlert yüklendi (CDN fallback)');
+                            resolve();
+                        };
+
+                        cdnScript.onerror = function() {
+                            console.error('SweetAlert yüklenemedi, form native validation kullanacak');
+                            reject(new Error('SweetAlert yüklenemedi'));
+                        };
+
+                        document.head.appendChild(cdnScript);
+                    };
+
+                    document.head.appendChild(script);
+                });
+            }
+
+            // SweetAlert'i asenkron yükle
+            loadSweetAlert().catch(() => {
                 // Form SweetAlert olmadan da çalışır, native validation kullanır
-            };
-
-            document.head.appendChild(script);
+                console.log('Form native mode ile çalışacak');
+            });
         }
     </script>
 </body>

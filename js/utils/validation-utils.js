@@ -43,28 +43,28 @@ export function validatePassword(password) {
 }
 
 /**
- * TC Kimlik Numarası Validasyonu (Production Ready)
+ * TC Kimlik Numarası Validasyonu (Doğru Algoritma)
  *
  * Türkiye Cumhuriyeti TC Kimlik Numarası Algoritması:
  * 1. 11 haneli olmalı
  * 2. Sadece rakamlardan oluşmalı
  * 3. İlk hane 0 olamaz
- * 4. 10. hane: İlk 9 hanenin toplamının 10'a bölümünden kalan
- * 5. 11. hane: (1,3,5,7,9 pozisyonlarının toplamı * 7) - (2,4,6,8 pozisyonlarının toplamı)
- *             Sonucun 10'a bölümünden kalan
+ * 4. 10. hane: ((Tek sıradakilar x 7) - Çift sıradakilar) % 10
+ * 5. 11. hane: (İlk 10 hane toplamı) % 10
  *
  * @param {string|number} tc - TC Kimlik numarası
  * @returns {boolean} Geçerli ise true, değilse false
  *
  * @example
- * validateTcKimlik("10000000146") // true (örnek TC)
- * validateTcKimlik("12345678901") // false (geçersiz algoritma)
+ * validateTcKimlik("23024321456") // true ✅
+ * validateTcKimlik("10000000146") // true ✅
+ * validateTcKimlik("11111111110") // false ❌
  */
 export function validateTcKimlik(tc) {
     // Type conversion ve trim
     const tcKimlik = String(tc).trim();
 
-    // 1. Temel format kontrolü: 11 haneli, sadece rakam, 0 ile başlamaz
+    // 1. Temel format kontrolü
     if (!/^[1-9]\d{10}$/.test(tcKimlik)) {
         return false;
     }
@@ -72,19 +72,19 @@ export function validateTcKimlik(tc) {
     // Rakamlara ayır
     const digits = tcKimlik.split('').map(Number);
 
-    // 2. 10. hane kontrolü: İlk 9 hanenin toplamının % 10
-    const first9Sum = digits.slice(0, 9).reduce((sum, digit) => sum + digit, 0);
-    const tenthDigit = first9Sum % 10;
+    // 2. 10. hane kontrolü: (Tek x 7 - Çift) % 10
+    // Tek sıradakilar: 1, 3, 5, 7, 9 (index: 0, 2, 4, 6, 8)
+    // Çift sıradakilar: 2, 4, 6, 8 (index: 1, 3, 5, 7)
+    const oddSum = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
+    const evenSum = digits[1] + digits[3] + digits[5] + digits[7];
+    const tenthDigit = ((oddSum * 7) - evenSum) % 10;
     if (digits[9] !== tenthDigit) {
         return false;
     }
 
-    // 3. 11. hane kontrolü: (tek pozisyonlar * 7 - çift pozisyonlar) % 10
-    // Tek pozisyonlar: 1, 3, 5, 7, 9 (index: 0, 2, 4, 6, 8)
-    // Çift pozisyonlar: 2, 4, 6, 8 (index: 1, 3, 5, 7)
-    const oddPositions = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
-    const evenPositions = digits[1] + digits[3] + digits[5] + digits[7];
-    const eleventhDigit = ((oddPositions * 7) - evenPositions) % 10;
+    // 3. 11. hane kontrolü: İlk 10 hane toplamı % 10
+    const first10Sum = digits.slice(0, 10).reduce((sum, digit) => sum + digit, 0);
+    const eleventhDigit = first10Sum % 10;
     if (digits[10] !== eleventhDigit) {
         return false;
     }

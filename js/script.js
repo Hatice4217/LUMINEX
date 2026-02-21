@@ -12,6 +12,25 @@ import { hashString, encryptData, decryptData, APP_SECRET } from './utils/crypto
 import { validateAge } from './utils/validation-utils.js';
 import logger from './utils/logger.js';
 
+// SweetAlert Global Defaults - Fix Transparent Backdrop Issue
+if (typeof Swal !== 'undefined') {
+    Swal.mixin({
+        showClass: {
+            popup: 'swal2-show',
+            backdrop: 'swal2-backdrop-show',
+            icon: 'swal2-icon-show'
+        },
+        hideClass: {
+            popup: 'swal2-hide',
+            backdrop: 'swal2-backdrop-hide',
+            icon: 'swal2-icon-hide'
+        },
+        customClass: {
+            container: 'swal2-container-luminex'
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
 
     // --- NEW: Scroll Position Restoration Logic ---
@@ -44,52 +63,60 @@ document.addEventListener('DOMContentLoaded', function() {
     const navRightActions = document.getElementById('navRightActions');
     const navOverlay = document.getElementById('navOverlay');
 
-    // Toggle mobile menu
-    function toggleMobileMenu() {
-        hamburgerBtn.classList.toggle('active');
-        navMenu.classList.toggle('active');
-        navRightActions.classList.toggle('active');
-        navOverlay.classList.toggle('active');
+    // Sadece menü elementleri varsa çalıştır
+    if (navMenu && hamburgerBtn) {
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            hamburgerBtn.classList.toggle('active');
+            navMenu.classList.toggle('active');
+            if (navRightActions) navRightActions.classList.toggle('active');
+            if (navOverlay) navOverlay.classList.toggle('active');
 
-        // Prevent body scroll when menu is open
-        document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
-    }
+            // Prevent body scroll when menu is open
+            document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+        }
 
-    // Close mobile menu
-    function closeMobileMenu() {
-        hamburgerBtn.classList.remove('active');
-        navMenu.classList.remove('active');
-        navRightActions.classList.remove('active');
-        navOverlay.classList.remove('active');
-        document.body.style.overflow = '';
-    }
+        // Close mobile menu
+        function closeMobileMenu() {
+            hamburgerBtn.classList.remove('active');
+            navMenu.classList.remove('active');
+            if (navRightActions) navRightActions.classList.remove('active');
+            if (navOverlay) navOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
 
-    // Hamburger button click
-    if (hamburgerBtn) {
+        // Hamburger button click
         hamburgerBtn.addEventListener('click', toggleMobileMenu);
-    }
 
-    // Overlay click to close
-    if (navOverlay) {
-        navOverlay.addEventListener('click', closeMobileMenu);
-    }
+        // Overlay click to close
+        if (navOverlay) {
+            navOverlay.addEventListener('click', closeMobileMenu);
+        }
 
-    // Close menu when clicking on nav links
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            if (navMenu.classList.contains('active')) {
+        // Close menu when clicking on nav links
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (navMenu.classList.contains('active')) {
+                    closeMobileMenu();
+                }
+            });
+        });
+
+        // Close menu on window resize if screen becomes larger
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 992 && navMenu.classList.contains('active')) {
                 closeMobileMenu();
             }
         });
-    });
 
-    // Close menu on window resize if screen becomes larger
-    window.addEventListener('resize', () => {
-        if (window.innerWidth > 992 && navMenu.classList.contains('active')) {
-            closeMobileMenu();
-        }
-    });
+        // OPTIMIZATION: Close menu with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+                closeMobileMenu();
+            }
+        });
+    }
     // --- END of Hamburger Menu Logic ---
 
     const loginForm = document.getElementById('loginForm');
@@ -133,7 +160,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Helper function to show error messages and re-trigger animations
     function showError(inputElement, message) {
-        const formGroup = inputElement.closest('.form-group');
+        // Checkbox için özel durum - parent kvkk-check class'ını bul
+        let formGroup;
+        if (inputElement.type === 'checkbox') {
+            formGroup = inputElement.closest('.kvkk-check');
+        } else {
+            formGroup = inputElement.closest('.form-group');
+        }
+
         if (!formGroup) return;
 
         let errorElement = formGroup.querySelector('.error-message');
@@ -268,131 +302,138 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // ========================================
-            // TC KIMLIK VALIDASYONU (Production Ready)
+            // TC KIMLIK VALIDASYONU & KULLANICI KONTROLÜ
             // ========================================
-            function validateTCKimlik(tc) {
-                // 1. Temel kontroller
-                if (!tc || typeof tc !== 'string') return false;
 
-                // Sadece rakamlar
-                const tcDigits = tc.replace(/\D/g, '');
-                if (tcDigits.length !== 11) return false;
-                if (tcDigits[0] === '0') return false; // Ilk hane 0 olamaz
-
-                // 2. TC Kimlik Algoritma Kontrolü (Resmi Spec)
-                const digits = tcDigits.split('').map(Number);
-
-                // 10. hane: ilk 9 hanenin toplamının 10'a bölümünden kalan
-                const first9Sum = digits.slice(0, 9).reduce((a, b) => a + b, 0);
-                const tenthDigit = (first9Sum % 10);
-                if (digits[9] !== tenthDigit) return false;
-
-                // 11. hane: 1,3,5,7,9 pozisyonlarının toplamı * 7 + 2,4,6,8 pozisyonlarının toplamı
-                //          Sonucun 10'a bölümünden kalan
-                const oddSum = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
-                const evenSum = digits[1] + digits[3] + digits[5] + digits[7];
-                const eleventhDigit = ((oddSum * 7) + evenSum) % 10;
-                if (digits[10] !== eleventhDigit) return false;
-
-                return true;
-            }
-
-            // TC Kimlik validasyonunu çalıştır
-            if (!validateTCKimlik(tc)) {
-                showError(tcKimlikInput, window.getTranslation('invalidTC') || 'Geçersiz TC Kimlik numarası');
+            // 1. Format kontrolü
+            if (!tc || typeof tc !== 'string') {
+                showError(tcKimlikInput, window.getTranslation('tcRequired') || 'TC Kimlik numarası gerekli');
                 return;
             }
-            // ========================================
 
+            const tcDigits = tc.replace(/\D/g, '');
+            if (tcDigits.length !== 11) {
+                showError(tcKimlikInput, 'TC Kimlik numarası 11 haneli olmalıdır');
+                return;
+            }
+            if (tcDigits[0] === '0') {
+                showError(tcKimlikInput, 'TC Kimlik numarası 0 ile başlayamaz');
+                return;
+            }
+
+            // 2. DOĞRU TC KİMLİK ALGORİTMASI
+            const digits = tcDigits.split('').map(Number);
+
+            // 10. hane kontrolü: (Tek x 7 - Çift) % 10
+            const oddSum = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
+            const evenSum = digits[1] + digits[3] + digits[5] + digits[7];
+            const tenthDigit = ((oddSum * 7) - evenSum) % 10;
+            if (digits[9] !== tenthDigit) {
+                showError(tcKimlikInput, '⚠️ Geçersiz TC Kimlik numarası');
+                return;
+            }
+
+            // 11. hane kontrolü: İlk 10 toplamı % 10
+            const first10Sum = digits.slice(0, 10).reduce((a, b) => a + b, 0);
+            const eleventhDigit = first10Sum % 10;
+            if (digits[10] !== eleventhDigit) {
+                showError(tcKimlikInput, '⚠️ Geçersiz TC Kimlik numarası');
+                return;
+            }
+
+            // 3. Algoritma geçti - şimdi kullanıcıyı kontrol et
             const registeredUsers = getLuminexUsers();
             const userIndex = registeredUsers.findIndex(u => (u.tc || u.tcKimlik) === tc);
-            
-            if (userIndex > -1) {
-                const user = registeredUsers[userIndex];
-                const hashedPassword = await hashString(password);
-                let passwordMatch = false;
 
-                // 1. Try matching with hashed password (new system)
-                if (hashedPassword === user.password) {
-                    passwordMatch = true;
-                } 
-                // 2. If not, try matching with plain text (for old accounts)
-                else if (password === user.password) {
-                    passwordMatch = true;
-                    // Lazy migration: Update the old plain-text password to a hashed one
-                    registeredUsers[userIndex].password = hashedPassword;
-                    setLuminexUsers(registeredUsers);
-                    logger.info('Password migrated to hash', { userId: user.id });
-                }
+            if (userIndex === -1) {
+                // Kayıtlı değilse
+                showError(tcKimlikInput, '❌ Kayıtlı değilsiniz. Lütfen önce kayıt olun.');
+                return;
+            }
 
-                if (passwordMatch) {
-                    // On successful login, clear attempts and lockout
+            // 4. Kullanıcı bulundu - şimdi şifre kontrolü
+            const user = registeredUsers[userIndex];
+            const hashedPassword = await hashString(password);
+            let passwordMatch = false;
+
+            // 1. Try matching with hashed password (new system)
+            if (hashedPassword === user.password) {
+                passwordMatch = true;
+            }
+            // 2. If not, try matching with plain text (for old accounts)
+            else if (password === user.password) {
+                passwordMatch = true;
+                // Lazy migration: Update the old plain-text password to a hashed one
+                registeredUsers[userIndex].password = hashedPassword;
+                setLuminexUsers(registeredUsers);
+                logger.info('Password migrated to hash', { userId: user.id });
+            }
+
+            if (!passwordMatch) {
+                // Şifre yanlış
+                let attempts = parseInt(sessionStorage.getItem(`attempts_${tc}`) || '0') + 1;
+
+                if (attempts >= MAX_ATTEMPTS) {
+                    const lockoutUntil = Date.now() + LOCKOUT_DURATION;
+                    sessionStorage.setItem(`lockout_${tc}`, lockoutUntil);
                     sessionStorage.removeItem(`attempts_${tc}`);
-                    sessionStorage.removeItem(`lockout_${tc}`);
-
-                    // Check user role and redirect accordingly. Default to 'patient'
-                    const userRole = user.role || 'patient';
-                    
-                    setLoggedInUser(user);
-
-                    logger.info('User login successful', { userId: user.id, role: userRole });
-
-                    // Check for redirect parameter or symptom checker parameters
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const redirectPage = urlParams.get('redirect');
-                    const deptParam = urlParams.get('dep');
-                    const branchParam = urlParams.get('branch');
-
-                    if (redirectPage) {
-                        window.location.href = redirectPage;
-                    } else if (deptParam) {
-                        // Eğer departman parametresi varsa, appointment.html'e yönlendir ve parametreleri taşı
-                        let targetUrl = `appointment.html?dep=${encodeURIComponent(deptParam)}`;
-                        if(branchParam) targetUrl += `&branch=${branchParam}`;
-                        window.location.href = targetUrl;
-                    } else if (userRole === 'admin') {
-                        logger.debug('Redirecting to admin dashboard');
-                        window.location.href = 'admin-dashboard.html'; 
-                    } else if (userRole === 'doctor') {
-                        logger.debug('Redirecting to doctor dashboard');
-                        window.location.href = 'doctor-dashboard.html';
-                    } else { // Patient
-                        if (user.birthDate && !validateAge(user.birthDate)) {
-                            showError(tcKimlikInput, window.getTranslation('ageRestriction'));
-                            removeLoggedInUser(); 
-                            return;
-                        }
-
-                        // Akıllı Yönlendirme: Eğer hafızada bir AI önerisi varsa randevu sayfasına git
-                        const hasAiRecommendation = sessionStorage.getItem('recommendedBranch');
-                        if (hasAiRecommendation) {
-                            logger.info('AI recommendation redirect', { hasRecommendation: true });
-                            window.location.href = 'appointment.html';
-                            return;
-                        }
-
-                        logger.debug('Redirecting to patient dashboard');
-                        window.location.href = 'dashboard.html';
-                    }
-                } else {
-                    // Password incorrect, handle attempts
-                    let attempts = parseInt(sessionStorage.getItem(`attempts_${tc}`) || '0') + 1;
-                    
-                    if (attempts >= MAX_ATTEMPTS) {
-                        const lockoutUntil = Date.now() + LOCKOUT_DURATION;
-                        sessionStorage.setItem(`lockout_${tc}`, lockoutUntil);
-                        sessionStorage.removeItem(`attempts_${tc}`);
-                        // Trigger the lockout timer immediately by re-running the submit logic
-                        loginForm.requestSubmit();
-                    } else {
-                        sessionStorage.setItem(`attempts_${tc}`, attempts);
-                        const remainingAttemptsMsg = window.getTranslation('attemptsRemaining').replace('{attempts}', MAX_ATTEMPTS - attempts);
-                        showError(passwordLoginInput, `${window.getTranslation('passwordIncorrect')} ${remainingAttemptsMsg}`);
-                    }
+                    loginForm.requestSubmit();
+                    return;
                 }
-            } else {
-                // User with this TC does not exist
-                showError(tcKimlikInput, window.getTranslation('userNotFound'));
+
+                sessionStorage.setItem(`attempts_${tc}`, attempts);
+                const remainingAttemptsMsg = window.getTranslation('attemptsRemaining').replace('{attempts}', MAX_ATTEMPTS - attempts);
+                showError(passwordLoginInput, `${window.getTranslation('passwordIncorrect')} ${remainingAttemptsMsg}`);
+                return;
+            }
+
+            // Giriş başarılı - temizlik
+            sessionStorage.removeItem(`attempts_${tc}`);
+            sessionStorage.removeItem(`lockout_${tc}`);
+
+            // Check user role and redirect accordingly. Default to 'patient'
+            const userRole = user.role || 'patient';
+
+            setLoggedInUser(user);
+
+            logger.info('User login successful', { userId: user.id, role: userRole });
+
+            // Check for redirect parameter or symptom checker parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectPage = urlParams.get('redirect');
+            const deptParam = urlParams.get('dep');
+            const branchParam = urlParams.get('branch');
+
+            if (redirectPage) {
+                window.location.href = redirectPage;
+            } else if (deptParam) {
+                // Eğer departman parametresi varsa, appointment.html'e yönlendir ve parametreleri taşı
+                let targetUrl = `appointment.html?dep=${encodeURIComponent(deptParam)}`;
+                if(branchParam) targetUrl += `&branch=${branchParam}`;
+                window.location.href = targetUrl;
+            } else if (userRole === 'admin') {
+                logger.debug('Redirecting to admin dashboard');
+                window.location.href = 'admin-dashboard.html';
+            } else if (userRole === 'doctor') {
+                logger.debug('Redirecting to doctor dashboard');
+                window.location.href = 'doctor-dashboard.html';
+            } else { // Patient
+                if (user.birthDate && !validateAge(user.birthDate)) {
+                    showError(tcKimlikInput, window.getTranslation('ageRestriction'));
+                    removeLoggedInUser();
+                    return;
+                }
+
+                // Akıllı Yönlendirme: Eğer hafızada bir AI önerisi varsa randevu sayfasına git
+                const hasAiRecommendation = sessionStorage.getItem('recommendedBranch');
+                if (hasAiRecommendation) {
+                    logger.info('AI recommendation redirect', { hasRecommendation: true });
+                    window.location.href = 'appointment.html';
+                    return;
+                }
+
+                logger.debug('Redirecting to patient dashboard');
+                window.location.href = 'dashboard.html';
             }
         });
     }
@@ -423,113 +464,104 @@ document.addEventListener('DOMContentLoaded', function() {
             hideIndexFormWarning(); // Always hide previous warnings on new submission attempt
 
             const contactName = document.getElementById('contactName');
+            const contactPosition = document.getElementById('contactPosition');
             const contactPhone = document.getElementById('contactPhone');
             const contactEmail = document.getElementById('contactEmail');
+            const companyName = document.getElementById('companyName');
+            const branchCount = document.getElementById('branchCount');
+            const dailyPatients = document.getElementById('dailyPatients');
+            const requestType = document.getElementById('requestType');
             const contactMessage = document.getElementById('contactMessage');
             const submitButton = contactForm.querySelector('button[type="submit"]');
 
-            // Alan bazlı kontrol ve SweetAlert uyarısı
+            // Önce tüm hataları temizle
+            clearErrors();
+
+            // Hataları topla
+            const errors = [];
+
+            // İsim kontrolü
             if (!contactName.value.trim()) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Eksik Bilgi!',
-                    text: 'Lütfen adınızı ve soyadınızı giriniz.',
-                    confirmButtonColor: '#78C7C7',
-                    confirmButtonText: 'Tamam'
-                });
-                contactName.focus();
-                return;
+                errors.push({ input: contactName, message: 'Lütfen adınızı ve soyadınızı giriniz.' });
             }
 
-            if (!contactPhone.value.trim()) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Eksik Bilgi!',
-                    text: 'Lütfen telefon numaranızı giriniz.',
-                    confirmButtonColor: '#78C7C7',
-                    confirmButtonText: 'Tamam'
-                });
-                contactPhone.focus();
-                return;
+            // Pozisyon kontrolü
+            if (!contactPosition.value.trim()) {
+                errors.push({ input: contactPosition, message: 'Lütfen pozisyonunuzu seçiniz.' });
             }
 
-            // Telefon format kontrolü (0XXX XXX XX XX)
-            const phonePattern = /^0[0-9]{3} [0-9]{3} [0-9]{2} [0-9]{2}$/;
-            if (!phonePattern.test(contactPhone.value.trim())) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Geçersiz Telefon!',
-                    text: 'Telefon numarası formatı: 0XXX XXX XX XX olmalıdır.',
-                    confirmButtonColor: '#78C7C7',
-                    confirmButtonText: 'Tamam'
-                });
-                contactPhone.focus();
-                return;
+            // Telefon kontrolü
+            if (!contactPhone.value.trim() || contactPhone.value === '0') {
+                errors.push({ input: contactPhone, message: 'Lütfen telefon numaranızı giriniz.' });
+            } else {
+                const phoneDigits = contactPhone.value.replace(/\D/g, '');
+                if (phoneDigits.length < 10) {
+                    errors.push({ input: contactPhone, message: 'Telefon numarası en az 10 haneli olmalıdır.' });
+                }
             }
 
+            // Email kontrolü
             if (!contactEmail.value.trim()) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Eksik Bilgi!',
-                    text: 'Lütfen e-posta adresinizi giriniz.',
-                    confirmButtonColor: '#78C7C7',
-                    confirmButtonText: 'Tamam'
-                });
-                contactEmail.focus();
-                return;
+                errors.push({ input: contactEmail, message: 'Lütfen e-posta adresinizi giriniz.' });
+            } else {
+                const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+                if (!emailRegex.test(contactEmail.value.trim())) {
+                    errors.push({ input: contactEmail, message: 'Lütfen geçerli bir e-posta adresi giriniz.' });
+                }
             }
 
-            // Email validasyonu - Production-ready regex
-            // Not: Backend'de MX record check yapılmalı (production için)
-            const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-            if (!emailRegex.test(contactEmail.value.trim())) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Geçersiz E-posta!',
-                    text: 'Lütfen geçerli bir e-posta adresi giriniz (örn: ornek@domain.com).',
-                    confirmButtonColor: '#78C7C7',
-                    confirmButtonText: 'Tamam'
-                });
-                contactEmail.focus();
-                return;
+            // Şirket adı kontrolü
+            if (!companyName.value.trim()) {
+                errors.push({ input: companyName, message: 'Lütfen klinik/hastane adını giriniz.' });
             }
 
-            // TODO: Production için Backend MX record check
-            // fetch('/api/validate-email?email=' + encodeURIComponent(contactEmail.value))
-            //   .then(res => res.json())
-            //   .then(data => { if (!data.valid) { /* Show error */ } });
+            // Branş sayısı kontrolü
+            if (!branchCount.value.trim()) {
+                errors.push({ input: branchCount, message: 'Lütfen branş sayısını seçiniz.' });
+            }
 
+            // Günlük hasta sayısı kontrolü
+            if (!dailyPatients.value.trim()) {
+                errors.push({ input: dailyPatients, message: 'Lütfen günlük hasta sayısını seçiniz.' });
+            }
 
+            // Talep türü kontrolü
+            if (!requestType.value.trim()) {
+                errors.push({ input: requestType, message: 'Lütfen talep türünü seçiniz.' });
+            }
+
+            // Mesaj kontrolü (opsiyonel ama yine de kontrol edelim)
             if (!contactMessage.value.trim()) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Eksik Bilgi!',
-                    text: 'Lütfen mesajınızı yazınız.',
-                    confirmButtonColor: '#78C7C7',
-                    confirmButtonText: 'Tamam'
-                });
-                contactMessage.focus();
-                return;
+                errors.push({ input: contactMessage, message: 'Lütfen mesajınızı yazınız.' });
             }
 
             // KVKK onayı kontrolü
             const kvkkCheckbox = document.getElementById('kvkkApprove');
             if (kvkkCheckbox && !kvkkCheckbox.checked) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Onay Gerekli!',
-                    text: 'KVKK Aydınlatma Metni\'ni okuyup onaylamanız gerekmektedir.',
-                    confirmButtonColor: '#78C7C7',
-                    confirmButtonText: 'Tamam'
-                });
+                errors.push({ input: kvkkCheckbox, message: 'KVKK Aydınlatma Metnini okuyup onaylamanız gerekmektedir.' });
+            }
+
+            // Hata varsa, tüm hataları göster
+            if (errors.length > 0) {
+                errors.forEach(err => showError(err.input, err.message));
+                // İlk hatalı alana odaklan
+                errors[0].input.focus();
                 return;
             }
 
             // Disable button to prevent multiple submissions and show sending state
             submitButton.disabled = true;
-            submitButton.textContent = window.getTranslation('sendingMessage');
+            submitButton.classList.add('btn-loading');
+            submitButton.setAttribute('data-original-text', window.getTranslation('sendMessage'));
+            submitButton.textContent = ''; // Clear text for spinner
+
+            // Form'u disable et ama şeffaflık yapma (SweetAlert açıkken)
+            contactForm.querySelectorAll('input, select, textarea').forEach(el => {
+                el.disabled = true;
+            });
 
             // Show "Sending..." SweetAlert
+            const isDarkMode = document.body.classList.contains('theme-dark');
             Swal.fire({
                 title: window.getTranslation('sendingTitle'),
                 text: window.getTranslation('sendingText'),
@@ -538,7 +570,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 didOpen: () => {
                     Swal.showLoading();
                 },
-                customClass: { // Re-apply premium class to sending SweetAlert
+                background: isDarkMode ? '#1e293b' : '#ffffff',
+                backdrop: isDarkMode
+                    ? 'rgba(0, 0, 0, 0.85)'
+                    : 'rgba(0, 15, 80, 0.85)',
+                customClass: {
                     popup: 'swal-premium-popup',
                     title: 'swal-premium-title',
                     htmlContainer: 'swal-premium-text',
@@ -558,28 +594,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 Swal.close(); // Close the "Sending..." SweetAlert
 
+                const isDarkMode = document.body.classList.contains('theme-dark');
+
                 if (response.ok) {
                     Swal.fire({
                         title: window.getTranslation('contactSuccessTitle'),
                         text: window.getTranslation('contactSuccessText'),
+                        icon: 'success',
                         timer: 3000,
                         timerProgressBar: true,
                         showConfirmButton: false,
                         padding: '2em',
-                        background: 'rgba(0, 4, 40, 0.85)', // Re-applying the premium style with slightly lighter default dark
-                        backdrop: `
-                            rgba(0, 15, 80, 0.4)
-                            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%2378c7c7' fill-opacity='0.1'%3E%3Crect x='0' y='0' width='100' height='100'/%3E%3C/g%3E%3C/svg%3E")
-                            left top
-                            repeat
-                        `,
+                        background: isDarkMode ? '#1e293b' : '#ffffff',
+                        backdrop: isDarkMode
+                            ? 'rgba(0, 0, 0, 0.9)'
+                            : 'rgba(0, 15, 80, 0.9)',
                         customClass: {
                             popup: 'swal-premium-popup',
                             title: 'swal-premium-title',
                             htmlContainer: 'swal-premium-text',
                             timerProgressBar: 'swal-premium-progressbar',
                         },
-                        iconHtml: '<div class="swal-custom-icon"><i class="fas fa-check"></i></div>', // Custom animated icon
                         willOpen: () => {
                             contactForm.reset();
                         }
@@ -595,7 +630,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         title: window.getTranslation('genericErrorTitle'),
                         text: serverErrorMessage,
                         confirmButtonText: window.getTranslation('okButton'),
-                        customClass: { // Re-apply premium class to error SweetAlert
+                        background: isDarkMode ? '#1e293b' : '#ffffff',
+                        backdrop: isDarkMode
+                            ? 'rgba(0, 0, 0, 0.9)'
+                            : 'rgba(0, 15, 80, 0.9)',
+                        customClass: {
                             popup: 'swal-premium-popup',
                             title: 'swal-premium-title',
                             htmlContainer: 'swal-premium-text',
@@ -614,11 +653,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'info',
                     title: 'Bağlantı Hatası',
-                    text: 'Formsunuz alternate yöntemle gönderiliyor...',
+                    text: 'Formunuz alternate yöntemle gönderiliyor...',
                     timer: 2000,
                     timerProgressBar: true,
                     showConfirmButton: false,
-                    background: 'rgba(0, 4, 40, 0.85)',
+                    background: isDarkMode ? '#1e293b' : '#ffffff',
+                    backdrop: isDarkMode
+                        ? 'rgba(0, 0, 0, 0.9)'
+                        : 'rgba(0, 15, 80, 0.9)',
                     customClass: {
                         popup: 'swal-premium-popup',
                         title: 'swal-premium-title',
@@ -636,7 +678,13 @@ document.addEventListener('DOMContentLoaded', function() {
             } finally {
                 // Re-enable button and restore original text
                 submitButton.disabled = false;
-                submitButton.textContent = window.getTranslation('sendMessage');
+                submitButton.classList.remove('btn-loading');
+                submitButton.textContent = submitButton.getAttribute('data-original-text') || window.getTranslation('sendMessage');
+
+                // Form elemanlarını tekrar enable et
+                contactForm.querySelectorAll('input, select, textarea').forEach(el => {
+                    el.disabled = false;
+                });
             }
         });
     }
@@ -764,16 +812,39 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add active to next
             slides[currentSlide].classList.add('active');
         }, 4000); // Change every 4 seconds
+    }
 
     // --- TELEFON FORMATLAMA (Türkiye) ---
     const contactPhone = document.getElementById('contactPhone');
     if (contactPhone) {
+        // Başlangıçta 0 yoksa ekle
+        if (!contactPhone.value) {
+            contactPhone.value = '0';
+        }
+
+        // 0'ı silmeyi engelle (backspace/delete kontrolü)
+        contactPhone.addEventListener('keydown', function(e) {
+            const currentValue = e.target.value;
+
+            // Eğer sadece 0 varsa ve silmek isteniyorsa engelle
+            if (currentValue === '0' && (e.key === 'Backspace' || e.key === 'Delete')) {
+                e.preventDefault();
+            }
+
+            // İmleç başta ve backspace basılıyorsa engelle (0'ı korumak için)
+            if (e.key === 'Backspace' && e.target.selectionStart === 1 && e.target.selectionEnd === 1) {
+                e.preventDefault();
+            }
+        });
+
         contactPhone.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, ''); // Sadece rakamları al
 
             // 0 ile başlamalı, maksimum 11 hane
             if (!value.startsWith('0') && value.length > 0) {
                 value = '0' + value;
+            } else if (value === '') {
+                value = '0'; // Hiçbir şey yoksa 0 koy
             }
 
             // Maksimum 11 hane (0XXXXXXXXXX)
@@ -810,5 +881,57 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    }
+
+    // --- OPTIMIZATION: Page Transition Loader ---
+    const pageLoader = document.createElement('div');
+    pageLoader.className = 'page-transition-loader';
+    document.body.appendChild(pageLoader);
+
+    // Show loader on page navigation
+    document.querySelectorAll('a[href]:not([href^="#"]):not([href^="mailto:"]):not([href^="tel:"])').forEach(link => {
+        link.addEventListener('click', function() {
+            // Skip for target="_blank" links
+            if (this.getAttribute('target') === '_blank') return;
+            pageLoader.classList.add('active');
+        });
+    });
+
+    // Hide loader when page is fully loaded
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            pageLoader.classList.remove('active');
+        }, 500);
+    });
+
+    // --- OPTIMIZATION: Enhanced Form Loading States ---
+    const forms = document.querySelectorAll('form[data-loading-state]');
+    forms.forEach(form => {
+        form.addEventListener('submit', function() {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.classList.add('btn-loading');
+            }
+            this.classList.add('form-loading');
+        });
+    });
+
+    // --- OPTIMIZATION: Global Loading Overlay Helper ---
+    window.showLoading = function(message = 'Yükleniyor...') {
+        let overlay = document.querySelector('.loading-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'loading-overlay';
+            overlay.innerHTML = '<div class="spinner"></div>';
+            document.body.appendChild(overlay);
+        }
+        overlay.classList.add('active');
+        return overlay;
+    };
+
+    window.hideLoading = function() {
+        const overlay = document.querySelector('.loading-overlay');
+        if (overlay) {
+            overlay.classList.remove('active');
+        }
+    };
 });

@@ -3090,3 +3090,138 @@ body.theme-light .form-column .section-divider span {
 .form-group.success select {
     border-color: #00f260;
 }
+
+/* ==========================================
+   SWEETALERT CUSTOM STYLES (Proper Backdrop)
+   ========================================== */
+
+/* SweetAlert Container - Strong Backdrop (FIXED) */
+.swal2-container,
+.swal2-container-luminex,
+body .swal2-container,
+body > .swal2-container {
+    background: rgba(0, 15, 80, 0.95) !important;
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    z-index: 99999 !important; /* Formun üstünde çıksın */
+}
+
+/* SweetAlert Backdrop Element */
+.swal2-backdrop-show {
+    background: rgba(0, 15, 80, 0.95) !important;
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    z-index: 99999 !important;
+}
+
+/* SweetAlert Popup Base Styles */
+.swal2-popup {
+    border-radius: 16px !important;
+    padding: 2rem !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* SweetAlert Title */
+.swal2-title {
+    font-family: 'Poppins', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 1.5rem !important;
+}
+
+/* SweetAlert Content */
+.swal2-html-container {
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+}
+
+/* SweetAlert Confirm Button */
+.swal2-confirm {
+    border-radius: 8px !important;
+    padding: 12px 24px !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    transition: all 0.3s ease !important;
+}
+
+.swal2-confirm:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(0, 31, 107, 0.3) !important;
+}
+
+/* SweetAlert Icon Styling */
+.swal2-icon {
+    border: none !important;
+}
+
+.swal2-icon.swal2-success {
+    color: #00f260 !important;
+}
+
+.swal2-icon.swal2-error {
+    color: #ff4b2b !important;
+}
+
+.swal2-icon.swal2-info {
+    color: #78C7C7 !important;
+}
+
+/* SweetAlert Timer Progress Bar */
+.swal2-timer-progress-bar {
+    background: linear-gradient(90deg, #78C7C7, #00f260) !important;
+}
+
+/* Premium SweetAlert Custom Classes */
+.swal-premium-popup {
+    border-radius: 20px !important;
+    padding: 2.5rem !important;
+}
+
+.swal-premium-title {
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+}
+
+.swal-premium-text {
+    font-size: 1.1rem !important;
+    line-height: 1.8 !important;
+}
+
+.swal-premium-confirm-button {
+    background: linear-gradient(135deg, #001F6B, #004e92) !important;
+    border: none !important;
+    color: #ffffff !important;
+    border-radius: 12px !important;
+    padding: 14px 32px !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+}
+
+.swal-premium-confirm-button:hover {
+    background: linear-gradient(135deg, #004e92, #001F6B) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 25px rgba(0, 31, 107, 0.4) !important;
+}
+
+.swal-premium-progressbar {
+    background: linear-gradient(90deg, #78C7C7, #00f260) !important;
+    height: 6px !important;
+}
+
+/* Light Mode SweetAlert Overrides */
+body.theme-light .swal2-popup {
+    background: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .swal2-title,
+body.theme-light .swal2-html-container {
+    color: #1e293b !important;
+}
+
+body.theme-light .swal2-confirm {
+    background: linear-gradient(135deg, #001F6B, #004e92) !important;
+}

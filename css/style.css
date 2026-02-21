@@ -349,6 +349,7 @@ body {
 }
 
 .error-message {
+    display: block;
     color: #D93025;
     font-size: 0.8rem;
     margin-top: 5px;

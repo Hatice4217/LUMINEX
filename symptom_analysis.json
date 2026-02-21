@@ -1,0 +1,378 @@
+{
+  "summary": {
+    "totalSymptoms": 15,
+    "overallMin": 1,
+    "overallMax": 7,
+    "overallAvg": "2.36",
+    "totalNodes": 106,
+    "intermediateNodes": 91
+  },
+  "symptoms": [
+    {
+      "id": "bas_agrisi",
+      "min": 2,
+      "max": 7,
+      "avg": "4.96",
+      "options": 4,
+      "paths": 46
+    },
+    {
+      "id": "bogaz_agrisi",
+      "min": 1,
+      "max": 2,
+      "avg": "1.86",
+      "options": 3,
+      "paths": 7
+    },
+    {
+      "id": "bulanti",
+      "min": 1,
+      "max": 3,
+      "avg": "2.27",
+      "options": 4,
+      "paths": 11
+    },
+    {
+      "id": "burun_tikanikligi",
+      "min": 1,
+      "max": 2,
+      "avg": "1.86",
+      "options": 3,
+      "paths": 7
+    },
+    {
+      "id": "carpinti",
+      "min": 2,
+      "max": 3,
+      "avg": "2.21",
+      "options": 4,
+      "paths": 14
+    },
+    {
+      "id": "cilt_sorunu",
+      "min": 2,
+      "max": 3,
+      "avg": "2.28",
+      "options": 4,
+      "paths": 18
+    },
+    {
+      "id": "dis_agrisi",
+      "min": 1,
+      "max": 2,
+      "avg": "1.71",
+      "options": 4,
+      "paths": 7
+    },
+    {
+      "id": "eklem_agrisi",
+      "min": 2,
+      "max": 3,
+      "avg": "2.20",
+      "options": 3,
+      "paths": 10
+    },
+    {
+      "id": "goz_agrisi",
+      "min": 1,
+      "max": 2,
+      "avg": "1.88",
+      "options": 4,
+      "paths": 8
+    },
+    {
+      "id": "halsizlik",
+      "min": 2,
+      "max": 4,
+      "avg": "2.65",
+      "options": 4,
+      "paths": 17
+    },
+    {
+      "id": "idrar_yanmasi",
+      "min": 1,
+      "max": 3,
+      "avg": "2.33",
+      "options": 4,
+      "paths": 12
+    },
+    {
+      "id": "kabizlik",
+      "min": 1,
+      "max": 1,
+      "avg": "1.00",
+      "options": 3,
+      "paths": 3
+    },
+    {
+      "id": "karin_agrisi",
+      "min": 2,
+      "max": 4,
+      "avg": "3.46",
+      "options": 4,
+      "paths": 39
+    },
+    {
+      "id": "kulak_agrisi",
+      "min": 1,
+      "max": 2,
+      "avg": "1.67",
+      "options": 4,
+      "paths": 6
+    },
+    {
+      "id": "nefes_darligi",
+      "min": 2,
+      "max": 4,
+      "avg": "3.10",
+      "options": 3,
+      "paths": 21
+    }
+  ],
+  "top10ByMax": [
+    {
+      "id": "bas_agrisi",
+      "min": 2,
+      "max": 7,
+      "avg": "4.96",
+      "options": 4,
+      "paths": 46
+    },
+    {
+      "id": "halsizlik",
+      "min": 2,
+      "max": 4,
+      "avg": "2.65",
+      "options": 4,
+      "paths": 17
+    },
+    {
+      "id": "karin_agrisi",
+      "min": 2,
+      "max": 4,
+      "avg": "3.46",
+      "options": 4,
+      "paths": 39
+    },
+    {
+      "id": "nefes_darligi",
+      "min": 2,
+      "max": 4,
+      "avg": "3.10",
+      "options": 3,
+      "paths": 21
+    },
+    {
+      "id": "bulanti",
+      "min": 1,
+      "max": 3,
+      "avg": "2.27",
+      "options": 4,
+      "paths": 11
+    },
+    {
+      "id": "carpinti",
+      "min": 2,
+      "max": 3,
+      "avg": "2.21",
+      "options": 4,
+      "paths": 14
+    },
+    {
+      "id": "cilt_sorunu",
+      "min": 2,
+      "max": 3,
+      "avg": "2.28",
+      "options": 4,
+      "paths": 18
+    },
+    {
+      "id": "eklem_agrisi",
+      "min": 2,
+      "max": 3,
+      "avg": "2.20",
+      "options": 3,
+      "paths": 10
+    },
+    {
+      "id": "idrar_yanmasi",
+      "min": 1,
+      "max": 3,
+      "avg": "2.33",
+      "options": 4,
+      "paths": 12
+    },
+    {
+      "id": "bogaz_agrisi",
+      "min": 1,
+      "max": 2,
+      "avg": "1.86",
+      "options": 3,
+      "paths": 7
+    }
+  ],
+  "top10ByAvg": [
+    {
+      "id": "bas_agrisi",
+      "min": 2,
+      "max": 7,
+      "avg": "4.96",
+      "options": 4,
+      "paths": 46
+    },
+    {
+      "id": "karin_agrisi",
+      "min": 2,
+      "max": 4,
+      "avg": "3.46",
+      "options": 4,
+      "paths": 39
+    },
+    {
+      "id": "nefes_darligi",
+      "min": 2,
+      "max": 4,
+      "avg": "3.10",
+      "options": 3,
+      "paths": 21
+    },
+    {
+      "id": "halsizlik",
+      "min": 2,
+      "max": 4,
+      "avg": "2.65",
+      "options": 4,
+      "paths": 17
+    },
+    {
+      "id": "idrar_yanmasi",
+      "min": 1,
+      "max": 3,
+      "avg": "2.33",
+      "options": 4,
+      "paths": 12
+    },
+    {
+      "id": "cilt_sorunu",
+      "min": 2,
+      "max": 3,
+      "avg": "2.28",
+      "options": 4,
+      "paths": 18
+    },
+    {
+      "id": "bulanti",
+      "min": 1,
+      "max": 3,
+      "avg": "2.27",
+      "options": 4,
+      "paths": 11
+    },
+    {
+      "id": "carpinti",
+      "min": 2,
+      "max": 3,
+      "avg": "2.21",
+      "options": 4,
+      "paths": 14
+    },
+    {
+      "id": "eklem_agrisi",
+      "min": 2,
+      "max": 3,
+      "avg": "2.20",
+      "options": 3,
+      "paths": 10
+    },
+    {
+      "id": "goz_agrisi",
+      "min": 1,
+      "max": 2,
+      "avg": "1.88",
+      "options": 4,
+      "paths": 8
+    }
+  ],
+  "bottom10ByMin": [
+    {
+      "id": "bogaz_agrisi",
+      "min": 1,
+      "max": 2,
+      "avg": "1.86",
+      "options": 3,
+      "paths": 7
+    },
+    {
+      "id": "bulanti",
+      "min": 1,
+      "max": 3,
+      "avg": "2.27",
+      "options": 4,
+      "paths": 11
+    },
+    {
+      "id": "burun_tikanikligi",
+      "min": 1,
+      "max": 2,
+      "avg": "1.86",
+      "options": 3,
+      "paths": 7
+    },
+    {
+      "id": "dis_agrisi",
+      "min": 1,
+      "max": 2,
+      "avg": "1.71",
+      "options": 4,
+      "paths": 7
+    },
+    {
+      "id": "goz_agrisi",
+      "min": 1,
+      "max": 2,
+      "avg": "1.88",
+      "options": 4,
+      "paths": 8
+    },
+    {
+      "id": "idrar_yanmasi",
+      "min": 1,
+      "max": 3,
+      "avg": "2.33",
+      "options": 4,
+      "paths": 12
+    },
+    {
+      "id": "kabizlik",
+      "min": 1,
+      "max": 1,
+      "avg": "1.00",
+      "options": 3,
+      "paths": 3
+    },
+    {
+      "id": "kulak_agrisi",
+      "min": 1,
+      "max": 2,
+      "avg": "1.67",
+      "options": 4,
+      "paths": 6
+    },
+    {
+      "id": "bas_agrisi",
+      "min": 2,
+      "max": 7,
+      "avg": "4.96",
+      "options": 4,
+      "paths": 46
+    },
+    {
+      "id": "carpinti",
+      "min": 2,
+      "max": 3,
+      "avg": "2.21",
+      "options": 4,
+      "paths": 14
+    }
+  ]
+}

@@ -21,8 +21,26 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             border-radius: 20px;
-            padding: 3rem 2.5rem;
+            padding: 2rem 2rem 2.5rem 2rem;
             transition: all 0.3s ease;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        /* Auth Card Scrollbar - Turquoise */
+        .auth-card::-webkit-scrollbar {
+            width: 6px;
+        }
+        .auth-card::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+        .auth-card::-webkit-scrollbar-thumb {
+            background: rgba(120, 199, 199, 0.5);
+            border-radius: 3px;
+        }
+        .auth-card::-webkit-scrollbar-thumb:hover {
+            background: rgba(120, 199, 199, 0.7);
         }
 
         body.theme-light .auth-card {
@@ -31,9 +49,24 @@
             box-shadow: 0 20px 60px rgba(0, 31, 107, 0.15) !important;
         }
 
+        body.theme-light .auth-card::-webkit-scrollbar-track {
+            background: #f0f0f0;
+        }
+        body.theme-light .auth-card::-webkit-scrollbar-thumb {
+            background: rgba(0, 31, 107, 0.3);
+        }
+        body.theme-light .auth-card::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 31, 107, 0.5);
+        }
+
         /* Auth Header */
+        .auth-header {
+            margin-top: 8px;
+            margin-bottom: 0.5rem;
+        }
+
         .auth-header h2 {
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: 700;
             background: linear-gradient(135deg, #78C7C7 0%, #ffffff 100%);
             -webkit-background-clip: text;
@@ -111,9 +144,14 @@
 
         /* Toggle Password */
         .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
             color: rgba(255, 255, 255, 0.5);
             cursor: pointer;
             transition: all 0.3s ease;
+            z-index: 2;
         }
 
         .toggle-password:hover {
@@ -325,32 +363,30 @@
                     
                     infoBox.style.cssText = `
                         background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-                        border-left: 5px solid #001F6B;
-                        border-radius: 12px;
-                        padding: 20px;
-                        margin-bottom: 20px;
-                        margin-top: 60px; /* Dil değiştirici ile çakışmaması için */
-                        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-                        animation: fadeIn 0.6s ease-out;
+                        border-left: 4px solid #001F6B;
+                        border-radius: 10px;
+                        padding: 12px 15px;
+                        margin-bottom: 15px;
+                        margin-top: 55px;
+                        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+                        animation: fadeIn 0.4s ease-out;
                     `;
-                    
+
                     infoBox.innerHTML = `
-                        <div style="display: flex; align-items: flex-start; gap: 15px;">
-                            <div style="background: white; padding: 10px; border-radius: 50%; color: #001F6B; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                                <i class="fas fa-user-md" style="font-size: 1.2rem;"></i>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="background: white; padding: 8px; border-radius: 50%; color: #001F6B; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex-shrink: 0;">
+                                <i class="fas fa-user-md" style="font-size: 1rem;"></i>
                             </div>
                             <div>
-                                <h4 style="margin: 0 0 5px 0; color: #001F6B; font-size: 1rem; font-weight: 700;">Analiz Sonucu</h4>
-                                <p style="margin: 0; font-size: 0.95rem; color: #444; line-height: 1.5;">
-                                    <strong style="color: #001F6B;">${decodedDept}</strong> bölümü için yönlendirildiniz. 
-                                    <br>Randevunuzu tamamlamak için lütfen giriş yapınız.
+                                <h4 style="margin: 0 0 3px 0; color: #001F6B; font-size: 0.9rem; font-weight: 700;">Analiz Sonucu</h4>
+                                <p style="margin: 0; font-size: 0.85rem; color: #444; line-height: 1.4;">
+                                    <strong style="color: #001F6B;">${decodedDept}</strong> bölümü için yönlendirildiniz. Randevu için giriş yapınız.
                                 </p>
                             </div>
                         </div>
                     `;
-                    
-                    formPanel.insertBefore(infoBox, authHeader);
-                    authHeader.style.marginTop = "10px"; 
+
+                    formPanel.insertBefore(infoBox, authHeader); 
                 } else {
                     console.error("Auth card or header not found in DOM.");
                 }

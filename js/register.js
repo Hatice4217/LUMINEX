@@ -38,7 +38,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const input = this.previousElementSibling;
             const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
             input.setAttribute('type', type);
-            this.querySelector('i').classList.toggle('fa-eye-slash');
+            const icon = this.querySelector('i');
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
         });
     });
 
