@@ -4,7 +4,7 @@ services:
     name: luminex-backend
     env: node
     buildCommand: cd backend && npm install && npx prisma generate
-    startCommand: cd backend && npx prisma migrate deploy && node src/server.js
+    startCommand: cd backend && npx prisma db push --skip-generate && node src/server.js
     envVars:
       - key: NODE_ENV
         value: production
