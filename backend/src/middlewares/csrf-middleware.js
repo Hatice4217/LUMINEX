@@ -78,12 +78,22 @@ export const validateOrigin = (req, res, next) => {
   const allowedOrigins = [
     'http://localhost:8080',
     'http://127.0.0.1:8080',
+    'https://luminex-app-seven.vercel.app',
+    'https://luminex-frontend.vercel.app',
     'https://luminex-app.vercel.app',
     process.env.FRONTEND_URL,
   ].filter(Boolean);
 
   const origin = req.headers.origin;
   const referer = req.headers.referer;
+
+  // Vercel domain'lerini kabul et
+  const isVercelOrigin = origin && /\.vercel\.app$/.test(origin);
+  const isVercelReferer = referer && /vercel\.app/.test(referer);
+
+  if (isVercelOrigin || isVercelReferer) {
+    return next();
+  }
 
   // Origin kontrolü
   if (origin && !allowedOrigins.includes(origin)) {

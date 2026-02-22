@@ -73,7 +73,15 @@ app.use(helmet({
 
 // CORS - Cross Origin Resource Sharing
 app.use(cors({
-  origin: [FRONTEND_URL, 'http://localhost:8080', 'http://127.0.0.1:8080'],
+  origin: [
+    FRONTEND_URL,
+    'http://localhost:8080',
+    'http://127.0.0.1:8080',
+    'https://luminex-app-seven.vercel.app',
+    'https://luminex-frontend.vercel.app',
+    'https://luminex-app.vercel.app',
+    /.+\.vercel\.app$/, // Tüm Vercel subdomain'lerine izin ver
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
