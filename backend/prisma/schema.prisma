@@ -5,10 +5,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
-  // Production için PostgreSQL kullanın:
-  // provider = "postgresql"
 }
 
 // Kullanıcı rolleri enum'ı
