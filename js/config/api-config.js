@@ -12,8 +12,8 @@ const getApiBaseUrl = () => {
   }
 
   // Production (Render)
-  if (hostname.includes('onrender.com')) {
-    return 'https://luminex-backend.onrender.com/api';
+  if (hostname.includes('onrender.com') || hostname.includes('vercel.app')) {
+    return 'https://luminex-backend-8zyl.onrender.com/api';
   }
 
   // Production (Custom domain)
