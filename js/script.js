@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const submitButton = loginForm.querySelector('button[type="submit"]');
         let lockoutInterval;
 
-        loginForm.addEventListener('submit', async function(event) { // Make async
+        loginForm.addEventListener('submit', async function(event) {
             event.preventDefault();
             clearErrors();
 
@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const lockoutTime = sessionStorage.getItem(`lockout_${tc}`);
             if (lockoutTime && Date.now() < parseInt(lockoutTime)) {
                 submitButton.disabled = true;
-                
+
                 const updateTimer = () => {
                     const remainingMs = parseInt(lockoutTime) - Date.now();
                     if (remainingMs <= 0) {
@@ -277,19 +277,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 };
 
-                updateTimer(); // Initial call
+                updateTimer();
                 lockoutInterval = setInterval(updateTimer, 1000);
                 return;
             }
 
             if (rememberMeCheckbox && tcKimlikInput) {
                 if (rememberMeCheckbox.checked) {
-                    // Encrypt TC Kimlik before storing (XSS prevention)
-                    encryptData(tc, APP_SECRET).then(encrypted => {
-                        if (encrypted) {
-                            setLocalStorageItem('rememberedTcKimlik', encrypted);
-                        }
-                    });
+                    setLocalStorageItem('rememberedTcKimlik', tc);
                 } else {
                     removeLocalStorageItem('rememberedTcKimlik');
                 }
@@ -301,139 +296,150 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // ========================================
-            // TC KIMLIK VALIDASYONU & KULLANICI KONTROLÜ
-            // ========================================
-
-            // 1. Format kontrolü
-            if (!tc || typeof tc !== 'string') {
-                showError(tcKimlikInput, window.getTranslation('tcRequired') || 'TC Kimlik numarası gerekli');
-                return;
-            }
-
+            // TC Kimlik validasyonu
             const tcDigits = tc.replace(/\D/g, '');
             if (tcDigits.length !== 11) {
                 showError(tcKimlikInput, 'TC Kimlik numarası 11 haneli olmalıdır');
                 return;
             }
-            if (tcDigits[0] === '0') {
-                showError(tcKimlikInput, 'TC Kimlik numarası 0 ile başlayamaz');
-                return;
-            }
 
-            // 2. DOĞRU TC KİMLİK ALGORİTMASI
-            const digits = tcDigits.split('').map(Number);
+            // Show loading
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + (window.getTranslation?.('loading') || 'Yükleniyor...');
 
-            // 10. hane kontrolü: (Tek x 7 - Çift) % 10
-            const oddSum = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
-            const evenSum = digits[1] + digits[3] + digits[5] + digits[7];
-            const tenthDigit = ((oddSum * 7) - evenSum) % 10;
-            if (digits[9] !== tenthDigit) {
-                showError(tcKimlikInput, '⚠️ Geçersiz TC Kimlik numarası');
-                return;
-            }
+            try {
+                // Backend API'ye login isteği
+                const apiBaseUrl = window.getApiBaseUrl ? window.getApiBaseUrl() : 'http://localhost:3000/api';
+                const response = await fetch(`${apiBaseUrl}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ tcNo: tc, password })
+                });
 
-            // 11. hane kontrolü: İlk 10 toplamı % 10
-            const first10Sum = digits.slice(0, 10).reduce((a, b) => a + b, 0);
-            const eleventhDigit = first10Sum % 10;
-            if (digits[10] !== eleventhDigit) {
-                showError(tcKimlikInput, '⚠️ Geçersiz TC Kimlik numarası');
-                return;
-            }
+                const result = await response.json();
 
-            // 3. Algoritma geçti - şimdi kullanıcıyı kontrol et
-            const registeredUsers = getLuminexUsers();
-            const userIndex = registeredUsers.findIndex(u => (u.tc || u.tcKimlik) === tc);
+                if (result.success && result.data) {
+                    // Giriş başarılı
+                    const user = result.data.user;
+                    const token = result.data.token;
 
-            if (userIndex === -1) {
-                // Kayıtlı değilse
-                showError(tcKimlikInput, '❌ Kayıtlı değilsiniz. Lütfen önce kayıt olun.');
-                return;
-            }
+                    // Token'ı sakla
+                    setLocalStorageItem('authToken', token);
+                    setLocalStorageItem('loggedInUser', JSON.stringify(user));
 
-            // 4. Kullanıcı bulundu - şimdi şifre kontrolü
-            const user = registeredUsers[userIndex];
-            const hashedPassword = await hashString(password);
-            let passwordMatch = false;
-
-            // 1. Try matching with hashed password (new system)
-            if (hashedPassword === user.password) {
-                passwordMatch = true;
-            }
-            // 2. If not, try matching with plain text (for old accounts)
-            else if (password === user.password) {
-                passwordMatch = true;
-                // Lazy migration: Update the old plain-text password to a hashed one
-                registeredUsers[userIndex].password = hashedPassword;
-                setLuminexUsers(registeredUsers);
-                logger.info('Password migrated to hash', { userId: user.id });
-            }
-
-            if (!passwordMatch) {
-                // Şifre yanlış
-                let attempts = parseInt(sessionStorage.getItem(`attempts_${tc}`) || '0') + 1;
-
-                if (attempts >= MAX_ATTEMPTS) {
-                    const lockoutUntil = Date.now() + LOCKOUT_DURATION;
-                    sessionStorage.setItem(`lockout_${tc}`, lockoutUntil);
+                    // Giriş başarılı - temizlik
                     sessionStorage.removeItem(`attempts_${tc}`);
-                    loginForm.requestSubmit();
+                    sessionStorage.removeItem(`lockout_${tc}`);
+
+                    logger.info('User login successful', { userId: user.id, role: user.role });
+
+                    // Rol bazlı yönlendirme
+                    const userRole = user.role.toLowerCase();
+
+                    // Check for redirect parameter
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const redirectPage = urlParams.get('redirect');
+                    const deptParam = urlParams.get('dep');
+                    const branchParam = urlParams.get('branch');
+
+                    if (redirectPage) {
+                        window.location.href = redirectPage;
+                    } else if (deptParam) {
+                        let targetUrl = `appointment.html?dep=${encodeURIComponent(deptParam)}`;
+                        if (branchParam) targetUrl += `&branch=${branchParam}`;
+                        window.location.href = targetUrl;
+                    } else if (userRole === 'admin') {
+                        window.location.href = 'admin-dashboard.html';
+                    } else if (userRole === 'doctor') {
+                        window.location.href = 'doctor-dashboard.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+                } else {
+                    // Login başarısız
+                    let attempts = parseInt(sessionStorage.getItem(`attempts_${tc}`) || '0') + 1;
+
+                    if (attempts >= MAX_ATTEMPTS) {
+                        const lockoutUntil = Date.now() + LOCKOUT_DURATION;
+                        sessionStorage.setItem(`lockout_${tc}`, lockoutUntil);
+                        sessionStorage.removeItem(`attempts_${tc}`);
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = window.getTranslation?.('login') || 'Giriş Yap';
+                        loginForm.requestSubmit();
+                        return;
+                    }
+
+                    sessionStorage.setItem(`attempts_${tc}`, attempts);
+                    const remainingAttemptsMsg = window.getTranslation('attemptsRemaining')?.replace('{attempts}', MAX_ATTEMPTS - attempts) || `${MAX_ATTEMPTS - attempts} deneme hakkınız kaldı`;
+                    showError(passwordLoginInput, `${window.getTranslation('passwordIncorrect') || 'Hatalı şifre'} ${remainingAttemptsMsg}`);
+
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = window.getTranslation?.('login') || 'Giriş Yap';
+                }
+            } catch (error) {
+                // API hatası - localStorage ile fallback
+                console.error('Backend API error, falling back to localStorage:', error);
+
+                // localStorage kontrolü
+                const registeredUsers = getLuminexUsers();
+                const userIndex = registeredUsers.findIndex(u => (u.tc || u.tcKimlik) === tc);
+
+                if (userIndex === -1) {
+                    showError(tcKimlikInput, '❌ Kayıtlı değilsiniz. Lütfen önce kayıt olun.');
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = window.getTranslation?.('login') || 'Giriş Yap';
                     return;
                 }
 
-                sessionStorage.setItem(`attempts_${tc}`, attempts);
-                const remainingAttemptsMsg = window.getTranslation('attemptsRemaining').replace('{attempts}', MAX_ATTEMPTS - attempts);
-                showError(passwordLoginInput, `${window.getTranslation('passwordIncorrect')} ${remainingAttemptsMsg}`);
-                return;
-            }
+                const user = registeredUsers[userIndex];
+                const hashedPassword = await hashString(password);
+                let passwordMatch = false;
 
-            // Giriş başarılı - temizlik
-            sessionStorage.removeItem(`attempts_${tc}`);
-            sessionStorage.removeItem(`lockout_${tc}`);
+                if (hashedPassword === user.password) {
+                    passwordMatch = true;
+                } else if (password === user.password) {
+                    passwordMatch = true;
+                    registeredUsers[userIndex].password = hashedPassword;
+                    setLuminexUsers(registeredUsers);
+                }
 
-            // Check user role and redirect accordingly. Default to 'patient'
-            const userRole = user.role || 'patient';
+                if (!passwordMatch) {
+                    let attempts = parseInt(sessionStorage.getItem(`attempts_${tc}`) || '0') + 1;
 
-            setLoggedInUser(user);
+                    if (attempts >= MAX_ATTEMPTS) {
+                        const lockoutUntil = Date.now() + LOCKOUT_DURATION;
+                        sessionStorage.setItem(`lockout_${tc}`, lockoutUntil);
+                        sessionStorage.removeItem(`attempts_${tc}`);
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = window.getTranslation?.('login') || 'Giriş Yap';
+                        loginForm.requestSubmit();
+                        return;
+                    }
 
-            logger.info('User login successful', { userId: user.id, role: userRole });
-
-            // Check for redirect parameter or symptom checker parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const redirectPage = urlParams.get('redirect');
-            const deptParam = urlParams.get('dep');
-            const branchParam = urlParams.get('branch');
-
-            if (redirectPage) {
-                window.location.href = redirectPage;
-            } else if (deptParam) {
-                // Eğer departman parametresi varsa, appointment.html'e yönlendir ve parametreleri taşı
-                let targetUrl = `appointment.html?dep=${encodeURIComponent(deptParam)}`;
-                if(branchParam) targetUrl += `&branch=${branchParam}`;
-                window.location.href = targetUrl;
-            } else if (userRole === 'admin') {
-                logger.debug('Redirecting to admin dashboard');
-                window.location.href = 'admin-dashboard.html';
-            } else if (userRole === 'doctor') {
-                logger.debug('Redirecting to doctor dashboard');
-                window.location.href = 'doctor-dashboard.html';
-            } else { // Patient
-                if (user.birthDate && !validateAge(user.birthDate)) {
-                    showError(tcKimlikInput, window.getTranslation('ageRestriction'));
-                    removeLoggedInUser();
+                    sessionStorage.setItem(`attempts_${tc}`, attempts);
+                    const remainingAttemptsMsg = window.getTranslation('attemptsRemaining')?.replace('{attempts}', MAX_ATTEMPTS - attempts);
+                    showError(passwordLoginInput, `${window.getTranslation('passwordIncorrect')} ${remainingAttemptsMsg}`);
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = window.getTranslation?.('login') || 'Giriş Yap';
                     return;
                 }
 
-                // Akıllı Yönlendirme: Eğer hafızada bir AI önerisi varsa randevu sayfasına git
-                const hasAiRecommendation = sessionStorage.getItem('recommendedBranch');
-                if (hasAiRecommendation) {
-                    logger.info('AI recommendation redirect', { hasRecommendation: true });
-                    window.location.href = 'appointment.html';
-                    return;
-                }
+                // Giriş başarılı (localStorage fallback)
+                sessionStorage.removeItem(`attempts_${tc}`);
+                sessionStorage.removeItem(`lockout_${tc}`);
+                setLoggedInUser(user);
+                logger.info('User login successful (localStorage fallback)', { userId: user.id, role: user.role });
 
-                logger.debug('Redirecting to patient dashboard');
-                window.location.href = 'dashboard.html';
+                const userRole = user.role || 'patient';
+                if (userRole === 'admin') {
+                    window.location.href = 'admin-dashboard.html';
+                } else if (userRole === 'doctor') {
+                    window.location.href = 'doctor-dashboard.html';
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
             }
         });
     }

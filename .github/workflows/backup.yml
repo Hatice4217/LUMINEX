@@ -1,0 +1,61 @@
+# Database Backup - GitHub Actions
+
+name: Database Backup
+
+on:
+  schedule:
+    # Her gün saat 02:00'de çalıştır (UTC)
+    - cron: '0 2 * * *'
+
+  workflow_dispatch:  # Manuel tetikleme
+
+jobs:
+  backup:
+    name: Backup Database
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout backup repo
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Create backup directory
+        run: mkdir -p backups
+
+      - name: Generate backup filename
+        run: echo "BACKUP_FILE=backup_$(date +%Y%m%d_%H%M%S).sql" >> $GITHUB_ENV
+
+      - name: Backup SQLite database
+        run: |
+          # Production için PostgreSQL dump kullanılmalı
+          # PGPASSWORD=$DB_PASSWORD pg_dump -h $DB_HOST -U $DB_USER $DB_NAME > backups/$BACKUP_FILE
+
+          # Geliştirme için SQLite kopyası
+          echo "Database backup placeholder: $BACKUP_FILE"
+          echo "Backup completed at $(date)" > backups/$BACKUP_FILE
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+      - name: Commit and push backup
+        run: |
+          git config user.name "Backup Bot"
+          git config user.email "backup@bot.com"
+          git add backups/
+          git commit -m "Database backup $(date +%Y%m%d)" || echo "No changes to commit"
+          git push || echo "Nothing to push"
+
+      - name: Clean old backups (keep last 30)
+        run: |
+          # Backup klasöründe eski dosyaları temizle
+          cd backups/
+          ls -t | tail -n +31 | xargs -r rm --

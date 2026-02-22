@@ -1,0 +1,42 @@
+services:
+  # Web Service
+  - type: web
+    name: luminex-backend
+    env: node
+    buildCommand: cd backend && npm install && npm run build
+    startCommand: cd backend && node src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false # Deploy sonrasına elle güncelle
+    healthCheckPath: /health
+    plan: free
+    region: frankfurt
+
+  # PostgreSQL Database
+  - type: pserv
+    name: luminex-db
+    plan: free
+    region: frankfurt
+    databaseName: luminex
+    user: luminex_user
+    ipAllowList: [] # Tüm erişime açık (production'da kısıtla)
+
+# Environment Groups
+databases:
+  - name: production
+    databases:
+      - name: luminex
+        databaseName: luminex
+        user: luminex_user
+        plan: free
+        region: frankfurt

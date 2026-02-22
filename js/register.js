@@ -1,6 +1,8 @@
 import { validateEmail, validatePassword, validateTcKimlik, validateAge } from './utils/validation-utils.js';
-import { getLuminexUsers, setLuminexUsers } from './utils/storage-utils.js';
-import { hashString } from './utils/crypto-utils.js';
+import { getApiBaseUrl } from './config/api-config.js';
+
+// API Base URL (dinamik)
+const API_BASE_URL = getApiBaseUrl();
 
 document.addEventListener('DOMContentLoaded', function() {
     const registerForm = document.getElementById('registerForm');
@@ -44,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    registerForm.addEventListener('submit', async function(event) { // Make async
+    registerForm.addEventListener('submit', async function(event) {
         event.preventDefault();
         clearErrors();
 
@@ -52,69 +54,81 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        // Show loading
+        const submitButton = registerForm.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.innerHTML;
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + (window.getTranslation?.('loading') || 'Yükleniyor...');
+
         const tcKimlik = document.getElementById('tcKimlikRegister').value;
-        const email = document.getElementById('emailRegister').value;
+        const nameParts = document.getElementById('fullName').value.trim().split(' ');
+        const firstName = nameParts[0];
+        const lastName = nameParts.slice(1).join(' ') || 'Kullanıcı';
 
-        // Get existing users
-        const users = getLuminexUsers();
-
-        // Check if user with the same TC Kimlik or Email already exists
-        const userExists = users.some(user => user.tc === tcKimlik || user.email === email);
-        if (userExists) {
-            showError(document.getElementById('tcKimlikRegister'), window.getTranslation('userExistsError'));
-            showError(document.getElementById('emailRegister'), window.getTranslation('userExistsError'));
-            return;
-        }
-        
-        // Hash the password
-        const hashedPassword = await hashString(passwordInput.value);
-
-        // Add new user to the array
-        const newUser = {
-            id: 'user-' + Date.now(),
-            tc: tcKimlik,
-            password: hashedPassword, // Save the hashed password
-            name: document.getElementById('fullName').value,
-            email: email,
+        // Prepare API request data
+        const registerData = {
+            tcNo: tcKimlik,
+            password: passwordInput.value,
+            firstName: firstName,
+            lastName: lastName,
+            email: document.getElementById('emailRegister').value,
             phone: document.getElementById('phone').value,
-            birthDate: document.getElementById('birthDate').value,
-            gender: document.getElementById('gender').value
+            dateOfBirth: document.getElementById('birthDate').value,
+            gender: document.getElementById('gender').value.toUpperCase(),
+            role: 'PATIENT'
         };
-        users.push(newUser);
 
-        // Save the updated users array back to localStorage
-        setLuminexUsers(users);
+        try {
+            // Call Backend API
+            const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(registerData)
+            });
 
-        // Show success message with SweetAlert
-        const isDarkMode = document.body.classList.contains('theme-dark') || localStorage.getItem('landingTheme') === 'dark';
-        const accentColor = isDarkMode ? '#78C7C7' : '#001F6B';
+            const result = await response.json();
 
-        Swal.fire({
-            icon: 'success',
-            title: window.getTranslation('registerSuccess'),
-            text: window.getTranslation('niceToSeeYou'),
-            confirmButtonText: 'OK',
-            confirmButtonColor: accentColor,
-            background: isDarkMode ? 'rgba(30, 41, 59, 0.98)' : 'rgba(255, 255, 255, 0.98)',
-            color: isDarkMode ? '#fff' : '#1a1a2e',
-            showClass: {
-                popup: 'swal2-show',
-                backdrop: 'swal2-backdrop-show',
-                icon: 'swal2-icon-show'
-            },
-            hideClass: {
-                popup: 'swal2-hide',
-                backdrop: 'swal2-backdrop-hide',
-                icon: 'swal2-icon-hide'
-            },
-            customClass: {
-                confirmButton: 'swal2-confirm-button',
-                popup: 'swal2-popup'
-            },
-            didClose: () => {
-                window.location.href = 'login.html';
+            if (result.success) {
+                // Registration successful
+                const isDarkMode = document.body.classList.contains('theme-dark') || localStorage.getItem('landingTheme') === 'dark';
+                const accentColor = isDarkMode ? '#78C7C7' : '#001F6B';
+
+                Swal.fire({
+                    icon: 'success',
+                    title: window.getTranslation('registerSuccess') || 'Kayıt Başarılı!',
+                    text: window.getTranslation('niceToSeeYou') || 'Giriş yapabilirsiniz',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: accentColor,
+                    background: isDarkMode ? 'rgba(30, 41, 59, 0.98)' : 'rgba(255, 255, 255, 0.98)',
+                    color: isDarkMode ? '#fff' : '#1a1a2e',
+                    didClose: () => {
+                        window.location.href = 'login.html';
+                    }
+                });
+            } else {
+                // Registration failed - show error
+                throw new Error(result.message || 'Kayıt başarısız');
             }
-        });
+        } catch (error) {
+            // Show error message
+            const isDarkMode = document.body.classList.contains('theme-dark') || localStorage.getItem('landingTheme') === 'dark';
+            const accentColor = isDarkMode ? '#78C7C7' : '#001F6B';
+
+            Swal.fire({
+                icon: 'error',
+                title: window.getTranslation('errorTitle') || 'Hata',
+                text: error.message || 'Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.',
+                confirmButtonColor: accentColor,
+                background: isDarkMode ? 'rgba(30, 41, 59, 0.98)' : 'rgba(255, 255, 255, 0.98)',
+                color: isDarkMode ? '#fff' : '#1a1a2e',
+            });
+
+            // Re-enable submit button
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonText;
+        }
     });
 
     function validateForm() {

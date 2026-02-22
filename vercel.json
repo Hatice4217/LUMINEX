@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "name": "luminex-frontend",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static",
+      "config": {
+        "distDir": ""
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/$1"
+    }
+  ]
+}

@@ -1,0 +1,279 @@
+// LUMINEX Sağlık Yönetim Sistemi - Prisma Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+  // Production için PostgreSQL kullanın:
+  // provider = "postgresql"
+}
+
+// Kullanıcı rolleri enum'ı
+enum UserRole {
+  ADMIN
+  DOCTOR
+  PATIENT
+}
+
+// Randevu durumları enum'ı
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+// Cinsiyet enum'ı
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+// Kullanıcı modeli (Hem hastalar hem doktorlar için)
+model User {
+  id                String        @id @default(uuid())
+  tcNo              String        @unique
+  email             String?
+  password          String
+  firstName         String
+  lastName          String
+  role              UserRole
+  gender            Gender?
+  phone             String?
+  dateOfBirth       DateTime?
+  hospitalId        String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  // İlişkiler
+  appointments      Appointment[]  @relation("PatientAppointments")
+  doctorAppointments Appointment[]  @relation("DoctorAppointments")
+  notifications     Notification[]
+  testResults       TestResult[]
+  prescriptions     Prescription[]
+  patientReviews    Review[]       @relation("PatientReviews")
+  doctorReviews     Review[]       @relation("DoctorReviews")
+  messages          Message[]      @relation("SentMessages")
+  receivedMessages  Message[]      @relation("ReceivedMessages")
+  availability      Availability[]
+  ratings           Rating[]       @relation("ReceivedRatings")
+  givenRatings      Rating[]       @relation("GivenRatings")
+  hospital          Hospital?      @relation("HospitalDoctors", fields: [hospitalId], references: [id])
+
+  @@index([tcNo])
+  @@index([email])
+  @@index([role])
+}
+
+// Hastane modeli
+model Hospital {
+  id          String      @id @default(uuid())
+  name        String
+  address     String?
+  phone       String?
+  email       String?
+  city        String?
+  district    String?
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // İlişkiler
+  appointments Appointment[]
+  doctors      User[]      @relation("HospitalDoctors")
+  departments  Department[]
+
+  @@index([city])
+}
+
+// Departman/Bölüm modeli
+model Department {
+  id          String      @id @default(uuid())
+  name        String
+  description String?
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // İlişkiler
+  hospitalId  String?
+  hospital    Hospital?   @relation(fields: [hospitalId], references: [id], onDelete: SetNull)
+
+  @@index([name])
+}
+
+// Randevu modeli
+model Appointment {
+  id              String            @id @default(uuid())
+  patientId       String
+  doctorId        String
+  hospitalId      String
+  departmentId    String?
+  appointmentDate DateTime
+  status          AppointmentStatus @default(PENDING)
+  notes           String?
+  symptoms        String?
+  diagnosis       String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  // İlişkiler
+  patient         User              @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade)
+  doctor          User              @relation("DoctorAppointments", fields: [doctorId], references: [id], onDelete: Cascade)
+  hospital        Hospital          @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([appointmentDate])
+  @@index([status])
+}
+
+// Doktor müsaitlik modeli
+model Availability {
+  id          String    @id @default(uuid())
+  doctorId    String
+  date        DateTime
+  startTime   String    // Örn: "09:00"
+  endTime     String    // Örn: "17:00"
+  isAvailable Boolean   @default(true)
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // İlişkiler
+  doctor      User      @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId])
+  @@index([date])
+  @@unique([doctorId, date, startTime])
+}
+
+// Bildirim modeli
+model Notification {
+  id          String   @id @default(uuid())
+  userId      String
+  type        String   // appointment, test_result, warning, system, info
+  message     String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  // İlişkiler
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+}
+
+// Test sonucu modeli
+model TestResult {
+  id          String   @id @default(uuid())
+  patientId   String
+  testName    String
+  resultDate  DateTime
+  status      String   @default("Sonuç Çıktı")
+  doctorName  String
+  results     String   // JSON formatında detaylı sonuçlar
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // İlişkiler
+  patient     User     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+  @@index([resultDate])
+}
+
+// Reçete modeli
+model Prescription {
+  id          String   @id @default(uuid())
+  patientId   String
+  doctorName  String
+  date        DateTime
+  diagnosis   String
+  medications String   // JSON formatında ilaç listesi
+  notes       String?
+  status      String   @default("Onaylandı")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // İlişkiler
+  patient     User     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+  @@index([date])
+}
+
+// Değerlendirme modeli
+model Review {
+  id          String   @id @default(uuid())
+  patientId   String
+  doctorId    String
+  rating      Int      // 1-5 arası
+  comment     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // İlişkiler
+  patient     User     @relation("PatientReviews", fields: [patientId], references: [id], onDelete: Cascade)
+  doctor      User     @relation("DoctorReviews", fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId])
+  @@index([patientId])
+}
+
+// Doktor puanlama modeli (genel ortalama için)
+model Rating {
+  id          String   @id @default(uuid())
+  doctorId    String
+  patientId   String
+  rating      Int      // 1-5 arası
+  comment     String?
+  createdAt   DateTime @default(now())
+
+  // İlişkiler
+  doctor      User     @relation("ReceivedRatings", fields: [doctorId], references: [id], onDelete: Cascade)
+  patient     User     @relation("GivenRatings", fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@unique([doctorId, patientId])
+  @@index([doctorId])
+}
+
+// Mesaj modeli (Doktor-Hasta iletişimi)
+model Message {
+  id          String   @id @default(uuid())
+  senderId    String
+  receiverId  String
+  subject     String
+  message     String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  // İlişkiler
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([isRead])
+}
+
+// Sağlık geçmişi modeli
+model HealthRecord {
+  id          String   @id @default(uuid())
+  patientId   String
+  recordType  String   // diagnosis, surgery, allergy, medication, etc.
+  title       String
+  description String
+  recordDate  DateTime
+  doctorName  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([patientId])
+  @@index([recordType])
+}
