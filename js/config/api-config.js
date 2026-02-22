@@ -26,6 +26,7 @@ const getApiBaseUrl = () => {
 };
 
 // Export olarak kullanıma
+export { getApiBaseUrl };
 export const API_BASE_URL = getApiBaseUrl();
 
 // Backend'e fetch request wrapper
