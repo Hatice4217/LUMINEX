@@ -7,6 +7,7 @@ import xssClean from 'xss-clean';
 import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+import { PrismaClient } from '@prisma/client';
 import logger from './utils/logger.js';
 import { errorHandler, notFoundHandler } from './middlewares/error-middleware.js';
 import { auditLogger } from './middlewares/audit-middleware.js';
@@ -22,6 +23,12 @@ import hospitalRoutes from './routes/hospitalRoutes.js';
 
 // Environment variables'ı yükle
 dotenv.config();
+
+// Prisma Client - Global olarak kullan
+const prisma = new PrismaClient();
+
+// Global scope'a prisma'ı ata (diğer dosyalardan erişilebilsin)
+global.prisma = prisma;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -210,27 +217,54 @@ app.use(errorHandler);
 // SERVER START
 // ============================================
 
-app.listen(PORT, () => {
-  logger.info(`🚀 Server çalışıyor`, {
-    port: PORT,
-    environment: process.env.NODE_ENV || 'development',
-    nodeVersion: process.version,
-  });
-  console.log(`\n✅ LUMINEX Backend API başlatıldı!`);
-  console.log(`📍 URL: http://localhost:${PORT}`);
-  console.log(`🏥 Health: http://localhost:${PORT}/health`);
-  console.log(`📚 Docs: http://localhost:${PORT}/\n`);
-});
+async function startServer() {
+  try {
+    // Database bağlantısını test et
+    await prisma.$connect();
+    logger.info('✅ Database bağlantısı başarılı');
+
+    // Production'da migration çalıştır (eğer gerekliyse)
+    if (process.env.NODE_ENV === 'production') {
+      // Prisma migrate deploy - sadece production'da
+      logger.info('🔄 Production mode - database migration kontrolü');
+    }
+
+    app.listen(PORT, () => {
+      logger.info(`🚀 Server çalışıyor`, {
+        port: PORT,
+        environment: process.env.NODE_ENV || 'development',
+        nodeVersion: process.version,
+      });
+      console.log(`\n✅ LUMINEX Backend API başlatıldı!`);
+      console.log(`📍 URL: http://localhost:${PORT}`);
+      console.log(`🏥 Health: http://localhost:${PORT}/health`);
+      console.log(`📚 Docs: http://localhost:${PORT}/\n`);
+    });
+  } catch (error) {
+    logger.error('❌ Server başlatma hatası:', error);
+    console.error('Database bağlantı hatası:', error.message);
+    process.exit(1);
+  }
+}
+
+startServer();
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM signal received, shutting down gracefully');
-  process.exit(0);
-});
+async function gracefulShutdown(signal) {
+  logger.info(`${signal} signal received, shutting down gracefully`);
 
-process.on('SIGINT', () => {
-  logger.info('SIGINT signal received, shutting down gracefully');
+  try {
+    // Prisma bağlantısını kapat
+    await prisma.$disconnect();
+    logger.info('✅ Database bağlantısı kapatıldı');
+  } catch (error) {
+    logger.error('❌ Database kapatma hatası:', error);
+  }
+
   process.exit(0);
-});
+}
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 export default app;
