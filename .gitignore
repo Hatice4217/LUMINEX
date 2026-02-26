@@ -46,3 +46,4 @@ Ekran*.png
 # Test coverage
 coverage/
 .nyc_output/
+DEPLOYMENT-PROGRESS.md
