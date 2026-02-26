@@ -31,9 +31,11 @@ export const register = async (req, res, next) => {
     // Şifre validasyonu
     const passwordValidation = validatePassword(password);
     if (!passwordValidation.valid) {
+      logger.info('Password validation failed', { errors: passwordValidation.errors, strength: passwordValidation.strength });
       return res.status(400).json({
         success: false,
         message: passwordValidation.errors.join(', '),
+        errors: passwordValidation.errors,
       });
     }
 
@@ -51,7 +53,7 @@ export const register = async (req, res, next) => {
 
     // Email zaten kayıtlı mı?
     if (email) {
-      const existingEmail = await prisma.user.findUnique({
+      const existingEmail = await prisma.user.findFirst({
         where: { email },
       });
 

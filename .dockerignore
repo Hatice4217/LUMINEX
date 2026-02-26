@@ -1,0 +1,25 @@
+# .dockerignore for LUMINEX Backend
+node_modules
+npm-debug.log*
+dist
+coverage
+.vscode
+.idea
+*.log
+.DS_Store
+.env
+.env.local
+.env.production
+.env.development
+.git
+.gitignore
+README.md
+docs
+tests
+*.test.js
+*.spec.js
+coverage
+.nyc_output
+prisma/*.db
+prisma/*.db-journal
+prisma/migrations

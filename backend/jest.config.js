@@ -1,6 +1,5 @@
 // Jest Configuration
 export default {
-  preset: 'node-preset',
   testEnvironment: 'node',
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
@@ -22,4 +21,10 @@ export default {
   },
   verbose: true,
   testTimeout: 10000,
+  transform: {
+    '^.+\\.js$': 'babel-jest',
+  },
+  transformIgnorePatterns: [
+    'node_modules/(?!(.pnpm|))',
+  ],
 };

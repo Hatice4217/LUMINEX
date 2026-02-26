@@ -8,10 +8,12 @@ import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
+import swaggerUi from 'swagger-ui-express';
 import logger from './utils/logger.js';
 import { errorHandler, notFoundHandler } from './middlewares/error-middleware.js';
 import { auditLogger } from './middlewares/audit-middleware.js';
 import { validateOrigin, getCSRFToken } from './middlewares/csrf-middleware.js';
+import { swaggerSpec } from './config/swagger.js';
 
 // Routes
 import authRoutes from './routes/authRoutes.js';
@@ -77,6 +79,8 @@ app.use(cors({
     FRONTEND_URL,
     'http://localhost:8080',
     'http://127.0.0.1:8080',
+    'http://localhost:5500',
+    'http://127.0.0.1:5500',
     'https://luminex-app-seven.vercel.app',
     'https://luminex-frontend.vercel.app',
     'https://luminex-app.vercel.app',
@@ -87,11 +91,17 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
 }));
 
+// Body parser - JSON ve URL-encoded verileri parse etmek için
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
 // Cookie parser (CSRF için gerekli)
 app.use(cookieParser());
 
-// Origin validation (Ek CSRF koruması)
-app.use(validateOrigin);
+// Origin validation (Ek CSRF koruması) - Sadece production'da
+if (process.env.NODE_ENV === 'production') {
+  app.use(validateOrigin);
+}
 
 // XSS Clean - XSS saldırılarına karşı
 app.use(xssClean());
@@ -140,9 +150,11 @@ const registerLimiter = rateLimit({
 // Tüm API route'larına genel rate limiting
 app.use('/api/', limiter);
 
-// Auth endpoint'lerine özel rate limiting
-app.use('/api/auth/login', authLimiter);
-app.use('/api/auth/register', registerLimiter);
+// Auth endpoint'lerine özel rate limiting (Sadece production'da)
+if (process.env.NODE_ENV === 'production') {
+  app.use('/api/auth/login', authLimiter);
+  app.use('/api/auth/register', registerLimiter);
+}
 
 // ============================================
 // AUDIT LOGGING
@@ -176,6 +188,36 @@ app.get('/health', (req, res) => {
     environment: process.env.NODE_ENV || 'development',
     version: '1.0.0',
   });
+});
+
+// ============================================
+// SWAGGER API DOCUMENTATION
+// ============================================
+
+/**
+ * @swagger
+ * /api-docs:
+ *   get:
+ *     summary: API dokümantasyonu
+ *     description: Swagger UI ile interaktif API dokümantasyonu
+ *     tags: [Documentation]
+ */
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customSiteTitle: 'LUMINEX API Dokümantasyonu',
+  customCss: '.swagger-ui .topbar { display: none }',
+  swaggerOptions: {
+    persistAuthorization: true,
+    docExpansion: 'tags',
+    filter: true,
+    showRequestDuration: true,
+    tryItOutEnabled: true,
+  },
+}));
+
+// Swagger JSON spec endpoint
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
 });
 
 // ============================================
