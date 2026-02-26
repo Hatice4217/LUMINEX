@@ -67,15 +67,15 @@ export function removeActiveProfile() {
 }
 
 export function getLoggedInUser() {
-    return getSessionStorageItem('loggedInUser');
+    return getLocalStorageItem('loggedInUser');  // localStorage kullan
 }
 
 export function setLoggedInUser(user) {
-    setSessionStorageItem('loggedInUser', user);
+    setLocalStorageItem('loggedInUser', user);
 }
 
 export function removeLoggedInUser() {
-    removeSessionStorageItem('loggedInUser');
+    removeLocalStorageItem('loggedInUser');
 }
 
 // --- Provinces and Districts ---

@@ -12,6 +12,48 @@ import { hashString, encryptData, decryptData, APP_SECRET } from './utils/crypto
 import { validateAge } from './utils/validation-utils.js';
 import logger from './utils/logger.js';
 
+// ============================================
+// TOAST BİLDİRİM FONKSİYONU
+// ============================================
+window.showToast = function(type, title, message, duration = 3000) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+
+    const iconMap = {
+        success: '✓',
+        error: '⚠',
+        warning: '⚡'
+    };
+
+    toast.innerHTML = `
+        <div class="toast-icon">${iconMap[type] || 'ℹ'}</div>
+        <div class="toast-content">
+            <div class="toast-title">${title}</div>
+            ${message ? `<div class="toast-message">${message}</div>` : ''}
+        </div>
+    `;
+
+    container.appendChild(toast);
+
+    // Otomatik scroll yap (eğer form görünümrdeyse)
+    const authCard = document.querySelector('.auth-card');
+    const loginForm = document.getElementById('loginForm');
+    if (authCard && (type === 'error' || type === 'warning')) {
+        authCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Belirli süre sonra kaldır
+    setTimeout(() => {
+        toast.classList.add('hide');
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, duration);
+};
+
 // SweetAlert Global Defaults - Fix Transparent Backdrop Issue
 if (typeof Swal !== 'undefined') {
     Swal.mixin({
@@ -344,19 +386,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     const deptParam = urlParams.get('dep');
                     const branchParam = urlParams.get('branch');
 
+                    // Yönlendirilecek sayfayı belirle
+                    let targetPage;
                     if (redirectPage) {
-                        window.location.href = redirectPage;
+                        targetPage = redirectPage;
                     } else if (deptParam) {
-                        let targetUrl = `appointment.html?dep=${encodeURIComponent(deptParam)}`;
-                        if (branchParam) targetUrl += `&branch=${branchParam}`;
-                        window.location.href = targetUrl;
+                        targetPage = `appointment.html?dep=${encodeURIComponent(deptParam)}`;
+                        if (branchParam) targetPage += `&branch=${branchParam}`;
                     } else if (userRole === 'admin') {
-                        window.location.href = 'admin-dashboard.html';
+                        targetPage = 'admin-dashboard.html';
                     } else if (userRole === 'doctor') {
-                        window.location.href = 'doctor-dashboard.html';
+                        targetPage = 'doctor-dashboard.html';
                     } else {
-                        window.location.href = 'dashboard.html';
+                        targetPage = 'dashboard.html';
                     }
+
+                    // Toast bildirimi göster
+                    showToast('success', 'Giriş Başarılı', 'Kimlik doğrulama başarılı. Sisteme aktarılıyorsunuz...');
+
+                    // 2.5 saniye sonra yönlendir
+                    setTimeout(() => {
+                        window.location.replace(targetPage);
+                    }, 2500);
                 } else {
                     // Login başarısız
                     let attempts = parseInt(sessionStorage.getItem(`attempts_${tc}`) || '0') + 1;
@@ -375,6 +426,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     const remainingAttemptsMsg = window.getTranslation('attemptsRemaining')?.replace('{attempts}', MAX_ATTEMPTS - attempts) || `${MAX_ATTEMPTS - attempts} deneme hakkınız kaldı`;
                     showError(passwordLoginInput, `${window.getTranslation('passwordIncorrect') || 'Hatalı şifre'} ${remainingAttemptsMsg}`);
 
+                    // Toast bildirimi göster
+                    showToast('error', 'Giriş Hatası', `${window.getTranslation('passwordIncorrect') || 'Hatalı şifre'} ${remainingAttemptsMsg}`, 4000);
+
                     submitButton.disabled = false;
                     submitButton.innerHTML = window.getTranslation?.('login') || 'Giriş Yap';
                 }
@@ -388,6 +442,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (userIndex === -1) {
                     showError(tcKimlikInput, '❌ Kayıtlı değilsiniz. Lütfen önce kayıt olun.');
+                    showToast('error', 'Kayıt Bulunamadı', 'Bu TC Kimlik Numarası ile kayıtlı kullanıcı bulunamadı. Lütfen önce kayıt olun.', 4000);
                     submitButton.disabled = false;
                     submitButton.innerHTML = window.getTranslation?.('login') || 'Giriş Yap';
                     return;

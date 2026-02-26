@@ -31,7 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Token Doğrulama ---
     if (!token) {
-        resetStatusDiv.innerHTML = `<div class="alert alert-danger">${window.getTranslation('invalidOrMissingResetToken')}</div>`;
+        resetStatusDiv.className = 'error';
+        resetStatusDiv.textContent = window.getTranslation('invalidOrMissingResetToken') || 'Geçersiz sıfırlama bağlantısı.';
+        resetStatusDiv.style.display = 'block';
         resetPasswordForm.style.display = 'none';
         return;
     }
@@ -47,7 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (!tokenData || !tokenData.tc || !tokenData.expiry || Date.now() >= tokenData.expiry) {
-        resetStatusDiv.innerHTML = `<div class="alert alert-danger">${window.getTranslation('invalidOrExpiredToken')}</div>`;
+        resetStatusDiv.className = 'error';
+        resetStatusDiv.textContent = window.getTranslation('invalidOrExpiredToken') || 'Sıfırlama bağlantısının süresi doldu.';
+        resetStatusDiv.style.display = 'block';
         resetPasswordForm.style.display = 'none';
         // Geçersiz/süresi dolmuş token'ı sessionStorage'dan temizle
         if (token) sessionStorage.removeItem(token);
@@ -103,21 +107,10 @@ document.addEventListener('DOMContentLoaded', () => {
             users[userIndex].password = hashedPassword;
             localStorage.setItem('luminexUsers', JSON.stringify(users));
 
-            // Modern Inline Success Message (Matching Forgot Password Style)
-            // Use CSS variables or high-contrast colors for dark mode compatibility
-            const textColor = document.body.classList.contains('theme-dark') ? '#4ade80' : '#28a745'; // Brighter green for dark mode
-            const subTextColor = document.body.classList.contains('theme-dark') ? '#cbd5e1' : '#666'; // Light gray for dark mode
-
-            resetStatusDiv.innerHTML = `
-                <div style="text-align: center; margin-top: 15px; color: ${textColor}; font-size: 1.1rem; font-weight: 600; animation: fadeIn 0.5s;">
-                    <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
-                    ${window.getTranslation('passwordUpdateSuccess')}
-                    <br>
-                    <span style="font-size: 0.9rem; color: ${subTextColor}; margin-top: 5px; display: inline-block;">
-                        <i class="fas fa-spinner fa-spin" style="margin-right: 5px;"></i> ${window.getTranslation('redirecting') || 'Yönlendiriliyorsunuz...'}
-                    </span>
-                </div>
-            `;
+            // Nazik fade-in bildirimi
+            resetStatusDiv.className = 'success';
+            resetStatusDiv.textContent = 'Şifreniz başarıyla güncellendi. Giriş sayfasına yönlendiriliyorsunuz...';
+            resetStatusDiv.style.display = 'block';
 
             // Kullanılan token'ı temizle
             sessionStorage.removeItem(token);
@@ -127,8 +120,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 3000);
 
         } else {
-            // Token doğrulaması geçmiş olsa bile bu durum oluşmamalı ama bir fallback olarak
-            resetStatusDiv.innerHTML = `<div class="alert alert-danger">${window.getTranslation('invalidOrExpiredToken')}</div>`;
+            // Hata bildirimi
+            resetStatusDiv.className = 'error';
+            resetStatusDiv.textContent = window.getTranslation('invalidOrExpiredToken') || 'Kullanıcı bulunamadı.';
+            resetStatusDiv.style.display = 'block';
             // Kullanıcı bulunamazsa veya manipüle edilmişse, akışı baştan başlatmak için forgot password sayfasına yönlendir
             setTimeout(() => {
                 window.location.href = 'forgot-password.html';

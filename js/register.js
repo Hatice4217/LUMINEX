@@ -4,6 +4,49 @@ import { getApiBaseUrl } from './config/api-config.js';
 // API Base URL (dinamik)
 const API_BASE_URL = getApiBaseUrl();
 
+// ============================================
+// TOAST BİLDİRİM FONKSİYONU
+// ============================================
+window.showToast = function(type, title, message, duration = 3000) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+
+    const iconMap = {
+        success: '✓',
+        error: '⚠',
+        warning: '⚡'
+    };
+
+    toast.innerHTML = `
+        <div class="toast-icon">${iconMap[type] || 'ℹ'}</div>
+        <div class="toast-content">
+            <div class="toast-title">${title}</div>
+            ${message ? `<div class="toast-message">${message}</div>` : ''}
+        </div>
+    `;
+
+    container.appendChild(toast);
+
+    // Hata durumunda scroll yap
+    if (type === 'error' || type === 'warning') {
+        const authCard = document.querySelector('.auth-card');
+        if (authCard) {
+            authCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    // Belirli süre sonra kaldır
+    setTimeout(() => {
+        toast.classList.add('hide');
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, duration);
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     const registerForm = document.getElementById('registerForm');
     if (!registerForm) return;
@@ -25,13 +68,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (phoneInput) {
         phoneInput.addEventListener('input', function(e) {
-            let val = e.target.value.replace(/\D/g, '');
-            // Prevent first digit from being 0
-            if (val.startsWith('0')) {
-                val = val.substring(1);
+            let val = e.target.value.replace(/\D/g, '').substring(0, 11);
+            // Türk telefon formatı: 05XX XXX XX XX
+            // 0 ile başlamıyorsa ve boşsa 0 ekle
+            if (val.length > 0 && !val.startsWith('0')) {
+                val = '0' + val;
             }
-            let x = val.match(/(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
-            e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? ' ' + x[3] : '') + (x[4] ? ' ' + x[4] : '');
+            // Format: (05XX) XXX XX XX
+            if (val.length > 0) {
+                let formatted = '';
+                if (val.length >= 1) formatted += '(' + val.substring(0, Math.min(4, val.length));
+                if (val.length >= 5) formatted += ') ' + val.substring(4, Math.min(7, val.length));
+                if (val.length >= 8) formatted += ' ' + val.substring(7, Math.min(9, val.length));
+                if (val.length >= 10) formatted += ' ' + val.substring(9, Math.min(11, val.length));
+                e.target.value = formatted;
+            } else {
+                e.target.value = val;
+            }
         });
     }
 
@@ -54,11 +107,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Show loading
         const submitButton = registerForm.querySelector('button[type="submit"]');
         const originalButtonText = submitButton.innerHTML;
-        submitButton.disabled = true;
-        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + (window.getTranslation?.('loading') || 'Yükleniyor...');
 
         const tcKimlik = document.getElementById('tcKimlikRegister').value;
         const nameParts = document.getElementById('fullName').value.trim().split(' ');
@@ -66,17 +116,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const lastName = nameParts.slice(1).join(' ') || 'Kullanıcı';
 
         // Prepare API request data
+        // Telefon numarasından ayraçları temizle
+        const rawPhone = document.getElementById('phone').value;
+        const cleanPhone = rawPhone.replace(/\D/g, ''); // Sadece rakamları al
+
         const registerData = {
             tcNo: tcKimlik,
             password: passwordInput.value,
             firstName: firstName,
             lastName: lastName,
             email: document.getElementById('emailRegister').value,
-            phone: document.getElementById('phone').value,
+            phone: cleanPhone,
             dateOfBirth: document.getElementById('birthDate').value,
             gender: document.getElementById('gender').value.toUpperCase(),
             role: 'PATIENT'
         };
+
+        // Debug: Gönderilen veriyi konsola yaz
+        console.log('Gönderilen veri:', registerData);
 
         try {
             // Call Backend API
@@ -90,40 +147,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const result = await response.json();
 
-            if (result.success) {
-                // Registration successful
-                const isDarkMode = document.body.classList.contains('theme-dark') || localStorage.getItem('landingTheme') === 'dark';
-                const accentColor = isDarkMode ? '#78C7C7' : '#001F6B';
+            // Backend'den gelen detaylı hata mesajını konsola yaz
+            if (!result.success && result.errors) {
+                console.log('Backend validation errors:', result.errors);
+                // Hata detaylarını birleştir
+                const errorDetails = result.errors.map(e => typeof e === 'string' ? e : (e.msg || e.message || JSON.stringify(e))).join('\n');
+                console.log('Hata detayları:\n', errorDetails);
+            }
+            if (!result.success && result.message) {
+                console.log('Backend error message:', result.message);
+            }
 
-                Swal.fire({
-                    icon: 'success',
-                    title: window.getTranslation('registerSuccess') || 'Kayıt Başarılı!',
-                    text: window.getTranslation('niceToSeeYou') || 'Giriş yapabilirsiniz',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: accentColor,
-                    background: isDarkMode ? 'rgba(30, 41, 59, 0.98)' : 'rgba(255, 255, 255, 0.98)',
-                    color: isDarkMode ? '#fff' : '#1a1a2e',
-                    didClose: () => {
-                        window.location.href = 'login.html';
-                    }
-                });
+            if (result.success) {
+                // Registration successful - Token ve kullanıcı bilgisini kaydet
+                if (result.data?.token) {
+                    localStorage.setItem('authToken', result.data.token);
+                }
+                if (result.data?.user) {
+                    localStorage.setItem('loggedInUser', JSON.stringify(result.data.user));
+                }
+
+                // Toast bildirimi göster
+                showToast('success', 'Kayıt Başarılı!', 'Kaydınız başarıyla oluşturuldu. Giriş sayfasına yönlendiriliyorsunuz...');
+
+                // 2.5 saniye sonra yönlendir
+                setTimeout(() => {
+                    window.location.replace('login.html');
+                }, 2500);
             } else {
                 // Registration failed - show error
                 throw new Error(result.message || 'Kayıt başarısız');
             }
         } catch (error) {
-            // Show error message
-            const isDarkMode = document.body.classList.contains('theme-dark') || localStorage.getItem('landingTheme') === 'dark';
-            const accentColor = isDarkMode ? '#78C7C7' : '#001F6B';
-
-            Swal.fire({
-                icon: 'error',
-                title: window.getTranslation('errorTitle') || 'Hata',
-                text: error.message || 'Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.',
-                confirmButtonColor: accentColor,
-                background: isDarkMode ? 'rgba(30, 41, 59, 0.98)' : 'rgba(255, 255, 255, 0.98)',
-                color: isDarkMode ? '#fff' : '#1a1a2e',
-            });
+            // Toast hata bildirimi göster
+            showToast('error', 'Kayıt Hatası', error.message || 'Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.', 5000);
 
             // Re-enable submit button
             submitButton.disabled = false;
@@ -139,7 +196,8 @@ document.addEventListener('DOMContentLoaded', function() {
             { id: 'emailRegister', validate: validateEmail, message: window.getTranslation('emailInvalid') },
             { id: 'phone', validate: (val) => {
                 const digits = val.replace(/\D/g, '');
-                return digits.length === 0 || digits.length === 10;
+                // Türk telefon formatı: 05XXXXXXXXX (11 hane) veya boş
+                return digits.length === 0 || digits.length === 11;
             }, message: window.getTranslation('phoneInvalid') },
             { id: 'passwordRegister', validate: validatePassword, message: window.getTranslation('passwordInvalid') },
             { id: 'passwordConfirm', validate: (val) => val === passwordInput.value, message: window.getTranslation('passwordMismatch') },
@@ -411,7 +469,6 @@ window.showTermsModal = function(e) {
                     <div class="premium-modal-content" style="text-align: left; max-height: 65vh; overflow-y: auto; padding: 10px 5px;">${content.innerHTML}</div>
                 `,
                 width: '95%',
-                maxWidth: '950px',
                 showConfirmButton: true,
                 confirmButtonText: `
                     <div style="display: flex; align-items: center; gap: 8px;">
@@ -644,7 +701,6 @@ window.showKvkkModal = function(e) {
                     <div class="premium-modal-content" style="text-align: left; max-height: 65vh; overflow-y: auto; padding: 10px 5px;">${content.innerHTML}</div>
                 `,
                 width: '95%',
-                maxWidth: '950px',
                 showConfirmButton: true,
                 confirmButtonText: `
                     <div style="display: flex; align-items: center; gap: 8px;">

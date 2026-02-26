@@ -126,14 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Loading state
-            if(resetResultDiv) {
-                resetResultDiv.innerHTML = `
-                    <div style="margin-top: 15px; text-align: center; font-weight: 500; color: #001F6B;">
-                        <i class="fas fa-spinner fa-spin"></i> ${window.getTranslation('checkingInfo')}
-                    </div>`;
-            }
-
             setTimeout(() => {
                 const users = JSON.parse(localStorage.getItem('luminexUsers')) || [];
                 const fullNameInput = `${firstName} ${lastName}`;
@@ -158,11 +150,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Token verilerini sessionStorage'a kaydet (anahtar UUID'nin kendisi)
                     sessionStorage.setItem(resetToken, JSON.stringify({ tc: user.tc || user.tcKimlik, expiry: expiryTime }));
 
+                    // Nazik fade-in bildirimi
                     if(resetResultDiv) {
-                        resetResultDiv.innerHTML = `
-                            <div style="margin-top: 15px; text-align: center; font-weight: 600; color: #001F6B;">
-                                <i class="fas fa-check"></i> ${window.getTranslation('infoVerifiedRedirecting')}
-                            </div>`;
+                        resetResultDiv.className = 'success';
+                        resetResultDiv.textContent = 'Bilgileriniz doğrulandı. Şifre sıfırlama sayfasına yönlendiriliyorsunuz...';
+                        resetResultDiv.style.display = 'block';
                     }
                     setTimeout(() => {
                         // İlk formu gizle ve doğrulama kodu bölümünü göster
@@ -180,11 +172,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     }, 1500); // Kullanıcıya doğrulama mesajını okuması için zaman tanı
                 } else {
+                    // Hata bildirimi
                     if(resetResultDiv) {
-                        resetResultDiv.innerHTML = `
-                            <div style="margin-top: 15px; text-align: center; font-weight: 500; color: #dc3545;">
-                                <i class="fas fa-times"></i> ${window.getTranslation('userNotFoundForgot')}
-                            </div>`;
+                        resetResultDiv.className = 'error';
+                        resetResultDiv.textContent = window.getTranslation('userNotFoundForgot') || 'Bilgileriniz bulunamadı. Lütfen tekrar kontrol edin.';
+                        resetResultDiv.style.display = 'block';
                     }
                 }
             }, 1500);
@@ -217,12 +209,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (tokenData && tokenData.tc && tokenData.expiry && Date.now() < tokenData.expiry) {
-                    // Başarı mesajını aşağıda göster - Şifre Sıfırlama ile aynı stil
+                    // Başarı bildirimi
                     if(verifyResultDiv) {
-                        verifyResultDiv.innerHTML = `
-                            <div style="margin-top: 15px; text-align: center; font-weight: 600; color: #001F6B;">
-                                <i class="fas fa-check"></i> ${window.getTranslation('infoVerifiedRedirecting')}
-                            </div>`;
+                        verifyResultDiv.className = 'success';
+                        verifyResultDiv.textContent = 'Doğrulama başarılı. Şifre sıfırlama sayfasına yönlendiriliyorsunuz...';
                         verifyResultDiv.style.display = 'block';
                     }
                     setTimeout(() => {
@@ -231,12 +221,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         window.location.href = `reset-password.html?token=${resetToken}`;
                     }, 2000);
                 } else {
-                    // Token süresi dolmuş veya geçersiz - hata mesajı
+                    // Token süresi dolmuş veya geçersiz - hata bildirimi
                     if(verifyResultDiv) {
-                        verifyResultDiv.innerHTML = `
-                            <div style="margin-top: 15px; text-align: center; font-weight: 500; color: #dc3545;">
-                                <i class="fas fa-times"></i> ${window.getTranslation('invalidOrExpiredToken')}
-                            </div>`;
+                        verifyResultDiv.className = 'error';
+                        verifyResultDiv.textContent = window.getTranslation('invalidOrExpiredToken') || 'Kod süresi doldu. Tekrar deneyin.';
                         verifyResultDiv.style.display = 'block';
                     }
                     setTimeout(() => {
@@ -248,12 +236,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     }, 2500);
                 }
             } else {
-                // Yanlış kod - hata mesajı
+                // Yanlış kod - hata bildirimi
                 if(verifyResultDiv) {
-                    verifyResultDiv.innerHTML = `
-                        <div style="margin-top: 15px; text-align: center; font-weight: 500; color: #dc3545;">
-                            <i class="fas fa-times"></i> ${window.getTranslation('invalidCode')}
-                        </div>`;
+                    verifyResultDiv.className = 'error';
+                    verifyResultDiv.textContent = window.getTranslation('invalidCode') || 'Kod hatalı. Lütfen kontrol edip tekrar deneyin.';
                     verifyResultDiv.style.display = 'block';
                 }
                 showError(verificationCodeInput, window.getTranslation('invalidCode'), 'invalidCode');
