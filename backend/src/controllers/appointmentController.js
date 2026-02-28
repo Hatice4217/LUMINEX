@@ -1,7 +1,13 @@
 // Appointment Controller
+import crypto from 'crypto';
 import prisma from '../config/database.js';
 import { validateAppointmentDate } from '../utils/validation-utils.js';
 import logger from '../utils/logger.js';
+import { invalidateAppointmentCache } from '../middlewares/cache-middleware.js';
+import emailService from '../services/emailService.js';
+import { sendNotificationToUser, sendAppointmentUpdate } from '../config/socket.js';
+import { encryptField, decryptField } from '../services/encryptionService.js';
+import { scheduleAppointmentReminders } from '../queues/appointmentReminderProcessor.js';
 
 /**
  * Randevu oluştur
@@ -86,7 +92,61 @@ export const createAppointment = async (req, res, next) => {
       },
     });
 
+    // Doktora real-time bildirim gönder
+    sendNotificationToUser(doctorId, {
+      id: crypto.randomUUID(),
+      type: 'appointment',
+      message: `Yeni randevu talebi: ${req.user.firstName} ${req.user.lastName}`,
+      data: {
+        appointmentId: appointment.id,
+        patientName: `${req.user.firstName} ${req.user.lastName}`,
+        appointmentDate: appointment.appointmentDate,
+      },
+    });
+
+    // Randevu odasına güncelleme gönder
+    sendAppointmentUpdate(appointment.id, {
+      type: 'created',
+      appointment,
+    });
+
+    // Hasta için email gönder (email varsa)
+    const patient = await prisma.user.findUnique({
+      where: { id: patientId },
+      select: { email: true, firstName: true, lastName: true },
+    });
+
+    if (patient && patient.email) {
+      try {
+        await emailService.sendAppointmentConfirmation(
+          patient.email,
+          `${patient.firstName} ${patient.lastName}`,
+          {
+            doctorName: `${doctor.firstName} ${doctor.lastName}`,
+            hospitalName: hospital.name,
+            date: new Date(appointmentDate).toLocaleDateString('tr-TR'),
+            time: new Date(appointmentDate).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }),
+          }
+        );
+      } catch (emailError) {
+        logger.error('Failed to send appointment confirmation email:', emailError);
+      }
+    }
+
     logger.info('Appointment created', { appointmentId: appointment.id, patientId });
+
+    // Randevu hatırlatma job'larını schedule et
+    try {
+      await scheduleAppointmentReminders(appointment);
+      logger.info('Appointment reminders scheduled', { appointmentId: appointment.id });
+    } catch (reminderError) {
+      logger.error('Failed to schedule appointment reminders:', reminderError);
+      // Randevu oluşturma başarılı olsun diye hata fırlatmıyoruz
+    }
+
+    // Cache'i invalidate et (hem hasta hem doktor için)
+    await invalidateAppointmentCache(patientId);
+    await invalidateAppointmentCache(doctorId);
 
     res.status(201).json({
       success: true,
@@ -313,6 +373,10 @@ export const updateAppointment = async (req, res, next) => {
 
     logger.info('Appointment updated', { appointmentId: id, updatedBy: userId });
 
+    // Cache'i invalidate et (hem hasta hem doktor için)
+    await invalidateAppointmentCache(appointment.patientId);
+    await invalidateAppointmentCache(appointment.doctorId);
+
     res.json({
       success: true,
       message: 'Randevu güncellendi',
@@ -382,6 +446,10 @@ export const cancelAppointment = async (req, res, next) => {
     });
 
     logger.info('Appointment cancelled', { appointmentId: id, cancelledBy: userId });
+
+    // Cache'i invalidate et (hem hasta hem doktor için)
+    await invalidateAppointmentCache(appointment.patientId);
+    await invalidateAppointmentCache(appointment.doctorId);
 
     res.json({
       success: true,

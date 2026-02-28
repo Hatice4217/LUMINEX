@@ -7,6 +7,8 @@ import {
   changePassword,
   forgotPassword,
   resetPassword,
+  requestEmailVerification,
+  verifyEmail,
 } from '../controllers/authController.js';
 import { registerValidation, loginValidation } from '../middlewares/validation-middleware.js';
 import { authenticate } from '../middlewares/auth-middleware.js';
@@ -360,5 +362,66 @@ router.post('/forgot-password', forgotPassword);
  *               $ref: '#/components/schemas/Error'
  */
 router.post('/reset-password', resetPassword);
+
+/**
+ * @swagger
+ * /api/auth/request-verification:
+ *   post:
+ *     summary: Email doğrulama talebi
+ *     description: Email adresine doğrulama linki gönderir.
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Email doğrulama linki gönderildi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       400:
+ *         description: Email adresi bulunamadı veya zaten doğrulanmış
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.post('/request-verification', authenticate, requestEmailVerification);
+
+/**
+ * @swagger
+ * /api/auth/verify-email:
+ *   post:
+ *     summary: Email doğrulama
+ *     description: Email doğrulama token'ı ile email adresini doğrular.
+ *     tags: [Auth]
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Email doğrulama token'ı
+ *     responses:
+ *       200:
+ *         description: Email başarıyla doğrulandı
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       400:
+ *         description: Geçersiz veya süresi geçmiş token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.post('/verify-email', verifyEmail);
 
 export default router;

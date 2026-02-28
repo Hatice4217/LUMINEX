@@ -46,6 +46,48 @@ export const authenticate = async (req, res, next) => {
   }
 };
 
+// Alias for backward compatibility
+export const authMiddleware = authenticate;
+  try {
+    // Token'ı header'dan al
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        message: 'Yetkilendirme token\'ı bulunamadı',
+      });
+    }
+
+    const token = authHeader.substring(7); // 'Bearer ' kısmını çıkar
+
+    // Token'ı doğrula
+    const decoded = getUserFromToken(token);
+
+    if (!decoded) {
+      return res.status(401).json({
+        success: false,
+        message: 'Geçersiz veya süresi dolmuş token',
+      });
+    }
+
+    // Kullanıcı bilgilerini request'e ekle
+    req.user = {
+      id: decoded.userId,
+      role: decoded.role,
+      tcNo: decoded.tcNo,
+    };
+
+    next();
+  } catch (error) {
+    logger.error('Authentication error:', error);
+    return res.status(401).json({
+      success: false,
+      message: 'Yetkilendirme hatası',
+    });
+  }
+};
+
 /**
  * Rol bazlı yetkilendirme middleware'i
  * @param {...String} roles - İzin verilen roller

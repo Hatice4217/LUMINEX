@@ -3,6 +3,7 @@ import express from 'express';
 import {
   getUsers,
   getUserById,
+  getMe,
   updateUser,
   deleteUser,
   changeUserRole,
@@ -10,11 +11,19 @@ import {
 } from '../controllers/userController.js';
 import { authenticate, authorize, isOwner } from '../middlewares/auth-middleware.js';
 import { idParamValidation } from '../middlewares/validation-middleware.js';
+import { cacheMiddleware } from '../middlewares/cache-middleware.js';
 
 const router = express.Router();
 
 // Tüm route'lar authentication gerektirir
 router.use(authenticate);
+
+/**
+ * @route   GET /api/users/me
+ * @desc    Mevcut kullanıcının profil bilgilerini getir
+ * @access  Private
+ */
+router.get('/me', cacheMiddleware('users', 300), getMe); // 5 dakika cache
 
 /**
  * @route   GET /api/users

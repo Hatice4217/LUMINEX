@@ -9,6 +9,7 @@ import {
 } from '../controllers/appointmentController.js';
 import { authenticate, authorize } from '../middlewares/auth-middleware.js';
 import { appointmentValidation, idParamValidation } from '../middlewares/validation-middleware.js';
+import { cacheMiddleware } from '../middlewares/cache-middleware.js';
 
 const router = express.Router();
 
@@ -175,7 +176,7 @@ router.post('/', authorize('PATIENT', 'ADMIN'), appointmentValidation, createApp
  *                                   city:
  *                                     type: string
  */
-router.get('/', getAppointments);
+router.get('/', cacheMiddleware('appointments', 120), getAppointments); // 2 dakika cache
 
 /**
  * @swagger

@@ -9,6 +9,7 @@ import {
 } from '../controllers/doctorController.js';
 import { authenticate, authorize } from '../middlewares/auth-middleware.js';
 import { idParamValidation } from '../middlewares/validation-middleware.js';
+import { cacheMiddleware } from '../middlewares/cache-middleware.js';
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ const router = express.Router();
  * @desc    Doktorları listele
  * @access  Public
  */
-router.get('/', getDoctors);
+router.get('/', cacheMiddleware('doctors', 900), getDoctors); // 15 dakika cache
 
 /**
  * @route   GET /api/doctors/:id

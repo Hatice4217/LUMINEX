@@ -12,12 +12,16 @@ build/
 .env
 .env.local
 .env.*.local
+backend/.env
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+
+# Claude Code workspace
+.claude/
 
 # OS
 .DS_Store
@@ -46,6 +50,15 @@ Ekran*.png
 # Test coverage
 coverage/
 .nyc_output/
-DEPLOYMENT-PROGRESS.md
-TEKNIK-DOKUMANTASYON.md
-LUMINEX-TEKNIK-DOKUMANTASYON.md
+
+# Database
+*.db
+*.sqlite
+backend/prisma/migrations/*.db
+
+# Uploads
+backend/uploads/
+uploads/
+
+# Migration lock
+backend/prisma/migrations/migration_lock.toml

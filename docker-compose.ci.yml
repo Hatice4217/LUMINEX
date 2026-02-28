@@ -1,0 +1,76 @@
+# Docker Compose for CI/CD Pipeline
+# Bu dosya GitHub Actions ve diğer CI ortamları için kullanılır
+
+version: '3.8'
+
+services:
+  # PostgreSQL Test Database
+  postgres-test:
+    image: postgres:16-alpine
+    container_name: luminex-test-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: luminex_test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - luminex-test-network
+
+  # Redis Test Instance
+  redis-test:
+    image: redis:7-alpine
+    container_name: luminex-test-redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    command: redis-server --save "" --appendonly no
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - luminex-test-network
+
+  # Test Runner (Opsiyonel - lokal test için)
+  test-runner:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: luminex-test-runner
+    restart: "no"
+    environment:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://test:test@postgres-test:5432/luminex_test
+      REDIS_HOST: redis-test
+      REDIS_PORT: 6379
+      REDIS_ENABLED: "true"
+      CACHE_ENABLED: "true"
+      JWT_SECRET: test_secret_for_ci_only
+      FRONTEND_URL: http://localhost:8080
+      EMAIL_ENABLED: "false"
+      ENCRYPTION_KEY: "test_encryption_key_32_bytes_long!!"
+      ENCRYPTION_ENABLED: "true"
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: npm run test:all
+    networks:
+      - luminex-test-network
+
+networks:
+  luminex-test-network:
+    driver: bridge

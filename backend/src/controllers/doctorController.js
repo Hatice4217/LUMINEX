@@ -1,6 +1,7 @@
 // Doctor Controller
 import prisma from '../config/database.js';
 import logger from '../utils/logger.js';
+import { invalidateDoctorCache } from '../middlewares/cache-middleware.js';
 
 /**
  * Doktorları listele
@@ -137,6 +138,9 @@ export const addAvailability = async (req, res, next) => {
 
     logger.info('Doctor availability added', { doctorId, date });
 
+    // Cache'i invalidate et
+    await invalidateDoctorCache();
+
     res.status(201).json({
       success: true,
       message: 'Müsaitlik eklendi',
@@ -209,6 +213,9 @@ export const deleteAvailability = async (req, res, next) => {
     });
 
     logger.info('Doctor availability deleted', { availabilityId: id, deletedBy: userId });
+
+    // Cache'i invalidate et
+    await invalidateDoctorCache();
 
     res.json({
       success: true,

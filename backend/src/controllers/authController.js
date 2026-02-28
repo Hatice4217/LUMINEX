@@ -1,9 +1,12 @@
 // Authentication Controller
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import prisma from '../config/database.js';
 import { generateToken } from '../utils/jwt-utils.js';
 import { validateTC, validateEmail, validatePassword } from '../utils/validation-utils.js';
 import logger from '../utils/logger.js';
+import emailService from '../services/emailService.js';
+import { encryptField, decryptField } from '../services/encryptionService.js';
 
 /**
  * Kullanıcı kaydı
@@ -273,22 +276,28 @@ export const changePassword = async (req, res, next) => {
 };
 
 /**
- * Şifremi unuttum - Sıfırlama token'ı oluştur
- * (Not: Gerçek uygulamada email ile gönderilmeli)
+ * Şifremi unuttum - Sıfırlama link'i email ile gönder
  */
 export const forgotPassword = async (req, res, next) => {
   try {
-    const { tcNo } = req.body;
+    const { email } = req.body;
 
-    const user = await prisma.user.findUnique({
-      where: { tcNo },
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email adresi gerekli',
+      });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: { email },
     });
 
     if (!user) {
       // Güvenlik için kullanıcı bulunamasa da başarlı döndür
       return res.json({
         success: true,
-        message: 'Eğer bu TC Kimlik Numarası kayıtlıysa, şifre sıfırlama bilgileri gönderilecektir',
+        message: 'Eğer bu email adresi kayıtlıysa, şifre sıfırlama linki gönderilecektir',
       });
     }
 
@@ -298,15 +307,22 @@ export const forgotPassword = async (req, res, next) => {
       type: 'password_reset',
     }, '1h');
 
-    logger.info('Password reset requested', { userId: user.id });
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
-    // Not: Gerçek uygulamada bu token email ile gönderilmeli
+    // Email gönder
+    if (user.email) {
+      await emailService.sendPasswordReset(
+        user.email,
+        `${user.firstName} ${user.lastName}`,
+        resetLink
+      );
+    }
+
+    logger.info('Password reset requested', { userId: user.id, email });
+
     res.json({
       success: true,
-      message: 'Şifre sıfırlama token\'ı oluşturuldu',
-      data: {
-        resetToken, // Sadece development'da geri döndür
-      },
+      message: 'Şifre sıfırlama linki email adresinize gönderildi',
     });
   } catch (error) {
     next(error);
@@ -362,6 +378,105 @@ export const resetPassword = async (req, res, next) => {
     res.json({
       success: true,
       message: 'Şifre başarıyla sıfırlandı',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Email doğrulama talebi
+ */
+export const requestEmailVerification = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user || !user.email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email adresi bulunamadı',
+      });
+    }
+
+    if (user.emailVerified) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email adresi zaten doğrulanmış',
+      });
+    }
+
+    // Verification token oluştur (24 saat geçerli)
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { verificationToken },
+    });
+
+    const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
+
+    // Email gönder
+    await emailService.sendEmailVerification(
+      user.email,
+      `${user.firstName} ${user.lastName}`,
+      verificationLink
+    );
+
+    logger.info('Email verification requested', { userId, email: user.email });
+
+    res.json({
+      success: true,
+      message: 'Email doğrulama linki gönderildi',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Email doğrulama
+ */
+export const verifyEmail = async (req, res, next) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: 'Doğrulama token\'ı gerekli',
+      });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: { verificationToken: token },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Geçersiz veya süresi geçmiş doğrulama linki',
+      });
+    }
+
+    // Email'i doğrula
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerified: true,
+        emailVerifiedAt: new Date(),
+        verificationToken: null,
+      },
+    });
+
+    logger.info('Email verified', { userId: user.id, email: user.email });
+
+    res.json({
+      success: true,
+      message: 'Email adresi başarıyla doğrulandı',
     });
   } catch (error) {
     next(error);

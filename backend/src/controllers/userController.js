@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import prisma from '../config/database.js';
 import { validateTC, validateEmail, validatePassword } from '../utils/validation-utils.js';
 import logger from '../utils/logger.js';
+import { invalidateUserCache } from '../middlewares/cache-middleware.js';
 
 /**
  * Tüm kullanıcıları listele (Admin)
@@ -59,6 +60,51 @@ export const getUsers = async (req, res, next) => {
           pages: Math.ceil(total / parseInt(limit)),
         },
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Mevcut kullanıcının profil bilgilerini getir
+ */
+export const getMe = async (req, res, next) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: {
+        id: true,
+        tcNo: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        email: true,
+        phone: true,
+        gender: true,
+        dateOfBirth: true,
+        createdAt: true,
+        updatedAt: true,
+        _count: {
+          select: {
+            appointments: true,
+            testResults: true,
+            prescriptions: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Kullanıcı bulunamadı',
+      });
+    }
+
+    res.json({
+      success: true,
+      data: { user },
     });
   } catch (error) {
     next(error);
@@ -162,6 +208,9 @@ export const updateUser = async (req, res, next) => {
     });
 
     logger.info('User updated', { userId: id, updatedBy: req.user.id });
+
+    // Cache'i invalidate et
+    await invalidateUserCache(id);
 
     res.json({
       success: true,

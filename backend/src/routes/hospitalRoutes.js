@@ -3,6 +3,7 @@ import express from 'express';
 import prisma from '../config/database.js';
 import { authenticate, authorize } from '../middlewares/auth-middleware.js';
 import logger from '../utils/logger.js';
+import { cacheMiddleware, invalidateHospitalCache } from '../middlewares/cache-middleware.js';
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ router.use(authenticate);
  * @desc    Hastaneleri listele
  * @access  Private
  */
-router.get('/', async (req, res, next) => {
+router.get('/', cacheMiddleware('hospitals', 1800), async (req, res, next) => { // 30 dakika cache
   try {
     const { city, search, page = 1, limit = 20 } = req.query;
 
@@ -118,6 +119,9 @@ router.post('/', authorize('ADMIN'), async (req, res, next) => {
 
     logger.info('Hospital created', { hospitalId: hospital.id, createdBy: req.user.id });
 
+    // Cache'i invalidate et
+    await invalidateHospitalCache();
+
     res.status(201).json({
       success: true,
       message: 'Hastane oluşturuldu',
@@ -153,6 +157,9 @@ router.put('/:id', authorize('ADMIN'), async (req, res, next) => {
 
     logger.info('Hospital updated', { hospitalId: id, updatedBy: req.user.id });
 
+    // Cache'i invalidate et
+    await invalidateHospitalCache();
+
     res.json({
       success: true,
       message: 'Hastane güncellendi',
@@ -177,6 +184,9 @@ router.delete('/:id', authorize('ADMIN'), async (req, res, next) => {
     });
 
     logger.info('Hospital deleted', { hospitalId: id, deletedBy: req.user.id });
+
+    // Cache'i invalidate et
+    await invalidateHospitalCache();
 
     res.json({
       success: true,
