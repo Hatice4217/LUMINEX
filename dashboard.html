@@ -87,13 +87,19 @@
             <!-- Side Menu -->
             <aside class="side-menu">
                 <ul id="dynamicSideMenu">
+                    <!-- Dinamik menü öğeleri buraya yüklenecek -->
+                </ul>
+                <!-- Yedek menü (JavaScript çalışmazsa gösterilir) -->
+                <ul id="fallbackSideMenu" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
                     <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Kontrol Paneli</span></a></li>
                     <li><a href="my-appointments.html"><i class="fas fa-calendar-alt"></i> <span>Randevularım</span></a></li>
                     <li><a href="doctors.html"><i class="fas fa-user-md"></i> <span>Doktorlar / Branşlar</span></a></li>
-                    <li><a href="test-results.html"><i class="fas fa-microscope"></i> <span>Tahlil & Sonuçlar</span></a></li>
-                    <li><a href="radiology-results.html"><i class="fas fa-x-ray"></i> <span>Radyolojik Görüntülerim</span></a></li>
                     <li><a href="prescriptions.html"><i class="fas fa-prescription-bottle-alt"></i> <span>Reçetelerim</span></a></li>
                     <li><a href="health-history.html"><i class="fas fa-notes-medical"></i> <span>Sağlık Geçmişim</span></a></li>
+                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Ödemeler & Faturalar</span></a></li>
+                    <li><a href="family-accounts.html"><i class="fas fa-users"></i> <span>Bağlı Hesaplar</span></a></li>
+                    <li><a href="my-reviews.html"><i class="fas fa-star"></i> <span>Değerlendirmelerim</span></a></li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> <span>Geri Bildirim</span></a></li>
                     <li><a href="contact.html"><i class="fas fa-headset"></i> <span>İletişim / Destek</span></a></li>
                 </ul>
                 <div class="sidebar-toggle-wrapper">
@@ -216,6 +222,232 @@
                         .medicine-reminder-card { flex-direction: column; text-align: center; gap: 15px; }
                         .medicine-info h2 { justify-content: center; }
                     }
+
+                    /* Premium İstatistik Kartı */
+                    .premium-stats {
+                        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+                        border: 1px solid rgba(0, 31, 107, 0.1) !important;
+                        border-left: 4px solid #78C7C7 !important;
+                        border-radius: 16px !important;
+                        overflow: hidden;
+                        position: relative;
+                    }
+
+                    .premium-stats::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        height: 4px;
+                        background: linear-gradient(90deg, #001F6B, #78C7C7, #001F6B);
+                    }
+
+                    .premium-stats h2 {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        margin-bottom: 20px;
+                        color: #001F6B !important;
+                        font-size: 1.3rem;
+                    }
+
+                    .premium-stats h2 i {
+                        color: #78C7C7 !important;
+                    }
+
+                    .stats-grid {
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr);
+                        gap: 15px;
+                    }
+
+                    @media (max-width: 768px) {
+                        .stats-grid {
+                            grid-template-columns: 1fr;
+                        }
+                    }
+
+                    .stat-item {
+                        display: flex;
+                        align-items: center;
+                        gap: 15px;
+                        padding: 15px;
+                        background: #ffffff;
+                        border-radius: 12px;
+                        transition: all 0.3s ease;
+                        border: 1px solid rgba(0, 31, 107, 0.08);
+                    }
+
+                    .stat-item:hover {
+                        transform: translateY(-3px);
+                        box-shadow: 0 8px 20px rgba(0, 31, 107, 0.15);
+                        border-color: #78C7C7;
+                    }
+
+                    .stat-icon {
+                        width: 50px;
+                        height: 50px;
+                        border-radius: 12px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 1.3rem;
+                        flex-shrink: 0;
+                    }
+
+                    .stat-icon.blue {
+                        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+                        color: #3b82f6;
+                    }
+
+                    .stat-icon.green {
+                        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+                        color: #22c55e;
+                    }
+
+                    .stat-icon.purple {
+                        background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+                        color: #a855f7;
+                    }
+
+                    .stat-content {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 4px;
+                    }
+
+                    .stat-number {
+                        font-size: 1.8rem;
+                        font-weight: 700;
+                        color: #001F6B;
+                        line-height: 1;
+                    }
+
+                    .stat-label {
+                        font-size: 0.8rem;
+                        color: #64748b;
+                        font-weight: 500;
+                    }
+
+                    /* Dark Mode için İstatistik */
+                    body.theme-dark .premium-stats {
+                        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+                        border: 1px solid rgba(56, 189, 248, 0.2) !important;
+                        border-left: 4px solid #38bdf8 !important;
+                    }
+
+                    body.theme-dark .premium-stats h2 {
+                        color: #38bdf8 !important;
+                    }
+
+                    body.theme-dark .premium-stats h2 i {
+                        color: #38bdf8 !important;
+                    }
+
+                    body.theme-dark .stat-item {
+                        background: rgba(30, 41, 59, 0.6);
+                        border: 1px solid rgba(255, 255, 255, 0.08);
+                    }
+
+                    body.theme-dark .stat-item:hover {
+                        border-color: rgba(56, 189, 248, 0.3);
+                        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+                    }
+
+                    body.theme-dark .stat-number {
+                        color: #f8fafc;
+                    }
+
+                    body.theme-dark .stat-label {
+                        color: #94a3b8;
+                    }
+
+                    /* Sidebar Toggle Button - Modern Style */
+                    .sidebar-toggle-wrapper {
+                        padding: 20px;
+                        display: flex;
+                        justify-content: center;
+                    }
+
+                    .sidebar-toggle-button {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        width: 100%;
+                        padding: 12px 20px;
+                        background: linear-gradient(135deg, rgba(0, 31, 107, 0.08) 0%, rgba(0, 31, 107, 0.05) 100%);
+                        border: 1px solid rgba(0, 31, 107, 0.15);
+                        border-radius: 12px;
+                        color: #001F6B;
+                        font-size: 0.9rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        position: relative;
+                        overflow: hidden;
+                    }
+
+                    .sidebar-toggle-button::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: -100%;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+                        transition: left 0.5s ease;
+                    }
+
+                    .sidebar-toggle-button:hover::before {
+                        left: 100%;
+                    }
+
+                    .sidebar-toggle-button:hover {
+                        background: linear-gradient(135deg, rgba(0, 31, 107, 0.15) 0%, rgba(0, 31, 107, 0.1) 100%);
+                        border-color: #001F6B;
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 12px rgba(0, 31, 107, 0.2);
+                    }
+
+                    .sidebar-toggle-button:active {
+                        transform: translateY(0);
+                    }
+
+                    .sidebar-toggle-button i {
+                        font-size: 1rem;
+                        transition: transform 0.3s ease;
+                    }
+
+                    .sidebar-toggle-button:hover i {
+                        transform: translateX(-3px);
+                    }
+
+                    /* Daraltılmış menü durumunda buton stili */
+                    .sidebar-is-collapsed .sidebar-toggle-button i {
+                        transform: rotate(180deg);
+                    }
+
+                    .sidebar-is-collapsed .sidebar-toggle-button:hover i {
+                        transform: rotate(180deg) translateX(3px);
+                    }
+
+                    /* Dark Mode */
+                    body.theme-dark .sidebar-toggle-button {
+                        background: linear-gradient(135deg, rgba(120, 199, 199, 0.1) 0%, rgba(120, 199, 199, 0.05) 100%);
+                        border-color: rgba(120, 199, 199, 0.2);
+                        color: #78C7C7;
+                    }
+
+                    body.theme-dark .sidebar-toggle-button:hover {
+                        background: linear-gradient(135deg, rgba(120, 199, 199, 0.2) 0%, rgba(120, 199, 199, 0.15) 100%);
+                        border-color: #78C7C7;
+                        box-shadow: 0 4px 12px rgba(120, 199, 199, 0.3);
+                    }
+
+                    body.theme-dark .sidebar-is-collapsed .sidebar-toggle-button i {
+                        transform: rotate(180deg);
+                    }
                 </style>
 
                 <!-- Announcements / Health Tips -->
@@ -224,10 +456,38 @@
                     <p id="health-tip"></p>
                 </div>
 
-                <!-- Mini Statistics Box -->
-                <div class="card stats-card">
+                <!-- Mini Statistics Box - Premium Modern -->
+                <div class="card stats-card premium-stats">
                     <h2><i class="fas fa-chart-line"></i> <span data-lang="statisticsHeader">İstatistikler</span></h2>
-                    <p data-lang="monthlyAppointmentsStats">Bu ay 0 randevunu tamamladın.</p>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-icon blue">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-content">
+                                <span class="stat-number" id="completedAppointments">0</span>
+                                <span class="stat-label">Tamamlanan Randevu</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon green">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-content">
+                                <span class="stat-number" id="upcomingAppointments">0</span>
+                                <span class="stat-label">Sıradaki Randevu</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon purple">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <div class="stat-content">
+                                <span class="stat-number" id="visitedDoctors">0</span>
+                                <span class="stat-label">Ziyaret Edilen Doktor</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>

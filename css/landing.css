@@ -56,13 +56,25 @@ html {
     scroll-behavior: smooth;
 }
 
-body {
+/* Sadece landing page için body stili */
+body.landing-page,
+body:not(.login-page):not([class*="dashboard"]) {
     font-family: 'Poppins', sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
     margin: 0;
-    padding-top: 160px; 
+    padding-top: 160px;
     overflow-x: hidden;
+}
+
+/* Dashboard sayfaları için - landing.css etkilemesin */
+body:not(.landing-page) {
+    padding-top: 0 !important;
+}
+
+/* Login sayfası için */
+body.login-page {
+    padding-top: 0 !important;
 }
 
 /* Background Animation - Liquid Layering */
@@ -1004,7 +1016,7 @@ body.theme-light .form-control:focus {
 /* New Hero Section & Cards */
 .hero {
     text-align: center;
-    padding: 8rem 0 4rem; /* Reduced from 12rem to 8rem */
+    padding: 14rem 0 4rem; /* Üst boşluk daha da artırıldı */
 }
 
 .hero h1 {
@@ -1390,10 +1402,14 @@ body.theme-light .section-header p {
 }
 
 @media (max-width: 768px) {
+    .hero {
+        padding: 9rem 0 3rem; /* Mobil için üst boşluk artırıldı */
+    }
+
     .hero-cards-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .doctors-carousel {
         display: flex;
         overflow-x: auto;
@@ -1401,12 +1417,12 @@ body.theme-light .section-header p {
         padding-bottom: 40px;
         -webkit-overflow-scrolling: touch;
     }
-    
+
     .doctor-card {
         flex: 0 0 300px;
         scroll-snap-align: center;
     }
-    
+
     .hero h1 {
         font-size: 2.5rem;
     }

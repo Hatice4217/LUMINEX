@@ -1,20 +1,21 @@
-/* DARK MODE OVERRIDES - PREMIUM */
+/* DARK MODE OVERRIDES - MODERN SLATE / DEEP NAVY */
 html.theme-dark, body.theme-dark {
     background-color: var(--body-bg);
     color: var(--text-color);
 }
 
 body.theme-dark {
-    --primary-color: #3b82f6; /* Vivid Blue */
-    --primary-dark: #1d4ed8;
-    --text-color: #f1f5f9; /* Bright White-ish */
+    /* Modern Slate / Deep Navy Paleti - Premium Dark Mode */
+    --primary-color: #38bdf8; /* Sky Blue - Modern vurgu */
+    --primary-dark: #0284c7;
+    --text-color: #f8fafc; /* Kırık beyaz - göz yormaz */
     --text-light: #94a3b8;
-    --body-bg: #020617; /* Deep Midnight Black (No more gray) */
-    --white-color: #0f172a; /* Dark card background */
-    --border-color: #1e293b;
-    --input-bg: #0f172a;
-    --shadow-color: rgba(0, 0, 0, 0.5);
-    --secondary-background: #1e293b;
+    --body-bg: #0f172a; /* Koyu Lacivert-Gri - Slate 900 */
+    --white-color: #1e293b; /* Kartlar - Slate 800 */
+    --border-color: rgba(255, 255, 255, 0.1); /* İnce border */
+    --input-bg: #1e293b; /* Input - Slate 800 */
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --secondary-background: #334155; /* Slate 700 */
 }
 
 body.theme-dark h1,
@@ -58,7 +59,7 @@ body.theme-dark #security h4 {
     color: var(--primary-color) !important; /* Ensure visibility for security heading */
 }
 
-body.theme-dark .card, 
+body.theme-dark .card,
 body.theme-dark .side-menu,
 body.theme-dark .top-bar,
 body.theme-dark .stats-card,
@@ -77,11 +78,12 @@ body.theme-dark .custom-options-panel,
 body.theme-dark .profile-section,
 body.theme-dark .profile-sidebar,
 body.theme-dark .profile-main,
-body.theme-dark .stat-card { /* Added .stat-card here for consistency */
-    background: #1e293b !important; /* Force Midnight Blue for all cards, overriding gradients */
-    border-color: var(--border-color);
+body.theme-dark .stat-card {
+    background: #1e293b !important; /* Slate 800 */
+    border: 1px solid rgba(255, 255, 255, 0.08) !important; /* İnce border */
     color: var(--text-color);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3); /* Consistent shadow */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05) !important; /* İç ışıltı */
 }
 
 /* Dark Mode for Availability Table */
@@ -524,39 +526,80 @@ body.theme-dark .premium-header h1 {
     text-shadow: 0 0 20px rgba(129, 140, 248, 0.5) !important; /* Indigo Glow */
 }
 
-/* Sidebar & Top Bar Integration */
+/* Sidebar & Top Bar - Modern Slate Derinlik */
 body.theme-dark .side-menu,
 body.theme-dark .top-bar {
-    background-color: #1e293b !important; /* Match card bg */
-    border-right: 1px solid #334155;
-    border-bottom: 1px solid #334155;
+    background: rgba(30, 41, 59, 0.8) !important; /* Glassmorphism */
+    backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* İç ışıltı ile derinlik */
+body.theme-dark .side-menu {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 body.theme-dark .side-menu ul li a {
+    color: #94a3b8 !important; /* Soft gri - göz yormaz */
+}
+
+body.theme-dark .side-menu ul li a span {
     color: #94a3b8 !important;
 }
 
-body.theme-dark .side-menu ul li a:hover, 
-body.theme-dark .side-menu ul li a.active {
-    background-color: rgba(129, 140, 248, 0.1) !important; /* Transparent Indigo */
-    color: #818cf8 !important;
-    border-left-color: #818cf8 !important;
+body.theme-dark .side-menu ul li a i {
+    color: #64748b !important; /* İkonlar daha yumuşak */
 }
 
-/* Cards with subtle glow */
+body.theme-dark .side-menu ul li a:hover,
+body.theme-dark .side-menu ul li a.active {
+    background: rgba(56, 189, 248, 0.1) !important; /* Sky Blue glow */
+    color: #38bdf8 !important;
+    border-left-color: #38bdf8 !important;
+}
+
+body.theme-dark .side-menu ul li a:hover i,
+body.theme-dark .side-menu ul li a.active i {
+    color: #38bdf8 !important;
+}
+
+/* Cards with subtle glow - Modern Sky Blue */
 body.theme-dark .card,
 body.theme-dark .ticket-card,
 body.theme-dark .user-card,
 body.theme-dark .hospital-card,
 body.theme-dark .department-card {
     background-color: #1e293b !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+    transition: all 0.3s ease;
 }
 
 body.theme-dark .card:hover {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(129, 140, 248, 0.1) !important; /* Subtle indigo glow on hover */
-    border-color: rgba(129, 140, 248, 0.3) !important;
+    border-color: rgba(56, 189, 248, 0.3) !important; /* Sky Blue */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(56, 189, 248, 0.1) !important; /* Sky Blue glow */
+}
+
+/* Duyurular - Sidebar aktif renk ile tam eşleşme */
+body.theme-dark .announcements-card,
+body.theme-dark .card.announcement-health,
+body.theme-dark .card.announcement-warning,
+body.theme-dark .card.announcement-info {
+    background: rgba(30, 41, 59, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important; /* Neutral border */
+    border-left: 4px solid #38bdf8 !important; /* Sol çizgi - Sky Blue */
+}
+
+body.theme-dark .announcements-card h2 i,
+body.theme-dark .announcement-card h2 i {
+    color: #38bdf8 !important; /* Megafon - Sky Blue */
+}
+
+body.theme-dark .announcements-card h2 {
+    color: #38bdf8 !important; /* Başlık - Sky Blue */
 }
 
 /* Admin Dashboard Specific Fixes */
@@ -1249,5 +1292,293 @@ body.theme-dark button::after {
     outline: none !important;
     -webkit-outline: none !important;
     box-shadow: none !important;
+}
+
+/* ==========================================================================
+   LOGIN & REGISTER SAYFALARI - DARK MODE DÜZELTMELERİ
+   Global Standart Renk Paleti (Apple/Google/Stripe Style)
+   ========================================================================== */
+
+/* ZEMİN HİYERAŞİSİ
+   #0F172A - En Alt Zemin (Ana Background)
+   #1E293B - Form Kartı (Elevation Level 1)
+   #334155 - Input Border
+   #F8FAFC - Ana Metinler
+   #94A3B8 - Placeholder Metinler
+   #3B82F6 - Marka Rengi (Accent Blue)
+*/
+
+/* Login Page Body Background - En Alt Zemin */
+body.theme-dark.login-page {
+    background: #0F172A !important;
+}
+
+/* Register Page Body Background */
+body.theme-dark.login-page.register-page {
+    background: #0F172A !important;
+}
+
+/* Info Panel - Sol Taraf (Logo ve Mesaj Alanı) */
+body.theme-dark.login-page .info-panel {
+    background: #0F172A !important;
+    border-right: 1px solid #1E293B !important;
+}
+
+/* Logo Div Mask - PARLAK BEYAZ/GÜMÜŞ */
+body.theme-dark.login-page .logo > div,
+body.theme-dark.login-page .logo div {
+    background-color: #F8FAFC !important; /* Parlak beyaz */
+    opacity: 1 !important;
+}
+
+/* Info Panel Text - Premium Okunabilirlik */
+body.theme-dark.login-page .info-panel h1,
+body.theme-dark.login-page .info-panel .content h1 {
+    color: #FFFFFF !important; /* Saf beyaz */
+}
+
+body.theme-dark.login-page .info-panel p,
+body.theme-dark.login-page .info-panel .content p {
+    color: #CBD5E1 !important; /* Daha açık gri */
+}
+
+/* Register Link Panel */
+body.theme-dark.login-page .register-link-panel p {
+    color: #94A3B8 !important;
+}
+
+body.theme-dark.login-page .register-link-panel a {
+    color: #60A5FA !important; /* Daha açık mavi */
+}
+
+/* Form Panel - Sağ Taraf */
+body.theme-dark.login-page .form-panel {
+    background: transparent !important;
+}
+
+/* Auth Card - Elevation Level 1 */
+body.theme-dark.login-page .auth-card {
+    background: #1E293B !important;
+    border: 1px solid #334155 !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Auth Header - Clean White, No Gradient */
+body.theme-dark.login-page .auth-header h2 {
+    color: #F8FAFC !important;
+    background: none !important;
+    -webkit-text-fill-color: #F8FAFC !important;
+}
+
+/* Form Labels - Premium White */
+body.theme-dark.login-page .form-group label {
+    color: #F8FAFC !important;
+}
+
+/* Input Wrapper - Transparent with Border */
+body.theme-dark.login-page .input-wrapper {
+    background: transparent !important;
+    border: 1px solid #334155 !important;
+}
+
+body.theme-dark.login-page .input-wrapper:focus-within {
+    border-color: #3B82F6 !important;
+    background: transparent !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Input Fields - Clean Text */
+body.theme-dark.login-page .input-wrapper input,
+body.theme-dark.login-page .input-wrapper select {
+    color: #F8FAFC !important;
+}
+
+/* Placeholder - DAHA AÇIK GRİ (OKUNABİLİR) */
+body.theme-dark.login-page .input-wrapper input::placeholder,
+body.theme-dark.login-page .input-wrapper select::placeholder {
+    color: #CBD5E1 !important; /* Daha açık gri */
+}
+
+/* Input Icons - Neutral Gray (Focus yoksa) */
+body.theme-dark.login-page .input-wrapper i {
+    color: #64748B !important; /* Koyu gri - neon değil */
+}
+
+body.theme-dark.login-page .input-wrapper:focus-within i {
+    color: #94A3B8 !important; /* Focus olunca açık gri, mavi değil */
+}
+
+/* Toggle Password */
+body.theme-dark.login-page .toggle-password {
+    color: #64748B !important;
+}
+
+body.theme-dark.login-page .toggle-password:hover {
+    color: #3B82F6 !important;
+}
+
+/* Checkbox */
+body.theme-dark.login-page .form-check-label {
+    color: #CBD5E1 !important;
+}
+
+/* Links - Brand Blue */
+body.theme-dark.login-page .forgot-password {
+    color: #3B82F6 !important;
+}
+
+body.theme-dark.login-page .forgot-password:hover {
+    color: #60A5FA !important;
+}
+
+/* Buttons - Brand Blue Gradient */
+body.theme-dark.login-page .btn-primary {
+    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+}
+
+body.theme-dark.login-page .btn-primary:hover {
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4) !important;
+    transform: translateY(-1px);
+}
+
+/* Top Right Actions - Lang Switcher */
+body.theme-dark.login-page .top-right-actions .selected-lang {
+    background: rgba(30, 41, 59, 0.5) !important;
+    border: 1px solid #334155 !important;
+    color: #F8FAFC !important;
+}
+
+body.theme-dark.login-page .top-right-actions .selected-lang:hover {
+    background: rgba(59, 130, 246, 0.15) !important;
+    border-color: #3B82F6 !important;
+}
+
+body.theme-dark.login-page .lang-options {
+    background: #1E293B !important;
+    border: 1px solid #334155 !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.theme-dark.login-page .lang-options li {
+    color: #F8FAFC !important;
+}
+
+body.theme-dark.login-page .lang-options li:hover {
+    background: rgba(59, 130, 246, 0.15) !important;
+    color: #3B82F6 !important;
+}
+
+/* Home Button - DAHA BELİRGİN ÇERÇEVE */
+body.theme-dark.login-page .btn-home-text {
+    background: rgba(30, 41, 59, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #94A3B8 !important;
+}
+
+body.theme-dark.login-page .btn-home-text:hover {
+    background: rgba(59, 130, 246, 0.15) !important;
+    border-color: #3B82F6 !important;
+    color: #3B82F6 !important;
+}
+
+/* Password Strength Bar */
+body.theme-dark.login-page .password-strength-bar {
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Error Messages */
+body.theme-dark.login-page .error-message {
+    background: rgba(239, 68, 68, 0.1) !important;
+    border-left-color: #EF4444 !important;
+    color: #FCA5A5 !important;
+}
+
+/* Password Tips */
+body.theme-dark.login-page .password-tips {
+    background: rgba(255, 255, 255, 0.03) !important;
+    color: #94A3B8 !important;
+}
+
+/* Notifications - Success */
+body.theme-dark.login-page #loginNotification.success {
+    background: rgba(34, 197, 94, 0.1) !important;
+    border: 1px solid rgba(34, 197, 94, 0.3) !important;
+    color: #4ADE80 !important;
+}
+
+/* Notifications - Error */
+body.theme-dark.login-page #loginNotification.error {
+    background: rgba(239, 68, 68, 0.1) !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    color: #F87171 !important;
+}
+
+body.theme-dark.login-page #registerNotification.success {
+    background: rgba(34, 197, 94, 0.1) !important;
+    border: 1px solid rgba(34, 197, 94, 0.3) !important;
+    color: #4ADE80 !important;
+}
+
+body.theme-dark.login-page #registerNotification.error {
+    background: rgba(239, 68, 68, 0.1) !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    color: #F87171 !important;
+}
+
+/* Custom Dropdown Arrow - Neutral Gray */
+body.theme-dark.login-page .input-wrapper:has(select)::after {
+    color: #94A3B8 !important;
+}
+
+body.theme-dark.login-page .dropdown-arrow {
+    color: #94A3B8 !important;
+}
+
+/* Select Option Background */
+body.theme-dark.login-page .input-wrapper select option {
+    background: #1E293B !important;
+    color: #F8FAFC !important;
+}
+
+/* Auth Card Scrollbar - Subtle */
+body.theme-dark.login-page .auth-card::-webkit-scrollbar {
+    width: 6px !important;
+}
+
+body.theme-dark.login-page .auth-card::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-radius: 3px !important;
+}
+
+body.theme-dark.login-page .auth-card::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.3) !important;
+    border-radius: 3px !important;
+}
+
+body.theme-dark.login-page .auth-card::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.5) !important;
+}
+
+/* Info Panel Content Text Override */
+body.theme-dark.login-page .info-panel .content {
+    color: #CBD5E1 !important;
+}
+
+body.theme-dark.login-page .info-panel .content h1 {
+    color: #FFFFFF !important;
+}
+
+/* Register Link Panel Link */
+body.theme-dark.login-page .register-link-panel a {
+    color: #60A5FA !important; /* Daha açık mavi */
+    text-decoration: none !important;
+}
+
+body.theme-dark.login-page .register-link-panel a:hover {
+    color: #93C5FD !important; /* Hover'da daha açık */
+    text-decoration: underline !important;
 }
 

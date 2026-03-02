@@ -67,7 +67,16 @@ export function removeActiveProfile() {
 }
 
 export function getLoggedInUser() {
-    return getLocalStorageItem('loggedInUser');  // localStorage kullan
+    const user = getLocalStorageItem('loggedInUser');
+    // Handle double-encoded JSON (legacy data)
+    if (typeof user === 'string') {
+        try {
+            return JSON.parse(user);
+        } catch (e) {
+            return user;
+        }
+    }
+    return user;
 }
 
 export function setLoggedInUser(user) {

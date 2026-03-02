@@ -44,18 +44,34 @@ body,
 
 html {
     font-size: 16px;
+    overflow: hidden;
+    height: 100%;
 }
 
 body {
-    font-family: var(--font-family-sans-serif);
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    height: 100% !important;
+    font-family: var(--font-family-sans-serif) !important;
     line-height: 1.5;
     background-color: var(--body-bg);
     color: var(--text-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
     transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Login sayfası için özel body stili */
+body.login-page {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 100vh !important;
+}
+
+/* Landing page için özel stili */
+body.landing-page {
+    padding-top: 160px !important;
+    overflow-x: hidden !important;
 }
 
 .login-container {
@@ -440,9 +456,13 @@ body {
 .dashboard-container {
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 100vw;
     height: 100vh;
     background-color: var(--body-bg);
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
 }
 
 .top-bar {
@@ -957,6 +977,8 @@ button:focus::after, button:active::after {
 .main-wrapper {
     display: flex;
     flex: 1;
+    overflow: hidden;
+    min-height: 0;
 }
 
 .side-menu {
@@ -964,7 +986,10 @@ button:focus::after, button:active::after {
     background-color: var(--white-color);
     padding: 20px 0;
     box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
-    overflow: visible; /* Changed from overflow-y: auto to allow dropdown to show */
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-shrink: 0;
+    min-height: 0;
 }
 
 .side-menu ul {
@@ -979,17 +1004,25 @@ button:focus::after, button:active::after {
     display: flex;
     align-items: center;
     padding: 12px 20px;
-    color: var(--text-color);
+    color: #001F6B;
     text-decoration: none;
     font-weight: 500;
     transition: background-color 0.3s ease, color 0.3s ease;
     border-left: 4px solid transparent;
 }
 
+.side-menu ul li a span {
+    /* Yazı alt satıra geçmesin - titreme önleyici */
+    white-space: nowrap;
+    overflow: hidden;
+    flex-shrink: 0;
+    color: #001F6B;
+}
+
 .side-menu ul li a i {
     margin-right: 15px;
     font-size: 1.1rem;
-    color: var(--text-light);
+    color: #001F6B;
 }
 
 .side-menu ul li a:hover,
@@ -1006,11 +1039,182 @@ button:focus::after, button:active::after {
     text-shadow: 0 0 8px rgba(0, 168, 150, 0.5);
 }
 
+/* Sidebar Daraltma (Collapsed State) */
+body.sidebar-is-collapsed .side-menu {
+    width: 70px !important;
+}
+
+body.sidebar-is-collapsed .side-menu ul li a span {
+    display: none !important;
+}
+
+body.sidebar-is-collapsed .side-menu ul li a {
+    justify-content: center;
+    padding: 15px 0;
+}
+
+body.sidebar-is-collapsed .side-menu ul li a i {
+    margin-right: 0 !important;
+    font-size: 1.3rem;
+}
+
+/* Sidebar Toggle Button Styles */
+.sidebar-toggle-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: calc(100% - 40px);
+    margin: 0 auto;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, rgba(0, 31, 107, 0.08) 0%, rgba(0, 31, 107, 0.04) 100%);
+    border: 1px solid rgba(0, 31, 107, 0.15);
+    border-radius: var(--border-radius);
+    color: #001F6B;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebar-toggle-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.sidebar-toggle-button:hover::before {
+    left: 100%;
+}
+
+.sidebar-toggle-button:hover {
+    background: linear-gradient(135deg, rgba(0, 31, 107, 0.15) 0%, rgba(0, 31, 107, 0.1) 100%);
+    border-color: #001F6B;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 31, 107, 0.2);
+}
+
+.sidebar-toggle-button:active {
+    transform: translateY(0);
+}
+
+.sidebar-toggle-button i {
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-toggle-button:hover i {
+    transform: translateX(-3px);
+}
+
+/* Daraltılmış menü durumunda buton stili */
+body.sidebar-is-collapsed .sidebar-toggle-button span {
+    display: none !important;
+}
+
+body.sidebar-is-collapsed .sidebar-toggle-button {
+    padding: 12px;
+    justify-content: center;
+}
+
+body.sidebar-is-collapsed .sidebar-toggle-button i {
+    transform: rotate(180deg);
+}
+
+body.sidebar-is-collapsed .sidebar-toggle-button:hover i {
+    transform: rotate(180deg) translateX(3px);
+}
+
+/* Dark Mode */
+body.theme-dark .sidebar-toggle-button {
+    background: linear-gradient(135deg, rgba(120, 199, 199, 0.1) 0%, rgba(120, 199, 199, 0.05) 100%);
+    border-color: rgba(120, 199, 199, 0.2);
+    color: #78C7C7;
+}
+
+body.theme-dark .sidebar-toggle-button:hover {
+    background: linear-gradient(135deg, rgba(120, 199, 199, 0.2) 0%, rgba(120, 199, 199, 0.15) 100%);
+    border-color: #78C7C7;
+    box-shadow: 0 4px 12px rgba(120, 199, 199, 0.3);
+}
+
+body.theme-dark .sidebar-is-collapsed .sidebar-toggle-button i {
+    transform: rotate(180deg);
+}
+
+/* Scrollbar sıçramasını önle */
+html {
+    scrollbar-gutter: stable;
+}
+
+/* Sidebar smooth transition - her iki taraf eşit */
+.side-menu {
+    transition: width 0.3s ease-in-out;
+    will-change: width;
+    /* GPU hızlandırma */
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-font-smoothing: antialiased;
+    /* Layout hesaplamalarını sınırla */
+    contain: layout style;
+}
+
+.side-menu ul li a {
+    transition: all 0.3s ease-in-out;
+}
+
+.main-wrapper {
+    will-change: transform;
+    /* GPU hızlandırma */
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
 .dashboard-content {
-    flex: 1;
+    flex: 1 1 0;
     padding: 30px;
     overflow-y: auto;
+    overflow-x: hidden;
     background-color: var(--body-bg);
+    min-width: 0;
+    min-height: 0;
+    /* İçerik genişlemesin - sabit genişlik */
+    max-width: calc(100% - 250px);
+    transition: max-width 0.3s ease-in-out;
+    /* GPU hızlandırma - titreme önleyici */
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-font-smoothing: antialiased;
+    /* Layout hesaplamalarını sınırla */
+    contain: layout style;
+}
+
+/* Sidebar kapalıyken içerik genişlemesin */
+body.sidebar-is-collapsed .dashboard-content {
+    flex-basis: calc(100% - 70px);
+    max-width: calc(100% - 70px);
+}
+
+/* Scrollbar sıçramasını önle */
+html {
+    scrollbar-gutter: stable;
+}
+
+/* Kartlar ve metinler için sabit line-height */
+.card, .card h2, .card p, .card h3 {
+    line-height: 1.5;
+}
+
+/* Yazı titremesini önle */
+.dashboard-content * {
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
 }
 
 .dashboard-content h1 {
@@ -1036,6 +1240,121 @@ button:focus::after, button:active::after {
     font-weight: 600;
     color: var(--text-color);
     margin-bottom: 15px;
+}
+
+/* Scrollbar gizle - duyurular ve kartlar için */
+.announcements-card,
+.stats-card,
+.premium-stats,
+.card {
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE/Edge */
+}
+
+.announcements-card::-webkit-scrollbar,
+.stats-card::-webkit-scrollbar,
+.premium-stats::-webkit-scrollbar,
+.card::-webkit-scrollbar {
+    display: none !important; /* Chrome, Safari, Opera */
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* Tüm sayfanın scrollbar'ını gizle */
+html,
+body,
+* {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* Duyurular kartı için üst ve sol çizgi - TUTARLI RENKLER */
+.announcements-card {
+    position: relative;
+    border-left: 4px solid #78C7C7 !important;
+}
+
+.announcements-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #78C7C7 !important; /* Sol ile aynı renk */
+    border-radius: 4px 4px 0 0;
+}
+
+/* Duyuru başlık ve ikon renkleri - Light Mode */
+.announcements-card h2,
+.announcements-card h2 i {
+    color: #001F6B !important;
+}
+
+/* Dark mode için duyuru üst çizgisi ve renkleri - TUTARLI */
+body.theme-dark .announcements-card {
+    border-left: 4px solid #38bdf8 !important;
+}
+
+body.theme-dark .announcements-card::before {
+    background: #38bdf8 !important; /* Sol ile aynı renk */
+}
+
+body.theme-dark .announcements-card h2,
+body.theme-dark .announcements-card h2 i {
+    color: #38bdf8 !important;
+}
+
+/* İstatistik kartı için üst ve sol çizgi - TUTARLI RENKLER */
+.premium-stats {
+    border-left: 4px solid #78C7C7 !important;
+    border-radius: 16px !important;
+    position: relative;
+}
+
+.premium-stats::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #78C7C7 !important; /* Sol ile aynı renk */
+    border-radius: 4px 4px 0 0;
+}
+
+body.theme-dark .premium-stats {
+    border-left: 4px solid #38bdf8 !important;
+}
+
+body.theme-dark .premium-stats::before {
+    background: #38bdf8 !important; /* Sol ile aynı renk */
+}
+
+/* Light mode için istatistik başlığı ve ikonu */
+.premium-stats h2 {
+    color: #001F6B !important;
+}
+
+.premium-stats h2 i {
+    color: #78C7C7 !important;
+}
+
+/* Dark mode için istatistik başlığı ve ikonu */
+body.theme-dark .premium-stats h2 {
+    color: #38bdf8 !important;
+}
+
+body.theme-dark .premium-stats h2 i {
+    color: #38bdf8 !important;
 }
 
 .appointment-card .btn {

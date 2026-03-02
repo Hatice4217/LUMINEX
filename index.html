@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Security Headers (Meta tags for CSP) - Improved for Production -->
     <!-- Note: frame-ancestors, X-Frame-Options should be set via server headers, not meta tags -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.jsdelivr.net https://flagcdn.com https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com https://plausible.io; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https://flagcdn.com; connect-src 'self' https://formspree.io https://plausible.io https://*.plausible.io;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.jsdelivr.net https://cdn.socket.io https://flagcdn.com https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com https://plausible.io; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.socket.io https://cdnjs.cloudflare.com https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https://flagcdn.com; connect-src 'self' https://formspree.io https://plausible.io https://*.plausible.io ws://localhost:* wss://*.vercel.app;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
     <meta name="robots" content="index, follow">
@@ -74,7 +74,7 @@
     }
     </script>
 </head>
-<body>
+<body class="landing-page login-page">
     <script src="js/theme-init.js"></script>
     <div class="background-animation"></div>
     
@@ -606,7 +606,7 @@
                                 <label class="checkbox-label">
                                     <input type="checkbox" id="kvkkApprove" name="kvkk" required>
                                     <span data-lang="kvkkApproveText">
-                                        <a href="kvkk.html?lang=tr" style="color: var(--accent-color);" data-lang="kvkkLinkText">KVKK Aydınlatma Metni</a>'ni okudum, onaylıyorum. *
+                                        <a href="kvkk.html" class="kvkk-link" style="color: var(--accent-color);" data-lang="kvkkLinkText">KVKK Aydınlatma Metni</a>'ni okudum, onaylıyorum. *
                                     </span>
                                 </label>
                             </div>
@@ -724,6 +724,9 @@
     </script>
     <script type="module" src="js/config/api-config.js"></script>
     <script type="module" src="js/script.js" defer></script>
+    <!-- Socket.IO Client -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="js/socket-client.js"></script>
     <!-- SweetAlert: Enhanced Loading with Better Error Handling -->
     <script>
         // SweetAlert'i sadece form varsa yükle (production-ready approach)

@@ -1005,7 +1005,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     sessionStorage.setItem('recommendedBranchName', '${res.department}');
                     sessionStorage.setItem('lastAiDiagnosis', '${res.title}');
                     sessionStorage.setItem('lastAiDescription', '${res.desc}');
-                    window.location.href='appointment.html?branch=${res.branchId}&dep=${encodeURIComponent(res.department)}'
+                    // Check if user is actually logged in with valid session
+                    let isLoggedIn = false;
+                    try {
+                        const userStr = localStorage.getItem('loggedInUser');
+                        if (userStr && userStr !== 'null' && userStr !== 'undefined') {
+                            const user = JSON.parse(userStr);
+                            if (user && user.id && user.tc) {
+                                isLoggedIn = true;
+                            }
+                        }
+                    } catch (e) {}
+                    if (isLoggedIn) {
+                        window.location.href='appointment.html?branch=${res.branchId}&dep=${encodeURIComponent(res.department)}';
+                    } else {
+                        window.location.href='login.html?redirect=appointment.html';
+                    }
                 ">
                     ${bookBtnText} <i class="fas fa-arrow-right"></i>
                 </button>

@@ -72,7 +72,13 @@
 
             <!-- Appointment Booking Content -->
             <main class="dashboard-content">
-                <h1 data-lang="appointmentTitle">Randevu Al</h1>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                    <h1 data-lang="appointmentTitle" style="margin: 0;">Randevu Al</h1>
+                    <button id="backButton" class="btn btn-secondary" style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Geri Dön</span>
+                    </button>
+                </div>
                 
                 <div class="card form-container">
                     <form id="appointmentForm">

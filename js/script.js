@@ -181,8 +181,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Toggle password visibility
-    if (togglePassword) {
+    // Toggle password visibility (only for login page)
+    if (togglePassword && passwordLoginInput) {
         togglePassword.addEventListener('click', function() {
             const type = passwordLoginInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordLoginInput.setAttribute('type', type);
@@ -427,7 +427,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     showError(passwordLoginInput, `${window.getTranslation('passwordIncorrect') || 'Hatalı şifre'} ${remainingAttemptsMsg}`);
 
                     // Toast bildirimi göster
-                    showToast('error', 'Giriş Hatası', `${window.getTranslation('passwordIncorrect') || 'Hatalı şifre'} ${remainingAttemptsMsg}`, 4000);
+                    showToast('error', window.getTranslation('loginErrorTitle') || 'Giriş Hatası', `${window.getTranslation('passwordIncorrect') || 'Hatalı şifre'} ${remainingAttemptsMsg}`, 4000);
 
                     submitButton.disabled = false;
                     submitButton.innerHTML = window.getTranslation?.('login') || 'Giriş Yap';
@@ -441,8 +441,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const userIndex = registeredUsers.findIndex(u => (u.tc || u.tcKimlik) === tc);
 
                 if (userIndex === -1) {
-                    showError(tcKimlikInput, '❌ Kayıtlı değilsiniz. Lütfen önce kayıt olun.');
-                    showToast('error', 'Kayıt Bulunamadı', 'Bu TC Kimlik Numarası ile kayıtlı kullanıcı bulunamadı. Lütfen önce kayıt olun.', 4000);
+                    showError(tcKimlikInput, '❌ ' + (window.getTranslation('userNotFoundError') || 'Kayıtlı değilsiniz. Lütfen önce kayıt olun.'));
+                    showToast('error', window.getTranslation('userNotFoundTitle') || 'Kayıt Bulunamadı', window.getTranslation('userNotFoundMessage') || 'Bu TC Kimlik Numarası ile kayıtlı kullanıcı bulunamadı. Lütfen önce kayıt olun.', 4000);
                     submitButton.disabled = false;
                     submitButton.innerHTML = window.getTranslation?.('login') || 'Giriş Yap';
                     return;
@@ -543,17 +543,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // İsim kontrolü
             if (!contactName.value.trim()) {
-                errors.push({ input: contactName, message: 'Lütfen adınızı ve soyadınızı giriniz.' });
+                errors.push({ input: contactName, message: window.getTranslation('errorNameRequired') || 'Lütfen adınızı ve soyadınızı giriniz.' });
             }
 
             // Pozisyon kontrolü
             if (!contactPosition.value.trim()) {
-                errors.push({ input: contactPosition, message: 'Lütfen pozisyonunuzu seçiniz.' });
+                errors.push({ input: contactPosition, message: window.getTranslation('errorPositionRequired') || 'Lütfen pozisyonunuzu seçiniz.' });
             }
 
             // Telefon kontrolü
             if (!contactPhone.value.trim() || contactPhone.value === '0') {
-                errors.push({ input: contactPhone, message: 'Lütfen telefon numaranızı giriniz.' });
+                errors.push({ input: contactPhone, message: window.getTranslation('errorPhoneRequired') || 'Lütfen telefon numaranızı giriniz.' });
             } else {
                 const phoneDigits = contactPhone.value.replace(/\D/g, '');
                 if (phoneDigits.length < 10) {
@@ -563,43 +563,43 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Email kontrolü
             if (!contactEmail.value.trim()) {
-                errors.push({ input: contactEmail, message: 'Lütfen e-posta adresinizi giriniz.' });
+                errors.push({ input: contactEmail, message: window.getTranslation('errorEmailRequired') || 'Lütfen e-posta adresinizi giriniz.' });
             } else {
                 const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
                 if (!emailRegex.test(contactEmail.value.trim())) {
-                    errors.push({ input: contactEmail, message: 'Lütfen geçerli bir e-posta adresi giriniz.' });
+                    errors.push({ input: contactEmail, message: window.getTranslation('errorInvalidEmail') || 'Lütfen geçerli bir e-posta adresi giriniz.' });
                 }
             }
 
             // Şirket adı kontrolü
             if (!companyName.value.trim()) {
-                errors.push({ input: companyName, message: 'Lütfen klinik/hastane adını giriniz.' });
+                errors.push({ input: companyName, message: window.getTranslation('errorCompanyNameRequired') || 'Lütfen klinik/hastane adını giriniz.' });
             }
 
             // Branş sayısı kontrolü
             if (!branchCount.value.trim()) {
-                errors.push({ input: branchCount, message: 'Lütfen branş sayısını seçiniz.' });
+                errors.push({ input: branchCount, message: window.getTranslation('errorBranchCountRequired') || 'Lütfen branş sayısını seçiniz.' });
             }
 
             // Günlük hasta sayısı kontrolü
             if (!dailyPatients.value.trim()) {
-                errors.push({ input: dailyPatients, message: 'Lütfen günlük hasta sayısını seçiniz.' });
+                errors.push({ input: dailyPatients, message: window.getTranslation('errorDailyPatientsRequired') || 'Lütfen günlük hasta sayısını seçiniz.' });
             }
 
             // Talep türü kontrolü
             if (!requestType.value.trim()) {
-                errors.push({ input: requestType, message: 'Lütfen talep türünü seçiniz.' });
+                errors.push({ input: requestType, message: window.getTranslation('errorRequestTypeRequired') || 'Lütfen talep türünü seçiniz.' });
             }
 
             // Mesaj kontrolü (opsiyonel ama yine de kontrol edelim)
             if (!contactMessage.value.trim()) {
-                errors.push({ input: contactMessage, message: 'Lütfen mesajınızı yazınız.' });
+                errors.push({ input: contactMessage, message: window.getTranslation('errorMessageRequired') || 'Lütfen mesajınızı yazınız.' });
             }
 
             // KVKK onayı kontrolü
             const kvkkCheckbox = document.getElementById('kvkkApprove');
             if (kvkkCheckbox && !kvkkCheckbox.checked) {
-                errors.push({ input: kvkkCheckbox, message: 'KVKK Aydınlatma Metnini okuyup onaylamanız gerekmektedir.' });
+                errors.push({ input: kvkkCheckbox, message: window.getTranslation('errorKvkkRequired') || 'KVKK Aydınlatma Metnini okuyup onaylamanız gerekmektedir.' });
             }
 
             // Hata varsa, tüm hataları göster

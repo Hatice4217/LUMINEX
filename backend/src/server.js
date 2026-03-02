@@ -1,5 +1,6 @@
 // LUMINEX Backend API - Main Server
 import express from 'express';
+import { createServer } from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
 import hpp from 'hpp';
@@ -14,6 +15,7 @@ import { errorHandler, notFoundHandler } from './middlewares/error-middleware.js
 import { auditLogger } from './middlewares/audit-middleware.js';
 import { validateOrigin, getCSRFToken } from './middlewares/csrf-middleware.js';
 import { swaggerSpec } from './config/swagger.js';
+import { initializeSocket } from './config/socket.js';
 
 // Routes
 import authRoutes from './routes/authRoutes.js';
@@ -22,6 +24,15 @@ import userRoutes from './routes/userRoutes.js';
 import doctorRoutes from './routes/doctorRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import hospitalRoutes from './routes/hospitalRoutes.js';
+import fileRoutes from './routes/fileRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import { startCacheWarming, stopCacheWarming } from './jobs/cache-warmer.js';
+
+// Bull Queue Processors
+import { startEmailProcessor } from './queues/emailProcessor.js';
+import { startAppointmentReminderProcessor, queueDailyReminderCheck } from './queues/appointmentReminderProcessor.js';
+import { startCacheWarmingProcessor } from './queues/cacheWarmingProcessor.js';
+import { closeQueues } from './config/queues.js';
 
 // Environment variables'ı yükle
 dotenv.config();
@@ -33,6 +44,7 @@ const prisma = new PrismaClient();
 global.prisma = prisma;
 
 const app = express();
+const server = createServer(app);
 const PORT = process.env.PORT || 3000;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:8080';
 
@@ -230,6 +242,10 @@ app.use('/api/users', userRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/hospitals', hospitalRoutes);
+app.use('/api/files', fileRoutes);
+
+// Admin Routes (Bull Board Dashboard)
+app.use('/admin', adminRoutes);
 
 // ============================================
 // ROOT ENDPOINT
@@ -248,6 +264,8 @@ app.get('/', (req, res) => {
       doctors: '/api/doctors',
       notifications: '/api/notifications',
       hospitals: '/api/hospitals',
+      files: '/api/files',
+      admin: '/admin',
     },
     documentation: '/api-docs', // Swagger eklenebilir
   });
@@ -279,7 +297,7 @@ async function startServer() {
       logger.info('🔄 Production mode - database migration kontrolü');
     }
 
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       logger.info(`🚀 Server çalışıyor`, {
         port: PORT,
         environment: process.env.NODE_ENV || 'development',
@@ -288,8 +306,51 @@ async function startServer() {
       console.log(`\n✅ LUMINEX Backend API başlatıldı!`);
       console.log(`📍 URL: http://localhost:${PORT}`);
       console.log(`🏥 Health: http://localhost:${PORT}/health`);
-      console.log(`📚 Docs: http://localhost:${PORT}/\n`);
+      console.log(`📚 Docs: http://localhost:${PORT}/api-docs`);
+      console.log(`📊 Admin (Bull Board): http://localhost:${PORT}/admin/queues\n`);
     });
+
+    // Socket.IO'yi başlat
+    initializeSocket(server);
+
+    // ============================================
+    // BULL QUEUE PROCESSORS'ı BAŞLAT
+    // ============================================
+
+    // Redis aktifse queue processor'ları başlat
+    if (process.env.REDIS_HOST || process.env.REDIS_ENABLED === 'true') {
+      logger.info('🔄 Starting Bull Queue processors...');
+
+      // Email processor'ı başlat
+      startEmailProcessor();
+      logger.info('✅ Email processor started');
+
+      // Appointment reminder processor'ı başlat
+      startAppointmentReminderProcessor();
+      logger.info('✅ Appointment reminder processor started');
+
+      // Cache warming processor'ı başlat
+      startCacheWarmingProcessor();
+      logger.info('✅ Cache warming processor started');
+
+      // Günlük randevu hatırlatma job'ını schedule et
+      try {
+        await queueDailyReminderCheck();
+        logger.info('✅ Daily appointment reminder scheduled');
+      } catch (error) {
+        logger.error('❌ Error scheduling daily reminder:', error);
+      }
+
+      logger.info('🎉 All Bull Queue processors started successfully');
+    } else {
+      logger.warn('⚠️ Redis not configured, skipping queue processors');
+    }
+
+    // Cache warming'i başlat (Redis aktifse)
+    if (process.env.REDIS_HOST || process.env.REDIS_ENABLED === 'true') {
+      startCacheWarming();
+      logger.info('✅ Cache warming started');
+    }
   } catch (error) {
     logger.error('❌ Server başlatma hatası:', error);
     console.error('Database bağlantı hatası:', error.message);
@@ -311,7 +372,38 @@ async function gracefulShutdown(signal) {
     logger.error('❌ Database kapatma hatası:', error);
   }
 
-  process.exit(0);
+  // Cache warming'i durdur
+  try {
+    stopCacheWarming();
+    logger.info('✅ Cache warming stopped');
+  } catch (error) {
+    logger.error('❌ Cache warming durdurma hatası:', error);
+  }
+
+  // Bull Queue'ları kapat
+  try {
+    await closeQueues();
+    logger.info('✅ Bull queues closed');
+  } catch (error) {
+    logger.error('❌ Queue kapatma hatası:', error);
+  }
+
+  // HTTP server'ı kapat
+  try {
+    server.close(() => {
+      logger.info('✅ HTTP server closed');
+      process.exit(0);
+    });
+
+    // 10 saniye sonra force exit
+    setTimeout(() => {
+      logger.error('❌ Forced shutdown after timeout');
+      process.exit(1);
+    }, 10000);
+  } catch (error) {
+    logger.error('❌ Server kapatma hatası:', error);
+    process.exit(1);
+  }
 }
 
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));

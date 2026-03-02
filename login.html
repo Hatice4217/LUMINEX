@@ -87,7 +87,7 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
             transition: all 0.3s ease;
-            overflow: hidden;
+            position: relative;
         }
 
         body.theme-light .input-wrapper {
@@ -131,6 +131,27 @@
             color: #ffffff;
         }
 
+        #passwordLogin {
+            padding-right: 50px;
+        }
+
+        /* Toggle Password */
+        .toggle-password {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+            pointer-events: auto !important;
+        }
+
+        .toggle-password i {
+            pointer-events: auto !important;
+        }
+
         body.theme-light .input-wrapper input {
             color: #1a1a2e !important;
         }
@@ -146,13 +167,13 @@
         /* Toggle Password */
         .toggle-password {
             position: absolute;
-            right: 15px;
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
             color: rgba(255, 255, 255, 0.5);
             cursor: pointer;
             transition: all 0.3s ease;
-            z-index: 2;
+            z-index: 10;
         }
 
         .toggle-password:hover {
@@ -489,7 +510,7 @@
                             <li data-lang="en"><img src="https://flagcdn.com/gb.svg" alt="English"><span>English</span></li>
                         </ul>
                     </div>
-                    <a href="index.html" class="btn-home-text" title="Ana Sayfaya Dön">Ana Sayfaya Dön</a>
+                    <a href="index.html" class="btn-home-text" data-lang="backToHome" title="Ana Sayfaya Dön">Ana Sayfaya Dön</a>
                 </div>
                 <div class="auth-header" style="margin-top: 60px;">
                     <h2 data-lang="login"></h2>
@@ -518,7 +539,7 @@
                         </div>
                         <a href="forgot-password.html" class="forgot-password" data-lang="forgotPassword"></a>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block" style="background: #001F6B !important; border-color: #001F6B !important; color: white; box-shadow: none;" data-lang="loginButton"></button>
+                    <button type="submit" class="btn btn-primary btn-block" data-lang="loginButton"></button>
 
                     <!-- Giriş Bildirim Alanı -->
                     <div id="loginNotification" style="display: none;"></div>
@@ -580,6 +601,16 @@
                 } else {
                     console.error("Auth card or header not found in DOM.");
                 }
+            }
+        });
+    </script>
+
+    <!-- Dil Başlatma Script'i -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.setLanguage) {
+                const savedLang = localStorage.getItem('language') || 'tr';
+                window.setLanguage(savedLang);
             }
         });
     </script>

@@ -29,7 +29,34 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        setupHeader();
+        // setupHeader çağrısı ve menü kontrolü
+        try {
+            setupHeader();
+
+            // Menü yüklenmediyse yedek menüyü göster
+            setTimeout(() => {
+                const dynamicMenu = document.getElementById('dynamicSideMenu');
+                const fallbackMenu = document.getElementById('fallbackSideMenu');
+
+                if (dynamicMenu && fallbackMenu) {
+                    if (dynamicMenu.children.length === 0) {
+                        console.warn('Dinamik menü yüklenemedi, yedek menü gösteriliyor');
+                        fallbackMenu.style.display = 'block';
+                        dynamicMenu.style.display = 'none';
+                    } else {
+                        dynamicMenu.style.display = 'block';
+                        fallbackMenu.style.display = 'none';
+                    }
+                }
+            }, 500);
+        } catch (error) {
+            console.error('setupHeader hatası:', error);
+            // Hata durumunda yedek menüyü göster
+            const fallbackMenu = document.getElementById('fallbackSideMenu');
+            const dynamicMenu = document.getElementById('dynamicSideMenu');
+            if (fallbackMenu) fallbackMenu.style.display = 'block';
+            if (dynamicMenu) dynamicMenu.style.display = 'none';
+        }
 
         // --- Smart Notification Cleanup (One-time fix for multilingual support) ---
         try {
@@ -153,46 +180,45 @@ document.addEventListener('DOMContentLoaded', function () {
         function updateStatistics() {
             const activeProfile = getActiveProfile();
             if (!activeProfile) return;
-    
-            const statsCardParagraph = document.querySelector('.stats-card p');
-            if (!statsCardParagraph) return;
 
-            // 1. Show Skeleton immediately (reset opacity just in case)
-            statsCardParagraph.style.opacity = '1';
-            statsCardParagraph.style.transition = 'none'; 
-            statsCardParagraph.innerHTML = `
-                <span class="skeleton" style="width: 60%; height: 15px; display: inline-block; margin-bottom: 5px; background-color: #e0e0e0;"></span>
-                <span class="skeleton" style="width: 40%; height: 15px; display: inline-block; background-color: #e0e0e0;"></span>
-            `;
-    
-            // 2. Simulate Loading Delay
-            setTimeout(() => {
-                const allAppointments = getLuminexAppointments();
-                const userAppointments = allAppointments.filter(app => app.patientTc === activeProfile.tc);
-        
-                const now = new Date();
-                const currentMonth = now.getMonth();
-                const currentYear = now.getFullYear();
-        
-                let completedAppointmentsThisMonth = 0;
-                userAppointments.forEach(app => {
-                    const appDate = new Date(app.date);
-                    if (appDate < now && appDate.getMonth() === currentMonth && appDate.getFullYear() === currentYear) {
-                        completedAppointmentsThisMonth++;
-                    }
-                });
-        
-                // 3. Update Content with Fade-in
-                statsCardParagraph.style.transition = 'opacity 0.3s ease';
-                statsCardParagraph.style.opacity = '0';
-                
-                setTimeout(() => {
-                    const statsText = window.getTranslation('monthlyAppointmentsStats').replace('{count}', completedAppointmentsThisMonth);
-                    statsCardParagraph.innerHTML = statsText;
-                    statsCardParagraph.style.opacity = '1';
-                }, 50); // Short delay to allow opacity to reset
+            const allAppointments = getLuminexAppointments();
+            const userAppointments = allAppointments.filter(app => app.patientTc === activeProfile.tc);
 
-            }, 800); // 800ms delay
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+
+            // Tamamlanan randevular (bu ay)
+            let completedAppointmentsThisMonth = 0;
+            userAppointments.forEach(app => {
+                const appDate = new Date(app.date);
+                if (appDate < now && appDate.getMonth() === currentMonth && appDate.getFullYear() === currentYear) {
+                    completedAppointmentsThisMonth++;
+                }
+            });
+
+            // Sıradaki randevular
+            const upcomingAppointments = userAppointments.filter(app => {
+                const appDateTime = new Date(`${app.date}T${app.time}`);
+                return appDateTime > now;
+            }).length;
+
+            // Ziyaret edilen doktorlar (benzersiz)
+            const visitedDoctors = new Set();
+            userAppointments.forEach(app => {
+                if (new Date(app.date) < now) {
+                    visitedDoctors.add(app.doctor);
+                }
+            });
+
+            // Update UI
+            const completedEl = document.getElementById('completedAppointments');
+            const upcomingEl = document.getElementById('upcomingAppointments');
+            const doctorsEl = document.getElementById('visitedDoctors');
+
+            if (completedEl) completedEl.textContent = completedAppointmentsThisMonth;
+            if (upcomingEl) upcomingEl.textContent = upcomingAppointments;
+            if (doctorsEl) doctorsEl.textContent = visitedDoctors.size;
         }
 
         function updateCountdown() {
@@ -344,11 +370,43 @@ document.addEventListener('DOMContentLoaded', function () {
 
         startHealthTipsCarousel();
         setupQuickAccessCards();
-        // loadAppointments(); 
+        // loadAppointments();
         updateStatistics();
         updateCountdown();
         updateHealthTimeline(); // Call the new function
-    
+
+        // --- Sidebar Toggle Functionality ---
+        const sidebarToggleButton = document.querySelector('.sidebar-toggle-button');
+        console.log('Sidebar toggle button found:', sidebarToggleButton);
+
+        if (sidebarToggleButton) {
+            sidebarToggleButton.addEventListener('click', function(e) {
+                console.log('Toggle button clicked!');
+                e.preventDefault();
+
+                // Body elementine class ekle
+                document.body.classList.toggle('sidebar-is-collapsed');
+
+                // Durumu localStorage'a kaydet
+                const isCollapsed = document.body.classList.contains('sidebar-is-collapsed');
+                console.log('Is collapsed:', isCollapsed);
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+
+                // Buton metnini güncelle
+                const buttonText = this.querySelector('span');
+                if (buttonText) {
+                    buttonText.textContent = isCollapsed ? 'Menüyü Genişlet' : 'Menüyü Daralt';
+                }
+
+                // Sidebar'ın yeni genişliğini kontrol et
+                const sideMenu = document.querySelector('.side-menu');
+                if (sideMenu) {
+                    console.log('Sidebar width:', sideMenu.offsetWidth);
+                    console.log('Body classes:', document.body.classList.toString());
+                }
+            });
+        }
+
         document.addEventListener('click', function(e) {
             if (e.target && e.target.classList.contains('cancel-appointment-btn')) {
                 const appointmentId = e.target.getAttribute('data-id');

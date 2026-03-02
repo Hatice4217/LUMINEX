@@ -1,37 +1,31 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUMINEX - Randevularım</title>
+    <title data-lang="myAppointmentsSidebar">LUMINEX - Randevularım</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="css/skeleton.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
-<script>
-      try {
-        if (localStorage.getItem('sidebarCollapsed') === 'true') {
-          document.documentElement.classList.add('sidebar-is-collapsed');
-        }
-      } catch (e) {}
-</script>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <script>
+        try {
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                document.documentElement.classList.add('sidebar-is-collapsed');
+            }
+        } catch (e) {}
+    </script>
 </head>
-<body>
+<body lang="tr">
     <div class="dashboard-container">
-        <!-- Top Bar -->
         <header class="top-bar">
             <div class="logo">
                 <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" style="display: flex; align-items: center; gap: 2px; margin-left: -30px;">
-                    <div style="
-                        width: 60px; 
-                        height: 60px; 
-                        background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); 
-                        -webkit-mask: url(clean-logo.png) no-repeat center / contain; 
-                        mask: url(clean-logo.png) no-repeat center / contain;
-                        display: inline-block;">
-                    </div>
+                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); -webkit-mask: url(clean-logo.png) no-repeat center / contain; mask: url(clean-logo.png) no-repeat center / contain; display: inline-block;"></div>
                     <span style="font-family: 'Exo 2', sans-serif; font-size: 2.5rem; font-weight: 700; color: #001F6B; letter-spacing: 1px; display: flex; align-items: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">LUMINEX</span>
                 </a>
             </div>
@@ -50,52 +44,51 @@
             </div>
         </header>
 
-        <!-- Main Content Area -->
         <div class="main-wrapper">
-            <!-- Side Menu -->
             <aside class="side-menu">
                 <ul id="dynamicSideMenu">
-                    <!-- Populated by header-manager.js -->
+                    <!-- Dinamik menü öğeleri buraya yüklenecek -->
+                </ul>
+                <!-- Yedek menü -->
+                <ul id="fallbackSideMenu" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Kontrol Paneli</span></a></li>
+                    <li><a href="my-appointments.html"><i class="fas fa-calendar-alt"></i> <span>Randevularım</span></a></li>
+                    <li><a href="doctors.html"><i class="fas fa-user-md"></i> <span>Doktorlar / Branşlar</span></a></li>
+                    <li><a href="prescriptions.html"><i class="fas fa-prescription-bottle-alt"></i> <span>Reçetelerim</span></a></li>
+                    <li><a href="health-history.html"><i class="fas fa-notes-medical"></i> <span>Sağlık Geçmişim</span></a></li>
+                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Ödemeler & Faturalar</span></a></li>
+                    <li><a href="family-accounts.html"><i class="fas fa-users"></i> <span>Bağlı Hesaplar</span></a></li>
+                    <li><a href="my-reviews.html"><i class="fas fa-star"></i> <span>Değerlendirmelerim</span></a></li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> <span>Geri Bildirim</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-headset"></i> <span>İletişim / Destek</span></a></li>
                 </ul>
                 <div class="sidebar-toggle-wrapper">
                     <button class="sidebar-toggle-button">
                         <i class="fas fa-chevron-left"></i>
-                        <span>Menüyü Daralt</span>
+                        <span data-lang="collapseMenu">Menüyü Daralt</span>
                     </button>
                 </div>
             </aside>
 
-            <!-- My Appointments Content -->
             <main class="dashboard-content">
                 <h1 data-lang="myAppointmentsSidebar" class="reveal">Randevularım</h1>
 
-                <!-- New Compact Filter Card -->
+                <!-- Filtreler -->
                 <div class="card filter-card collapsed reveal">
                     <div class="filter-card-header">
-                        <h3><i class="fas fa-filter"></i> <span data-lang="filter">Randevuları Filtrele</span></h3>
+                        <h3><i class="fas fa-filter"></i> <span data-lang="filter">Filtrele</span></h3>
                         <button id="toggle-filter-body" class="btn-icon"><i class="fas fa-chevron-down"></i></button>
                     </div>
                     <div id="filter-card-body" class="filter-card-body">
                         <div class="filter-card-content-wrapper">
                             <div class="filter-form-compact">
                                 <div class="form-group">
-                                    <label for="filter-start-date" data-lang="startDate">Başlangıç Tarihi</label>
-                                    <input type="date" id="filter-start-date" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="filter-end-date" data-lang="endDate">Bitiş Tarihi</label>
-                                    <input type="date" id="filter-end-date" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="filter-doctor" data-lang="doctorNameLabel">Doktor Adı</label>
-                                    <input type="text" id="filter-doctor" class="form-control" placeholder="Doktor adı girin..." data-lang-placeholder="searchByDoctorName">
-                                </div>
-                                <div class="form-group">
-                                    <label for="filter-status" data-lang="statusLabel">Durum</label>
-                                    <select id="filter-status" class="form-control">
+                                    <label data-lang="statusLabel">Durum</label>
+                                    <select id="statusFilter" class="form-control">
                                         <option value="all" data-lang="all">Tümü</option>
                                         <option value="upcoming" data-lang="statusUpcoming">Yaklaşan</option>
                                         <option value="past" data-lang="statusPast">Geçmiş</option>
+                                        <option value="cancelled" data-lang="statusCancelled">İptal Edildi</option>
                                     </select>
                                 </div>
                                 <div class="form-actions-compact">
@@ -119,6 +112,7 @@
             </main>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script src="js/language-manager.js"></script>
     <script type="module" src="js/user-session.js"></script>
@@ -126,4 +120,3 @@
     <script type="module" src="js/my-appointments.js"></script>
 </body>
 </html>
-

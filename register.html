@@ -31,6 +31,10 @@
             overflow: hidden; /* Ana sayfa scroll engellendi */
         }
 
+        html {
+            overflow: hidden;
+        }
+
         body.theme-light {
             background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 50%, #f0f4f8 100%);
         }
@@ -43,8 +47,9 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             border-radius: 20px;
             padding: 2rem 1.5rem 1rem 1.5rem;
-            max-height: 95vh;
+            max-height: 90vh;
             overflow-y: auto;
+            overflow-x: hidden;
             transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
@@ -107,7 +112,6 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
             transition: all 0.3s ease;
-            overflow: hidden;
             position: relative;
             display: flex;
             align-items: center;
@@ -136,6 +140,11 @@
             outline: none;
             background: transparent;
             color: #ffffff;
+        }
+
+        #passwordRegister,
+        #passwordConfirm {
+            padding-right: 50px;
         }
 
         body.theme-light .input-wrapper input,
@@ -311,13 +320,18 @@
         /* Toggle Password */
         .toggle-password {
             position: absolute;
-            right: 15px;
+            right: 8px;
             top: 50%;
             transform: translateY(-50%);
             color: rgba(255, 255, 255, 0.5);
             cursor: pointer;
             transition: all 0.3s ease;
-            z-index: 2;
+            z-index: 100;
+            pointer-events: auto !important;
+        }
+
+        .toggle-password i {
+            pointer-events: auto !important;
         }
 
         .toggle-password:hover {
@@ -968,7 +982,7 @@
         }
     </style>
 </head>
-<body lang="tr" class="theme-light">
+<body lang="tr" class="login-page theme-light">
     <script>
       (function() {
         try {
@@ -1020,7 +1034,7 @@
                             <li data-lang="en"><img src="https://flagcdn.com/gb.svg" alt="English"><span>English</span></li>
                         </ul>
                     </div>
-                    <a href="login.html" class="btn-home-text" title="Giriş Ekranına Dön">Giriş Ekranına Dön</a>
+                    <a href="login.html" class="btn-home-text" data-lang="backToLogin" title="Giriş Ekranına Dön">Giriş Ekranına Dön</a>
                 </div>
                 <div class="auth-header" style="margin-top: 60px;">
                     <h2 data-lang="register"></h2>
@@ -1104,7 +1118,7 @@
                             <label class="form-check-label" for="termsCheck" style="font-size: 0.85rem;" data-lang="termsLabel"></label>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block" style="background: #001F6B !important; border-color: #001F6B !important; color: white; box-shadow: none;" data-lang="registerButton"></button>
+                    <button type="submit" class="btn btn-primary btn-block" data-lang="registerButton"></button>
 
                     <!-- Kayıt Bildirim Alanı -->
                     <div id="registerNotification" style="display: none;"></div>
@@ -1150,8 +1164,9 @@
 
             // Güç seviyesini güncelleme
             function updateStrengthIndicator(strength) {
-                // Mevcut sınıfları temizle
+                // Mevcut sınıfları temizle ve inline style'ı kaldır
                 strengthFill.className = 'password-strength-fill';
+                strengthFill.style.width = '';
                 strengthText.className = 'password-strength-text';
 
                 // Mevcut dili al - localStorage'dan

@@ -262,10 +262,19 @@ export function applyAdminTheme(theme) {
     }
 }
 
+// CACHE-BUST: v2.0 - Helper function to get user name from various formats
+function getUserName(user) {
+    if (!user) return null;
+    if (user.name) return user.name;
+    if (user.firstName && user.lastName) return `${user.firstName} ${user.lastName}`;
+    if (user.firstName) return user.firstName;
+    return null;
+}
+
 export function setupHeader() {
     setupSidebarToggler();
-    setupThemeToggler(); 
-    
+    setupThemeToggler();
+
     const activeProfile = getActiveProfile();
     const loggedInUser = getLoggedInUser();
     const currentUser = activeProfile || loggedInUser;
@@ -311,15 +320,42 @@ export function setupHeader() {
     const langSwitcher = document.querySelector('.lang-switcher');
     if (langSwitcher) {
         const selectedLang = langSwitcher.querySelector('.selected-lang');
+        const langOptionsDropdown = langSwitcher.querySelector('.lang-options');
+        const langOptions = langSwitcher.querySelectorAll('.lang-options li');
 
         selectedLang.addEventListener('click', (e) => {
             e.stopPropagation();
-            langSwitcher.classList.toggle('active');
+            const isActive = langSwitcher.classList.toggle('active');
+
+            // Manually show/hide dropdown
+            if (langOptionsDropdown) {
+                langOptionsDropdown.style.display = isActive ? 'block' : 'none';
+            }
 
             // Close notification dropdown
             if (notificationDropdown) {
                 notificationDropdown.classList.remove('show', 'active');
             }
+        });
+
+        // Dil seçeneklerine tıklandığında
+        langOptions.forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const selectedLangCode = option.getAttribute('data-lang');
+
+                // Dil değiştir
+                if (window.setLanguage) {
+                    window.setLanguage(selectedLangCode);
+                    localStorage.setItem('language', selectedLangCode);
+                }
+
+                // Dropdown'ı kapat
+                langSwitcher.classList.remove('active');
+                if (langOptionsDropdown) {
+                    langOptionsDropdown.style.display = 'none';
+                }
+            });
         });
     }
 
@@ -333,8 +369,13 @@ export function setupHeader() {
         if (!e.target.closest('.lang-switcher')) {
             if (langSwitcher) {
                 langSwitcher.classList.remove('active');
+                const dropdown = langSwitcher.querySelector('.lang-options');
+                if (dropdown) {
+                    dropdown.style.display = 'none';
+                }
             }
         }
+    });
     });
 
     const mainLogoLink = document.getElementById('mainLogoLink');
@@ -370,54 +411,58 @@ export function setupHeader() {
             welcomeMessageElement.style.color = 'var(--text-color)';
             welcomeMessageElement.style.cursor = 'default';
         } else {
-            const nameToDisplay = currentUser.name || loggedInUser.name;
+            const nameToDisplay = getUserName(currentUser) || getUserName(loggedInUser);
             if (!nameToDisplay) {
-                console.error("User name is not available to display.");
-                return;
-            }
+                console.warn("User name is not available to display. Showing generic greeting.");
+                welcomeMessageElement.textContent = "Hoş Geldiniz";
+                welcomeMessageElement.style.fontSize = '1rem';
+                welcomeMessageElement.style.fontWeight = '500';
+                welcomeMessageElement.style.color = 'var(--text-color)';
+                // Skip profile pill creation and continue to menu setup
+            } else {
+                const isChild = currentUser.isChild || false;
 
-            const isChild = currentUser.isChild || false;
+                // Cinsiyet tespiti
+                const detectGender = (name) => {
+                    const firstName = name.split(' ')[0].toLowerCase();
+                    const femaleNames = ['ayşe', 'fatma', 'zeynep', 'elife', 'zeyneb', 'hatice', 'meryem', 'sultan', 'şükriye', 'safiye', 'emin', 'ümmü', 'zeynep', 'esra', 'gülşah', 'büşra', 'betül', 'nur', 'selin', 'cera', 'sude', 'ece', 'sinem', 'deniz', 'nil', 'naz', 'nazlı', 'belinay', 'elin', 'selin', 'balım', 'begüm'];
+                    const maleNames = ['ahmet', 'mehmet', 'mustafa', 'ali', 'hasan', 'hüseyin', 'ibrahim', 'osman', 'murat', 'can', 'emre', 'burak', 'arda', 'serkan', 'berk', 'mert', 'kaan', 'kerem', 'yusuf', 'eyüp', 'ömer', 'abdullah', 'muhammed', 'yunus', 'veli', 'rıza', 'nuri', 'kemal', 'tamer', 'erkam'];
 
-            // Cinsiyet tespiti
-            const detectGender = (name) => {
-                const firstName = name.split(' ')[0].toLowerCase();
-                const femaleNames = ['ayşe', 'fatma', 'zeynep', 'elife', 'zeyneb', 'hatice', 'meryem', 'sultan', 'şükriye', 'safiye', 'emin', 'ümmü', 'zeynep', 'esra', 'gülşah', 'büşra', 'betül', 'nur', 'selin', 'cera', 'sude', 'ece', 'sinem', 'deniz', 'nil', 'naz', 'nazlı', 'belinay', 'elin', 'selin', 'balım', 'begüm'];
-                const maleNames = ['ahmet', 'mehmet', 'mustafa', 'ali', 'hasan', 'hüseyin', 'ibrahim', 'osman', 'murat', 'can', 'emre', 'burak', 'arda', 'serkan', 'berk', 'mert', 'kaan', 'kerem', 'yusuf', 'eyüp', 'ömer', 'abdullah', 'muhammed', 'yunus', 'veli', 'rıza', 'nuri', 'kemal', 'tamer', 'erkam'];
+                    if (femaleNames.includes(firstName)) return 'female';
+                    if (maleNames.includes(firstName)) return 'male';
+                    return 'neutral';
+                };
 
-                if (femaleNames.includes(firstName)) return 'female';
-                if (maleNames.includes(firstName)) return 'male';
-                return 'neutral';
-            };
+                const genderClass = isChild ? 'neutral' : detectGender(nameToDisplay);
 
-            const genderClass = isChild ? 'neutral' : detectGender(nameToDisplay);
+                const names = nameToDisplay.split(' ');
+                const initials = names.length > 1
+                    ? (names[0][0] + names[names.length - 1][0]).toUpperCase()
+                    : nameToDisplay[0].toUpperCase();
 
-            const names = nameToDisplay.split(' ');
-            const initials = names.length > 1
-                ? (names[0][0] + names[names.length - 1][0]).toUpperCase()
-                : nameToDisplay[0].toUpperCase();
-
-            const profilePillHtml = `
-                <div class="profile-pill ${isChild ? 'child' : ''}" onclick="Luminex.showProfileSwitcher()">
-                    <div class="profile-avatar ${genderClass}">${initials}</div>
-                    <div class="profile-info">
-                        <span class="name">${nameToDisplay}</span>
-                        <span class="role-badge">${isChild ? 'Çocuk Hesabı' : 'Ana Hesap'}</span>
+                const profilePillHtml = `
+                    <div class="profile-pill ${isChild ? 'child' : ''}" onclick="Luminex.showProfileSwitcher()">
+                        <div class="profile-avatar ${genderClass}">${initials}</div>
+                        <div class="profile-info">
+                            <span class="name">${nameToDisplay}</span>
+                            <span class="role-badge">${isChild ? 'Çocuk Hesabı' : 'Ana Hesap'}</span>
+                        </div>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
                     </div>
-                    <i class="fas fa-chevron-down toggle-icon"></i>
-                </div>
-            `;
+                `;
 
-            welcomeMessageElement.innerHTML = profilePillHtml;
-            const profilePillElement = welcomeMessageElement.querySelector('.profile-pill');
-            if (profilePillElement) {
-                profilePillElement.style.cursor = 'pointer';
-                profilePillElement.addEventListener('click', () => {
-                    if (window.Luminex && window.Luminex.showProfileSwitcher) {
-                        window.Luminex.showProfileSwitcher();
-                    } else {
-                        console.error("Luminex.showProfileSwitcher is not defined.");
-                    }
-                });
+                welcomeMessageElement.innerHTML = profilePillHtml;
+                const profilePillElement = welcomeMessageElement.querySelector('.profile-pill');
+                if (profilePillElement) {
+                    profilePillElement.style.cursor = 'pointer';
+                    profilePillElement.addEventListener('click', () => {
+                        if (window.Luminex && window.Luminex.showProfileSwitcher) {
+                            window.Luminex.showProfileSwitcher();
+                        } else {
+                            console.error("Luminex.showProfileSwitcher is not defined.");
+                        }
+                    });
+                }
             }
         }
     }
@@ -540,17 +585,17 @@ export function setupHeader() {
                 <li><a href="doctor-sent-messages.html"><i class="fas fa-envelope-open-text"></i> <span data-lang="doctorSentMessagesSidebar">Gönderilen Mesajlar</span></a></li>
                 <li><a href="contact.html"><i class="fas fa-headset"></i> <span data-lang="contactSupportSidebar">İletişim / Destek</span></a></li>
             `;
-        } else { 
+        } else {
             menuHtml = `
                 <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span data-lang="dashboardSidebar">Kontrol Paneli</span></a></li>
-                <li><a href="notifications.html"><i class="fas fa-bell"></i> <span data-lang="notificationsTitle">Bildirimler</span></a></li>
                 <li><a href="my-appointments.html"><i class="fas fa-calendar-alt"></i> <span data-lang="myAppointmentsSidebar">Randevularım</span></a></li>
                 <li><a href="doctors.html"><i class="fas fa-user-md"></i> <span data-lang="doctorsBranchesSidebar">Doktorlar / Branşlar</span></a></li>
-                <li><a href="test-results.html"><i class="fas fa-microscope"></i> <span data-lang="testResultsSidebar">Tahlil & Sonuçlar</span></a></li>
-                <li><a href="radiology-results.html"><i class="fas fa-x-ray"></i> <span data-lang="radiologyResultsSidebar">Radyolojik Görüntülerim</span></a></li>
                 <li><a href="prescriptions.html"><i class="fas fa-prescription-bottle-alt"></i> <span data-lang="prescriptionsSidebar">Reçetelerim</span></a></li>
                 <li><a href="health-history.html"><i class="fas fa-notes-medical"></i> <span data-lang="healthHistorySidebar">Sağlık Geçmişim</span></a></li>
+                <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span data-lang="paymentsSidebar">Ödemeler & Faturalar</span></a></li>
+                <li><a href="family-accounts.html"><i class="fas fa-users"></i> <span data-lang="familyAccountsSidebar">Bağlı Hesaplar</span></a></li>
                 <li><a href="my-reviews.html"><i class="fas fa-star"></i> <span data-lang="myReviewsSidebar">Değerlendirmelerim</span></a></li>
+                <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> <span data-lang="feedbackSidebar">Geri Bildirim</span></a></li>
                 <li><a href="contact.html"><i class="fas fa-headset"></i> <span data-lang="contactSupportSidebar">İletişim / Destek</span></a></li>
             `;
         }
@@ -558,32 +603,6 @@ export function setupHeader() {
     }
 
     updateActiveMenuItem();
-
-    const sidebarToggleWrapper = document.querySelector('.sidebar-toggle-wrapper');
-    if (sidebarToggleWrapper && !document.getElementById('langSwitcher')) {
-        const langSwitcherHtml = `
-            <div class="lang-switcher sidebar-lang-switcher" id="langSwitcher" style="margin-bottom: 10px; width: 100%; padding: 0 20px; position: relative;">
-                <button type="button" class="selected-lang" style="width: 100%; justify-content: flex-start; background-color: var(--input-bg); border: none; padding: 10px 15px; border-radius: var(--border-radius); cursor: pointer; display: flex; align-items: center; gap: 12px; transition: all 0.2s ease; position: relative;">
-                    <img src="https://flagcdn.com/tr.svg" alt="TR Flag" style="width: 20px; height: 14px; border-radius: 2px; object-fit: cover; flex-shrink: 0;">
-                    <span style="font-size: 0.9rem; font-weight: 500; color: var(--text-light); white-space: nowrap; flex-grow: 1; text-align: left;">Türkçe</span>
-                    <i class="fas fa-chevron-up" style="font-size: 0.7rem; color: var(--text-light); opacity: 0.5; flex-shrink: 0;"></i>
-                </button>
-                <ul class="lang-options" style="bottom: 100%; top: auto; right: 20px; left: 20px; width: auto; margin-bottom: 8px; background: var(--white-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: 0 10px 25px rgba(0,0,0,0.1); list-style: none; padding: 8px; display: none; position: absolute; z-index: 9999;">
-                    <li data-lang="tr" style="padding: 10px 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; border-radius: 8px; transition: background 0.2s;"><img src="https://flagcdn.com/tr.svg" alt="TR Flag" style="width: 18px; height: 12px; border-radius: 2px;"> <span style="font-size: 0.9rem;">Türkçe</span></li>
-                    <li data-lang="en" style="padding: 10px 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; border-radius: 8px; transition: background 0.2s;"><img src="https://flagcdn.com/gb.svg" alt="GB Flag" style="width: 18px; height: 12px; border-radius: 2px;"> <span style="font-size: 0.9rem;">English</span></li>
-                </ul>
-            </div>
-        `;
-        sidebarToggleWrapper.insertAdjacentHTML('beforebegin', langSwitcherHtml);
-        
-        if (window.initLanguageSwitcher) {
-            window.initLanguageSwitcher();
-        }
-        if (window.updateTexts) {
-             const savedLang = localStorage.getItem('language') || 'tr';
-             window.setLanguage(savedLang); 
-        }
-    }
 }
 // Global click listener to close dropdown
 document.addEventListener('click', (e) => {

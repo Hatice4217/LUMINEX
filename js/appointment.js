@@ -1701,6 +1701,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // --- Back Button Handler ---
+    const backButton = document.getElementById('backButton');
+    if (backButton) {
+        backButton.addEventListener('click', function() {
+            // Direct go to dashboard
+            const loggedInUser = getLoggedInUser();
+            if (loggedInUser && loggedInUser.role === 'admin') {
+                window.location.href = 'admin-dashboard.html';
+            } else {
+                window.location.href = 'dashboard.html';
+            }
+        });
+    }
+
     // --- Initial Setup ---
     populatePatientSelect(); // Call to populate patient selection dropdown
     setupCustomDropdown({ input: formElements.province.input, panel: formElements.province.panel, items: provinces, onSelect: onProvinceSelect });
