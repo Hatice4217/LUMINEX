@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang="feedbackTitle">LUMINEX - Geri Bildirim</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <script>
+        try {
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                document.documentElement.classList.add('sidebar-is-collapsed');
+            }
+        } catch (e) {}
+    </script>
+    <style>
+        .feedback-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feedback-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .feedback-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .feedback-form-card {
+            background: var(--white-color);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .feedback-form-card h2 {
+            margin: 0 0 25px 0;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .feedback-form-card h2 i {
+            color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .form-control,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .feedback-type-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .feedback-type-btn {
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--white-color);
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .feedback-type-btn:hover {
+            border-color: var(--primary-color);
+            background: rgba(var(--primary-color-rgb), 0.05);
+        }
+
+        .feedback-type-btn.active {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .rating-star {
+            font-size: 2rem;
+            color: #dfe4ea;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .rating-star:hover,
+        .rating-star.active {
+            color: #ffb800;
+            transform: scale(1.1);
+        }
+
+        .btn-submit-feedback {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-submit-feedback:hover {
+            background: var(--primary-color-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(var(--primary-color-rgb), 0.3);
+        }
+
+        .feedback-history-card {
+            background: var(--white-color);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .feedback-history-card h2 {
+            margin: 0 0 25px 0;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .feedback-history-card h2 i {
+            color: var(--primary-color);
+        }
+
+        .feedback-item {
+            background: var(--input-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .feedback-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+
+        .feedback-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .feedback-item-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .feedback-item-type.compliment {
+            background: #d4edda;
+            color: #28a745;
+        }
+
+        .feedback-item-type.complaint {
+            background: #f8d7da;
+            color: #dc3545;
+        }
+
+        .feedback-item-type.suggestion {
+            background: #d1ecf1;
+            color: #17a2b8;
+        }
+
+        .feedback-item-type.question {
+            background: #fff3cd;
+            color: #ffc107;
+        }
+
+        .feedback-item-date {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .feedback-item-content h4 {
+            margin: 0 0 8px 0;
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        .feedback-item-content p {
+            margin: 0 0 12px 0;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .feedback-item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .feedback-item-rating {
+            display: flex;
+            gap: 3px;
+        }
+
+        .feedback-item-rating i {
+            font-size: 0.9rem;
+            color: #ffb800;
+        }
+
+        .feedback-item-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .feedback-item-status.pending {
+            background: #fff3cd;
+            color: #ffc107;
+        }
+
+        .feedback-item-status.resolved {
+            background: #d4edda;
+            color: #28a745;
+        }
+
+        .feedback-item-status.rejected {
+            background: #f8d7da;
+            color: #dc3545;
+        }
+
+        .empty-feedback-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-feedback-state i {
+            font-size: 4rem;
+            opacity: 0.2;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body lang="tr">
+    <div class="dashboard-container">
+        <header class="top-bar">
+            <div class="logo">
+                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" style="display: flex; align-items: center; gap: 2px; margin-left: -30px;">
+                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); -webkit-mask: url(clean-logo.png) no-repeat center / contain; mask: url(clean-logo.png) no-repeat center / contain; display: inline-block;"></div>
+                    <span style="font-family: 'Exo 2', sans-serif; font-size: 2.5rem; font-weight: 700; color: #001F6B; letter-spacing: 1px;">LUMINEX</span>
+                </a>
+            </div>
+            <div class="user-info">
+                <span id="welcomeMessage"></span>
+                <div class="icons">
+                    <i id="themeToggleButton" class="fas fa-moon"></i>
+                    <div class="notification-wrapper" style="position: relative; display: inline-block;">
+                        <i class="fas fa-bell" style="cursor: pointer;"></i>
+                        <span class="notification-badge" style="display: none; position: absolute; top: -8px; right: -8px; background: #ff4757; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; align-items: center; justify-content: center; font-weight: bold; border: 2px solid var(--white-color);"></span>
+                        <div class="notification-dropdown dropdown" style="position: absolute; top: 100%; right: 0; width: 320px; background: var(--white-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; z-index: 1000; flex-direction: column; overflow: hidden; margin-top: 15px;"></div>
+                    </div>
+                    <i class="fas fa-cog"></i>
+                    <i id="logoutButton" class="fas fa-sign-out-alt"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-wrapper">
+            <aside class="side-menu">
+                <ul id="dynamicSideMenu">
+                    <!-- header-manager.js will fill this -->
+                </ul>
+                <!-- Yedek menü -->
+                <ul id="fallbackSideMenu" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Kontrol Paneli</span></a></li>
+                    <li><a href="my-appointments.html"><i class="fas fa-calendar-alt"></i> <span>Randevularım</span></a></li>
+                    <li><a href="doctors.html"><i class="fas fa-user-md"></i> <span>Doktorlar / Branşlar</span></a></li>
+                    <li><a href="prescriptions.html"><i class="fas fa-prescription-bottle-alt"></i> <span>Reçetelerim</span></a></li>
+                    <li><a href="health-history.html"><i class="fas fa-notes-medical"></i> <span>Sağlık Geçmişim</span></a></li>
+                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Ödemeler & Faturalar</span></a></li>
+                    <li><a href="family-accounts.html"><i class="fas fa-users"></i> <span>Bağlı Hesaplar</span></a></li>
+                    <li><a href="my-reviews.html"><i class="fas fa-star"></i> <span>Değerlendirmelerim</span></a></li>
+                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> <span>Geri Bildirim</span></a></li>
+                    <li><a href="contact.html"><i class="fas fa-headset"></i> <span>İletişim / Destek</span></a></li>
+                </ul>
+                <div class="sidebar-toggle-wrapper">
+                    <button class="sidebar-toggle-button">
+                        <i class="fas fa-chevron-left"></i>
+                        <span data-lang="collapseMenu">Menüyü Daralt</span>
+                    </button>
+                </div>
+            </aside>
+
+            <main class="dashboard-content">
+                <h1 data-lang="feedbackTitle" class="reveal">Geri Bildirim / Şikayet</h1>
+
+                <div class="feedback-container reveal">
+                    <div class="feedback-grid">
+                        <!-- Feedback Form -->
+                        <div class="feedback-form-card">
+                            <h2><i class="fas fa-paper-plane"></i> <span data-lang="submitFeedback">Geri Bildirim Gönder</span></h2>
+
+                            <form id="feedbackForm">
+                                <div class="form-group">
+                                    <label data-lang="feedbackType">Geri Bildirim Türü</label>
+                                    <div class="feedback-type-buttons">
+                                        <button type="button" class="feedback-type-btn" data-type="compliment">
+                                            <i class="fas fa-heart"></i>
+                                            <span data-lang="feedbackTypeCompliment">Övgü</span>
+                                        </button>
+                                        <button type="button" class="feedback-type-btn" data-type="complaint">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            <span data-lang="feedbackTypeComplaint">Şikayet</span>
+                                        </button>
+                                        <button type="button" class="feedback-type-btn" data-type="suggestion">
+                                            <i class="fas fa-lightbulb"></i>
+                                            <span data-lang="feedbackTypeSuggestion">Öneri</span>
+                                        </button>
+                                        <button type="button" class="feedback-type-btn" data-type="question">
+                                            <i class="fas fa-question-circle"></i>
+                                            <span data-lang="feedbackTypeQuestion">Soru</span>
+                                        </button>
+                                    </div>
+                                    <input type="hidden" id="feedbackType" value="">
+                                </div>
+
+                                <div class="form-group">
+                                    <label data-lang="feedbackSubject">Konu</label>
+                                    <input type="text" id="feedbackSubject" class="form-control" placeholder="Geri bildiriminizin konusu...">
+                                </div>
+
+                                <div class="form-group">
+                                    <label data-lang="feedbackRating">Değerlendirme Puanı</label>
+                                    <div class="rating-stars" id="ratingStars">
+                                        <i class="fas fa-star rating-star" data-rating="1"></i>
+                                        <i class="fas fa-star rating-star" data-rating="2"></i>
+                                        <i class="fas fa-star rating-star" data-rating="3"></i>
+                                        <i class="fas fa-star rating-star" data-rating="4"></i>
+                                        <i class="fas fa-star rating-star" data-rating="5"></i>
+                                    </div>
+                                    <input type="hidden" id="feedbackRating" value="5">
+                                </div>
+
+                                <div class="form-group">
+                                    <label data-lang="feedbackMessage">Mesajınız</label>
+                                    <textarea id="feedbackMessage" class="form-control" placeholder="Geri bildiriminizi detaylıca yazın..."></textarea>
+                                </div>
+
+                                <button type="submit" class="btn-submit-feedback">
+                                    <i class="fas fa-paper-plane"></i>
+                                    <span data-lang="submitFeedback">Geri Bildirim Gönder</span>
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Feedback History -->
+                        <div class="feedback-history-card">
+                            <h2><i class="fas fa-history"></i> <span data-lang="feedbackHistory">Geri Bildirim Geçmişi</span></h2>
+                            <div id="feedbackHistoryList">
+                                <div class="skeleton-feedback">
+                                    <div class="skeleton" style="height: 100px; margin-bottom: 15px;"></div>
+                                    <div class="skeleton" style="height: 100px; margin-bottom: 15px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="js/language-manager.js"></script>
+    <script type="module" src="js/user-session.js"></script>
+    <script type="module" src="js/utils/header-manager.js"></script>
+    <script type="module" src="js/feedback.js"></script>
+</body>
+</html>
