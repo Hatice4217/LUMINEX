@@ -12,6 +12,7 @@ body.theme-dark {
     --text-light: #94a3b8;
     --body-bg: #0f172a; /* Koyu Lacivert-Gri - Slate 900 */
     --white-color: #1e293b; /* Kartlar - Slate 800 */
+    --primary-color-rgb: 56, 189, 248; /* Sky Blue RGB */
     --border-color: rgba(255, 255, 255, 0.1); /* İnce border */
     --input-bg: #1e293b; /* Input - Slate 800 */
     --shadow-color: rgba(0, 0, 0, 0.3);
@@ -84,6 +85,11 @@ body.theme-dark .stat-card {
     color: var(--text-color);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2),
                 inset 0 1px 0 rgba(255, 255, 255, 0.05) !important; /* İç ışıltı */
+}
+
+body.theme-dark .quick-access-item {
+    background: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* Dark Mode for Availability Table */
@@ -370,8 +376,13 @@ body.theme-dark .toggle-icon {
 body.theme-dark .side-menu ul li a:hover,
 body.theme-dark .side-menu ul li a.active {
     background-color: var(--secondary-background);
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(56, 189, 248, 0.05) 100%) !important;
     color: #a29bfe;
     border-left-color: #a29bfe;
+}
+
+body.theme-dark .side-menu ul li a.active::before {
+    background: #38bdf8;
 }
 
 body.theme-dark .form-control {
@@ -477,6 +488,11 @@ body.theme-dark .fa-sign-out-alt {
 }
 
 body.theme-dark .quick-access-item i {
+    background: rgba(56, 189, 248, 0.1);
+    color: #38bdf8 !important;
+}
+
+body.theme-dark .quick-access-item i {
     text-shadow: 0 0 15px rgba(108, 92, 231, 0.4);
 }
 /* Dark Mode overrides for doctor initials */
@@ -531,6 +547,7 @@ body.theme-dark .side-menu,
 body.theme-dark .top-bar {
     background: rgba(30, 41, 59, 0.8) !important; /* Glassmorphism */
     backdrop-filter: blur(10px);
+    backdrop-filter: blur(15px);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -555,6 +572,7 @@ body.theme-dark .side-menu ul li a i {
 body.theme-dark .side-menu ul li a:hover,
 body.theme-dark .side-menu ul li a.active {
     background: rgba(56, 189, 248, 0.1) !important; /* Sky Blue glow */
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(56, 189, 248, 0.05) 100%) !important;
     color: #38bdf8 !important;
     border-left-color: #38bdf8 !important;
 }
@@ -591,6 +609,7 @@ body.theme-dark .card.announcement-info {
     background: rgba(30, 41, 59, 0.6) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important; /* Neutral border */
     border-left: 4px solid #38bdf8 !important; /* Sol çizgi - Sky Blue */
+    /* border-left removed in style.css, handled by ::before */
 }
 
 body.theme-dark .announcements-card h2 i,
@@ -600,6 +619,10 @@ body.theme-dark .announcement-card h2 i {
 
 body.theme-dark .announcements-card h2 {
     color: #38bdf8 !important; /* Başlık - Sky Blue */
+}
+
+body.theme-dark .announcements-card::before {
+    background: linear-gradient(to bottom, #38bdf8, #818cf8) !important;
 }
 
 /* Admin Dashboard Specific Fixes */
@@ -1581,4 +1604,3 @@ body.theme-dark.login-page .register-link-panel a:hover {
     color: #93C5FD !important; /* Hover'da daha açık */
     text-decoration: underline !important;
 }
-

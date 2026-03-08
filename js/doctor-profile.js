@@ -22,34 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const doctorNewPasswordInput = document.getElementById('doctorNewPassword');
     const doctorConfirmNewPasswordInput = document.getElementById('doctorConfirmNewPassword');
 
-    const doctorThemeSettingsForm = document.getElementById('doctorThemeSettingsForm');
-    const doctorThemeOptionsContainer = document.getElementById('doctorThemeOptions');
-
     let originalDoctorProfileData = {}; // To store data before editing
-
-    // Helper to render individual theme options
-    function renderThemeOption(value, label, bgColor, primaryColor, currentSelected) {
-        const isSelected = value === currentSelected;
-        return `
-            <label class="theme-option ${isSelected ? 'selected' : ''}" data-theme-value="${value}">
-                <div class="theme-preview-circle" style="background: ${bgColor}; border-color: ${primaryColor};"></div>
-                <span class="theme-label">${label}</span>
-                <input type="radio" name="userTheme" class="theme-radio" value="${value}" ${isSelected ? 'checked' : ''}>
-            </label>
-        `;
-    }
-
-    // Helper to convert hex to rgb for dynamic css variable
-    function hexToRgb(hex) {
-        if (!hex || hex.indexOf('#') === -1) return '0,0,0';
-        const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-        hex = hex.replace(shorthandRegex, function(m, r, g, b) {
-            return r + r + g + g + b + b;
-        });
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? `${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)}` : '0,0,0';
-    }
-
 
     // --- Tab Switching Logic ---
     const tabs = document.querySelectorAll('.profile-tab');
@@ -65,36 +38,8 @@ document.addEventListener('DOMContentLoaded', function() {
             tab.classList.add('active');
             const targetId = tab.dataset.target;
             document.getElementById(targetId).classList.add('active');
-
-            // Render theme options if theme tab is active
-            if (targetId === 'theme-settings') {
-                renderDoctorThemeOptions();
-            }
         });
     });
-
-    function renderDoctorThemeOptions() {
-        if (!doctorThemeOptionsContainer) return;
-
-        const loggedInUser = getLoggedInUser();
-        const currentUserTheme = (loggedInUser && loggedInUser.theme) ? loggedInUser.theme : 'light';
-        
-        doctorThemeOptionsContainer.innerHTML = `
-            ${renderThemeOption('light', '🌞 Aydınlık Tema', '#f5f5f7', '#3667A8', currentUserTheme)}
-            ${renderThemeOption('dark', '🌙 Karanlık Tema', '#0f172a', '#818cf8', currentUserTheme)}
-            ${renderThemeOption('blue', '🔵 Kurumsal Mavi', '#f0f7ff', '#0984e3', currentUserTheme)}
-            ${renderThemeOption('gold', '🏆 Gold Premium', '#fdfcf5', '#D4B88C', currentUserTheme)}
-        `;
-
-        // Add event listeners for the new theme options
-        doctorThemeOptionsContainer.querySelectorAll('.theme-option').forEach(option => {
-            option.addEventListener('click', () => {
-                doctorThemeOptionsContainer.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('selected'));
-                option.classList.add('selected');
-                option.querySelector('.theme-radio').checked = true;
-            });
-        });
-    }
 
     // --- Helper Functions ---
     function setProfileFieldsEditable(editable) {
@@ -272,44 +217,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // In a real app, send request to backend to change password
     });
 
-    // --- Theme Settings Form Listener ---
-    if (doctorThemeSettingsForm) {
-        doctorThemeSettingsForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            const selectedTheme = document.querySelector('input[name="userTheme"]:checked').value;
-            
-            // Update LoggedIn User Session
-            const loggedInUser = getLoggedInUser();
-            if (loggedInUser) {
-                loggedInUser.theme = selectedTheme;
-                sessionStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
-                
-                 // Update Persistent User Data (if doctor exists in luminexUsers)
-                const allUsers = JSON.parse(localStorage.getItem('luminexUsers')) || [];
-                const userIndex = allUsers.findIndex(u => u.email === loggedInUser.email || u.tc === loggedInUser.tc); // Try matching by email or TC
-                if (userIndex !== -1) {
-                    allUsers[userIndex].theme = selectedTheme;
-                    localStorage.setItem('luminexUsers', JSON.stringify(allUsers));
-                }
-            }
-            
-            applyAdminTheme(selectedTheme); // Apply theme
-
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true
-            });
-            Toast.fire({
-                icon: 'success',
-                title: 'Tema ayarları güncellendi'
-            });
-        });
-    }
-
     // --- Initial Load ---
     loadDoctorProfileData();
-    renderDoctorThemeOptions(); // Initial render of theme options
 });

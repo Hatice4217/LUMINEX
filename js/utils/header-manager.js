@@ -187,19 +187,8 @@ function setupThemeToggler() {
     // Sync with global landingTheme preference on load
     const savedTheme = localStorage.getItem('landingTheme') || 'light';
 
-    if (savedTheme === 'dark') {
-        document.body.classList.add('theme-dark');
-        if (themeIcon) {
-            themeIcon.classList.remove('fa-moon');
-            themeIcon.classList.add('fa-sun');
-        }
-    } else {
-        document.body.classList.remove('theme-dark');
-        if (themeIcon) {
-            themeIcon.classList.remove('fa-sun');
-            themeIcon.classList.add('fa-moon');
-        }
-    }
+    // Apply the saved theme correctly on load (handles all themes: dark, blue, gold, light)
+    applyAdminTheme(savedTheme);
 
     themeToggleButton.addEventListener('click', () => {
         const isCurrentlyDark = document.body.classList.contains('theme-dark');
@@ -238,13 +227,9 @@ function setupThemeToggler() {
 
 
 export function applyAdminTheme(theme) {
-    document.body.classList.remove('theme-dark', 'theme-blue', 'theme-gold');
+    document.body.classList.remove('theme-dark');
     if (theme === 'dark') {
         document.body.classList.add('theme-dark');
-    } else if (theme === 'blue') {
-        document.body.classList.add('theme-blue');
-    } else if (theme === 'gold') {
-        document.body.classList.add('theme-gold');
     }
 
     const themeToggleButton = document.getElementById('themeToggleButton');

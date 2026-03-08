@@ -1027,7 +1027,7 @@ button:focus::after, button:active::after {
 
 .side-menu ul li a:hover,
 .side-menu ul li a.active {
-    background-color: rgba(0, 31, 107, 0.08); /* Hafif lacivert/mavi arka plan */
+    background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.08) 0%, rgba(var(--primary-color-rgb), 0.02) 100%);
     color: var(--primary-color) !important;
     border-left: 4px solid var(--primary-color); /* Sol tarafa kalın mavi çizgi */
     font-weight: 500;
@@ -1036,7 +1036,7 @@ button:focus::after, button:active::after {
 .side-menu ul li a:hover i,
 .side-menu ul li a.active i {
     color: var(--primary-color);
-    text-shadow: 0 0 8px rgba(0, 168, 150, 0.5);
+    text-shadow: 0 0 8px rgba(var(--primary-color-rgb), 0.4);
 }
 
 /* Sidebar Daraltma (Collapsed State) */
@@ -1279,7 +1279,7 @@ body::-webkit-scrollbar,
 /* Duyurular kartı için üst ve sol çizgi - TUTARLI RENKLER */
 .announcements-card {
     position: relative;
-    border-left: 4px solid #78C7C7 !important;
+    border-left: 4px solid var(--primary-color) !important;
 }
 
 .announcements-card::before {
@@ -1289,14 +1289,14 @@ body::-webkit-scrollbar,
     left: 0;
     right: 0;
     height: 4px;
-    background: #78C7C7 !important; /* Sol ile aynı renk */
+    background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
     border-radius: 4px 4px 0 0;
 }
 
 /* Duyuru başlık ve ikon renkleri - Light Mode */
 .announcements-card h2,
 .announcements-card h2 i {
-    color: #001F6B !important;
+    color: var(--primary-color) !important;
 }
 
 /* Dark mode için duyuru üst çizgisi ve renkleri - TUTARLI */
@@ -1315,7 +1315,7 @@ body.theme-dark .announcements-card h2 i {
 
 /* İstatistik kartı için üst ve sol çizgi - TUTARLI RENKLER */
 .premium-stats {
-    border-left: 4px solid #78C7C7 !important;
+    border-left: 4px solid var(--primary-color) !important;
     border-radius: 16px !important;
     position: relative;
 }
@@ -1327,7 +1327,7 @@ body.theme-dark .announcements-card h2 i {
     left: 0;
     right: 0;
     height: 4px;
-    background: #78C7C7 !important; /* Sol ile aynı renk */
+    background: var(--primary-color) !important;
     border-radius: 4px 4px 0 0;
 }
 
@@ -1341,11 +1341,11 @@ body.theme-dark .premium-stats::before {
 
 /* Light mode için istatistik başlığı ve ikonu */
 .premium-stats h2 {
-    color: #001F6B !important;
+    color: var(--primary-color) !important;
 }
 
 .premium-stats h2 i {
-    color: #78C7C7 !important;
+    color: var(--primary-color) !important;
 }
 
 /* Dark mode için istatistik başlığı ve ikonu */
@@ -1379,13 +1379,14 @@ body.theme-dark .premium-stats h2 i {
 
 .quick-access-item:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 40px rgba(var(--primary-color-rgb), 0.15);
+    border-color: var(--primary-color);
 }
 
 .quick-access-item i {
     font-size: 2.5rem;
-    color: #001F6B !important;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    color: var(--primary-color) !important;
+    background: rgba(var(--primary-color-rgb), 0.05);
     margin-bottom: 15px;
 }
 .quick-access-item h3 {
@@ -2543,12 +2544,6 @@ body.theme-dark .appointment-item.past {
 .theme-gold .top-bar .logo a,
 .theme-gold .form-options .forgot-password,
 .theme-gold .input-wrapper input:focus ~ i,
-.theme-gold .top-bar .user-info .icons i:hover,
-.theme-gold .side-menu ul li a:hover,
-.theme-gold .side-menu ul li a.active,
-.theme-gold .side-menu ul li a:hover i,
-.theme-gold .side-menu ul li a.active i,
-.theme-gold .quick-access-item i,
 .theme-gold .stats-card p strong,
 .theme-gold .form-section legend,
 .theme-gold .appointment-summary h3,
@@ -2565,11 +2560,6 @@ body.theme-dark .appointment-item.past {
 .theme-gold .custom-option.highlighted {
     color: var(--primary-color);
     text-shadow: 0 0 8px rgba(212, 184, 140, 0.5);
-}
-
-.theme-gold .side-menu ul li a:hover,
-.theme-gold .side-menu ul li a.active {
-    border-left-color: #E8D1B2; /* Adjusted border color */
 }
 
 .theme-gold .time-slot {
@@ -3737,4 +3727,78 @@ body.theme-dark .swal2-confirm {
 .theme-dark .swal2-backdrop-show,
 body.theme-dark .swal2-backdrop-show {
     background: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* ============================================
+   DYNAMIC LOGO COLORS BY THEME
+   ============================================ */
+
+/* Common Transitions for Theme Change */
+body, h1, h2, h3, h4, h5, h6, p, span, i, a, button, .btn, .card, .sidebar-toggle-button, .quick-access-item i {
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease, background-image 0.4s ease, text-shadow 0.4s ease;
+}
+
+/* --- BLUE THEME --- */
+body.theme-blue {
+    --primary-color: #0984e3;
+    --primary-dark: #0069d9;
+    --primary-color-rgb: 9, 132, 227;
+    --accent-color: #0984e3;
+    --secondary-color: #74b9ff;
+    --text-color: #2d3436;
+    --text-light: #636e72;
+    --body-bg: #f0f8ff;
+    --border-color: #dfe6e9;
+    --white-color: #ffffff;
+}
+
+body.theme-blue .btn {
+    background-image: linear-gradient(to right, #0984e3, #74b9ff);
+    box-shadow: 0 4px 15px rgba(9, 132, 227, 0.3);
+    color: #ffffff;
+}
+
+body.theme-blue .btn:hover {
+    background-image: linear-gradient(to left, #0984e3, #74b9ff);
+}
+
+body.theme-blue .top-bar .logo-text {
+    color: #0984e3 !important;
+    text-shadow: 0 0 15px rgba(9, 132, 227, 0.3);
+}
+
+/* --- GOLD THEME --- */
+body.theme-gold {
+    --primary-color: #c5a059;
+    --primary-dark: #a68545;
+    --primary-color-rgb: 197, 160, 89;
+    --accent-color: #c5a059;
+    --secondary-color: #e6d2aa;
+    --text-color: #5d4037; /* Dark brown for text */
+    --text-light: #8d6e63;
+    --body-bg: #fdfcf5;
+    --border-color: #e6d2aa;
+    --white-color: #ffffff;
+}
+
+body.theme-gold .btn {
+    background-image: linear-gradient(to right, #c5a059, #e6d2aa);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+body.theme-gold .btn:hover {
+    background-image: linear-gradient(to left, #c5a059, #e6d2aa);
+}
+
+body.theme-gold .top-bar .logo-text {
+    color: #c5a059 !important;
+    text-shadow: 0 0 15px rgba(197, 160, 89, 0.5);
+}
+
+/* Specific Logo Styles per Theme (Dark Mode) */
+body.theme-dark .top-bar .logo-text {
+    color: #78C7C7 !important;
+    text-shadow: 0 0 15px rgba(120, 199, 199, 0.4);
 }
