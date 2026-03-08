@@ -1,4 +1,4 @@
-﻿
+﻿﻿﻿﻿
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -18,13 +18,6 @@
         }
       } catch (e) {}
     </script>
-<script>
-      try {
-        if (localStorage.getItem('sidebarCollapsed') === 'true') {
-          document.documentElement.classList.add('sidebar-is-collapsed');
-        }
-      } catch (e) {}
-</script>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
@@ -32,25 +25,58 @@
         <!-- Top Bar -->
         <header class="top-bar">
             <div class="logo">
-                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" style="display: flex; align-items: center; gap: 2px; margin-left: -30px;">
-                    <div style="
-                        width: 60px; 
-                        height: 60px; 
-                        background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); 
-                        -webkit-mask: url(clean-logo.png) no-repeat center / contain; 
-                        mask: url(clean-logo.png) no-repeat center / contain;
-                        display: inline-block;">
-                    </div>
-                    <span style="font-family: 'Exo 2', sans-serif; font-size: 2.5rem; font-weight: 700; color: #001F6B; letter-spacing: 1px; display: flex; align-items: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">LUMINEX</span>
+                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" class="logo-link">
+                    <span class="logo-text">LUMINEX</span>
                 </a>
             </div>
             <div class="user-info">
-                <span id="welcomeMessage"></span>
-                <div class="icons">
-                    <i id="themeToggleButton" class="fas fa-moon"></i>
-                    <i class="fas fa-bell"></i>
-                    <i class="fas fa-cog"></i>
-                    <i id="logoutButton" class="fas fa-sign-out-alt"></i>
+                <span id="welcomeMessage" class="welcome-text"></span>
+                <div class="top-bar-actions">
+                    <!-- Dil Switcher -->
+                    <div class="lang-switcher">
+                        <button type="button" class="selected-lang">
+                            <img src="https://flagcdn.com/tr.svg" alt="TR Flag">
+                            <span>Türkçe</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <ul class="lang-options">
+                            <li data-lang="tr"><img src="https://flagcdn.com/tr.svg" alt="TR Flag"> Türkçe</li>
+                            <li data-lang="en"><img src="https://flagcdn.com/gb.svg" alt="GB Flag"> English</li>
+                        </ul>
+                    </div>
+                    <button id="themeToggleButton" class="top-bar-btn" title="Tema Değiştir">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="notification-wrapper" style="position: relative !important; display: inline-block !important;">
+                        <button class="top-bar-btn" title="Bildirimler" style="position: relative !important;">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                        <span class="notification-badge" style="
+                            position: absolute !important;
+                            top: -6px !important;
+                            right: -6px !important;
+                            z-index: 100 !important;
+                            background: linear-gradient(135deg, #ff4757, #ff6b7a) !important;
+                            color: white !important;
+                            border-radius: 50% !important;
+                            width: 18px !important;
+                            height: 18px !important;
+                            display: flex !important;
+                            justify-content: center !important;
+                            align-items: center !important;
+                            font-size: 10px !important;
+                            font-weight: bold !important;
+                            border: 2px solid white !important;
+                            pointer-events: none !important;
+                        ">4</span>
+                        <div class="notification-dropdown dropdown"></div>
+                    </div>
+                    <button class="top-bar-btn" onclick="window.location.href='profile.html'" title="Ayarlar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button id="logoutButton" class="top-bar-btn" title="Çıkış Yap">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
                 </div>
             </div>
         </header>
@@ -72,18 +98,12 @@
 
             <!-- Appointment Booking Content -->
             <main class="dashboard-content">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-                    <h1 data-lang="appointmentTitle" style="margin: 0;">Randevu Al</h1>
-                    <button id="backButton" class="btn btn-secondary" style="display: flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-arrow-left"></i>
-                        <span>Geri Dön</span>
-                    </button>
-                </div>
+                <h1 data-lang="appointmentTitle">Randevu Al</h1>
                 
                 <div class="card form-container">
                     <form id="appointmentForm">
-                        <div class="form-section">
-                            <legend data-lang="locationInfo">Konum Bilgileri</legend>
+                        <div class="form-section-clean">
+                            <h2 class="form-section-title" data-lang="locationInfo">Konum Bilgileri</h2>
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="provinceInput" data-lang="provinceSelection">İl Seçimi</label>
@@ -109,8 +129,8 @@
                             </div>
                         </div>
 
-                        <div class="form-section">
-                            <legend data-lang="appointmentDetails">Randevu Detayları</legend>
+                        <div class="form-section-clean">
+                            <h2 class="form-section-title" data-lang="appointmentDetails">Randevu Detayları</h2>
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="branchInput" data-lang="branchSelection">Branş Seçimi</label>
@@ -142,15 +162,15 @@
                             </div>
                         </div>
 
-                        <div class="form-section">
-                            <legend data-lang="availableHours">Müsait Saatler</legend>
+                        <div class="form-section-clean">
+                            <h2 class="form-section-title" data-lang="availableHours">Müsait Saatler</h2>
                              <div id="timeSlots" class="time-slots">
                                 <p class="time-slot-placeholder" data-lang="selectDateFirst">Lütfen tarih seçimi yapınız.</p>
                             </div>
                         </div>
                         
-                        <div class="form-section">
-                            <legend data-lang="importantHealthInfo">Önemli Sağlık Bilgisi</legend>
+                        <div class="form-section-clean">
+                            <h2 class="form-section-title" data-lang="importantHealthInfo">Önemli Sağlık Bilgisi</h2>
                             <div class="form-group">
                                 <div class="input-wrapper">
                                     <textarea id="healthInfo" class="form-control" rows="4" placeholder="Önemli sağlık bilgilerinizi buraya yazabilirsiniz..." data-lang-placeholder="enterHealthInfoPlaceholder"></textarea>
@@ -159,7 +179,7 @@
                         </div>
 
                         <div class="summary-and-button-wrapper">
-                            <div class="form-section appointment-summary">
+                            <div class="appointment-summary">
                                 <h3><i class="fas fa-clipboard-list"></i> <span data-lang="appointmentSummary">Randevu Özeti</span></h3>
                                 <div class="summary-grid">
                                     <p><i class="fas fa-user"></i> <strong data-lang="patientLabel">Hasta:</strong> <span id="summaryPatient" data-lang="notSelected">Seçilmedi</span></p>
@@ -185,4 +205,3 @@
     <script type="module" src="js/appointment.js"></script>
 </body>
 </html>
-

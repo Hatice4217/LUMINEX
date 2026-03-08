@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
@@ -23,25 +23,58 @@
         <!-- Top Bar -->
         <header class="top-bar">
             <div class="logo">
-                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" style="display: flex; align-items: center; gap: 2px; margin-left: -30px;">
-                    <div style="
-                        width: 60px; 
-                        height: 60px; 
-                        background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); 
-                        -webkit-mask: url(clean-logo.png) no-repeat center / contain; 
-                        mask: url(clean-logo.png) no-repeat center / contain;
-                        display: inline-block;">
-                    </div>
-                    <span style="font-family: 'Exo 2', sans-serif; font-size: 2.5rem; font-weight: 700; color: #001F6B; letter-spacing: 1px; display: flex; align-items: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">LUMINEX</span>
+                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" class="logo-link">
+                    <span class="logo-text">LUMINEX</span>
                 </a>
             </div>
             <div class="user-info">
-                <span id="welcomeMessage"></span>
-                <div class="icons">
-                    <i id="themeToggleButton" class="fas fa-moon"></i>
-                    <i class="fas fa-bell"></i>
-                    <i class="fas fa-cog"></i>
-                    <i id="logoutButton" class="fas fa-sign-out-alt"></i>
+                <span id="welcomeMessage" class="welcome-text"></span>
+                <div class="top-bar-actions">
+                    <!-- Dil Switcher -->
+                    <div class="lang-switcher">
+                        <button type="button" class="selected-lang">
+                            <img src="https://flagcdn.com/tr.svg" alt="TR Flag">
+                            <span>Türkçe</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <ul class="lang-options">
+                            <li data-lang="tr"><img src="https://flagcdn.com/tr.svg" alt="TR Flag"> Türkçe</li>
+                            <li data-lang="en"><img src="https://flagcdn.com/gb.svg" alt="GB Flag"> English</li>
+                        </ul>
+                    </div>
+                    <button id="themeToggleButton" class="top-bar-btn" title="Tema Değiştir">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="notification-wrapper" style="position: relative !important; display: inline-block !important;">
+                        <button class="top-bar-btn" title="Bildirimler" style="position: relative !important;">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                        <span class="notification-badge" style="
+                            position: absolute !important;
+                            top: -6px !important;
+                            right: -6px !important;
+                            z-index: 100 !important;
+                            background: linear-gradient(135deg, #ff4757, #ff6b7a) !important;
+                            color: white !important;
+                            border-radius: 50% !important;
+                            width: 18px !important;
+                            height: 18px !important;
+                            display: flex !important;
+                            justify-content: center !important;
+                            align-items: center !important;
+                            font-size: 10px !important;
+                            font-weight: bold !important;
+                            border: 2px solid white !important;
+                            pointer-events: none !important;
+                        ">4</span>
+                        <div class="notification-dropdown dropdown"></div>
+                    </div>
+                    <button class="top-bar-btn" onclick="window.location.href='doctor-profile.html'" title="Ayarlar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button id="logoutButton" class="top-bar-btn" title="Çıkış Yap">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
                 </div>
             </div>
         </header>
@@ -95,4 +128,3 @@
     <script type="module" src="js/doctor-ratings.js"></script>
 </body>
 </html>
-
