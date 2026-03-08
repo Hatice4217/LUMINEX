@@ -56,16 +56,19 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.list.innerHTML = '';
 
         if (filtered.length === 0) {
-            elements.list.innerHTML = `<div class="card no-results-card" style="text-align:center; padding: 50px;">
-                <i class="fas fa-search" style="font-size: 3rem; opacity: 0.2; margin-bottom: 15px;"></i>
-                <p>${getSafeTranslation('noReviewsFoundPlaceholder')}</p>
-            </div>`;
+            elements.list.innerHTML = `
+                <div class="empty-reviews">
+                    <i class="fas fa-comment-slash"></i>
+                    <h3>${getSafeTranslation('noReviewsFoundPlaceholder')}</h3>
+                    <p>Farklı filtrelerle tekrar deneyin veya yeni bir yorum ekleyin.</p>
+                </div>
+            `;
             return;
         }
 
         filtered.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(r => {
             const card = document.createElement('div');
-            card.className = 'review-card-modern reveal';
+            card.className = 'review-card reveal';
             
             const doctor = allUsers.find(u => u.id === r.doctorId);
             const doctorName = doctor ? doctor.name : 'Bilinmeyen Doktor';
@@ -78,22 +81,32 @@ document.addEventListener('DOMContentLoaded', function() {
             ).join('');
 
             card.innerHTML = `
-                <div class="review-header-new">
-                    <div class="doc-badge-info">
-                        <div class="doc-icon-circle"><i class="fas fa-user-md"></i></div>
-                        <div>
-                            <h4 style="margin:0; font-size: 1.1rem; color: var(--text-color);">${doctorName}</h4>
-                            <span style="font-size: 0.8rem; color: var(--text-light);">${new Date(r.date).toLocaleDateString(dateLocale, { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                <div class="review-header">
+                    <div class="doctor-info">
+                        <div class="doctor-avatar"><i class="fas fa-user-md"></i></div>
+                        <div class="doctor-details">
+                            <h4>${doctorName}</h4>
+                            <span class="doctor-date">${new Date(r.date).toLocaleDateString(dateLocale, { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                         </div>
                     </div>
-                    <div class="stars-wrap" style="display: flex; gap: 3px;">${stars}</div>
+                    <div class="review-rating">
+                        ${stars}
+                        <span>${r.rating}</span>
+                    </div>
                 </div>
-                <div class="review-text-quote">${r.comment}</div>
-                <div class="review-footer-actions">
-                    <span style="font-size: 0.8rem; color: var(--text-light);"><i class="fas fa-check-circle" style="color: #00b894;"></i> İncelendi</span>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn-action-minimal" onclick="window.editReview('${r.id}')"><i class="fas fa-edit"></i> ${getSafeTranslation('editReview')}</button>
-                        <button class="btn-action-minimal delete" onclick="window.deleteReview('${r.id}')"><i class="fas fa-trash-alt"></i> ${getSafeTranslation('deleteReview')}</button>
+                <div class="review-comment">${r.comment}</div>
+                <div class="review-footer">
+                    <div class="review-status">
+                        <i class="fas fa-check"></i>
+                        İncelendi
+                    </div>
+                    <div class="review-actions">
+                        <button class="btn-action btn-action-edit" onclick="window.editReview('${r.id}')">
+                            <i class="fas fa-edit"></i> ${getSafeTranslation('editReview')}
+                        </button>
+                        <button class="btn-action btn-action-delete" onclick="window.deleteReview('${r.id}')">
+                            <i class="fas fa-trash-alt"></i> ${getSafeTranslation('deleteReview')}
+                        </button>
                     </div>
                 </div>
             `;

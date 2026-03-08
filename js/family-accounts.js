@@ -8,14 +8,20 @@ document.addEventListener('DOMContentLoaded', function() {
         currentAccountAvatar: document.getElementById('currentAccountAvatar'),
         currentAccountName: document.getElementById('currentAccountName'),
         currentAccountEmail: document.getElementById('currentAccountEmail'),
-        familyMembersList: document.getElementById('familyMembersList')
+        familyMembersList: document.getElementById('familyMembersList'),
+        searchInput: document.getElementById('familySearch'),
+        addFamilyMemberBtn: document.getElementById('addFamilyMemberBtn')
     };
+
+    let allFamilyMembers = [];
+    let searchTerm = '';
 
     function getSafeTranslation(key) {
         return window.getTranslation ? window.getTranslation(key) : key;
     }
 
     function getInitials(name) {
+        if (!name || typeof name !== 'string') return '??';
         const names = name.split(' ');
         if (names.length >= 2) {
             return (names[0][0] + names[names.length - 1][0]).toUpperCase();
@@ -23,8 +29,19 @@ document.addEventListener('DOMContentLoaded', function() {
         return name.substring(0, 2).toUpperCase();
     }
 
+    // Helper to get full name from user object
+    function getFullName(user) {
+        if (!user) return '';
+        if (user.name) return user.name;
+        // Backend returns firstName and lastName
+        const firstName = user.firstName || '';
+        const lastName = user.lastName || '';
+        return `${firstName} ${lastName}`.trim();
+    }
+
     function getGenderClass(name) {
-        const firstName = name.split(' ')[0].toLowerCase();
+        if (!name || typeof name !== 'string') return 'neutral';
+        const firstName = name.split(' ')[0]?.toLowerCase() || '';
         const femaleNames = ['ayşe', 'fatma', 'zeynep', 'elife', 'zeyneb', 'hatice', 'meryem', 'sultan', 'şükriye', 'safiye', 'emin', 'ümmü', 'zeynep', 'esra', 'gülşah', 'büşra', 'betül', 'nur', 'selin', 'cera', 'sude', 'ece', 'sinem', 'deniz', 'nil', 'naz', 'nazlı', 'belinay', 'elin', 'selin', 'balım', 'begüm'];
         const maleNames = ['ahmet', 'mehmet', 'mustafa', 'ali', 'hasan', 'hüseyin', 'ibrahim', 'osman', 'murat', 'can', 'emre', 'burak', 'arda', 'serkan', 'berk', 'mert', 'kaan', 'kerem', 'yusuf', 'eyüp', 'ömer', 'abdullah', 'muhammed', 'yunus', 'veli', 'rıza', 'nuri', 'kemal', 'tamer', 'erkam'];
 
@@ -85,10 +102,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const loggedInUser = getLoggedInUser();
         const currentUser = activeProfile || loggedInUser;
 
-        if (!currentUser) {
-            elements.currentAccountName.textContent = 'Giriş yapılmadı';
-            elements.currentAccountEmail.textContent = '-';
-            elements.currentAccountAvatar.textContent = '?';
+        // Debug log
+        console.log('Active Profile:', activeProfile);
+        console.log('Logged In User:', loggedInUser);
+
+        if (!currentUser || !currentUser.name) {
+            // Try to get user from localStorage directly as fallback
+            const storedUser = getLocalStorageItem('loggedInUser');
+            console.log('Stored user from localStorage:', storedUser);
+
+            if (storedUser && storedUser.name) {
+                const initials = getInitials(storedUser.name);
+                elements.currentAccountAvatar.textContent = initials;
+                elements.currentAccountName.textContent = storedUser.name;
+                elements.currentAccountEmail.textContent = storedUser.email || '-';
+            } else {
+                // Fallback to dummy user for testing
+                elements.currentAccountAvatar.textContent = 'LH';
+                elements.currentAccountName.textContent = 'Luminex User';
+                elements.currentAccountEmail.textContent = 'user@luminex.com';
+            }
             return;
         }
 
@@ -98,7 +131,91 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.currentAccountEmail.textContent = currentUser.email || '-';
     }
 
-    function renderFamilyMembers() {
+    function renderFamilyMemberCards(familyMembers) {
+        if (!elements.familyMembersList) return;
+
+        elements.familyMembersList.innerHTML = '';
+
+        if (!familyMembers || familyMembers.length === 0) {
+            elements.familyMembersList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-users"></i>
+                    <h3>${getSafeTranslation('noFamilyMembers')}</h3>
+                    <p>${getSafeTranslation('noFamilyDesc') || 'Henüz bağlı aile üyesi bulunmuyor.'}</p>
+                </div>
+            `;
+            return;
+        }
+
+        const currentLang = localStorage.getItem('language') || 'tr';
+        const dateLocale = currentLang === 'tr' ? 'tr-TR' : 'en-GB';
+
+        familyMembers.forEach(member => {
+            const card = document.createElement('div');
+            card.className = 'family-member-card';
+            card.dataset.id = member.id;
+
+            const initials = getInitials(member.name);
+            const genderClass = getGenderClass(member.name);
+            const accountTypeClass = member.isChild ? 'child' : member.isElderly ? 'elderly' : '';
+            const avatarClass = member.isChild ? 'child' : member.isElderly ? 'elderly' : genderClass;
+            const relationshipText = getRelationshipTranslation(member.relationship);
+
+            const birthDate = member.dateOfBirth ? new Date(member.dateOfBirth).toLocaleDateString(dateLocale) : '-';
+            const age = member.dateOfBirth
+                ? new Date().getFullYear() - new Date(member.dateOfBirth).getFullYear()
+                : '-';
+
+            card.innerHTML = `
+                <div class="family-member-header">
+                    <div class="family-member-avatar ${avatarClass}">${initials}</div>
+                    <div class="family-member-info">
+                        <h4>${member.name}</h4>
+                        <span class="family-member-date">${birthDate} (${age} yaş)</span>
+                    </div>
+                </div>
+                <div class="family-member-badges">
+                    <span class="family-member-badge relation">${relationshipText}</span>
+                    ${member.isChild ? `<span class="family-member-badge child">${getSafeTranslation('childAccount')}</span>` : ''}
+                    ${member.isElderly ? `<span class="family-member-badge elderly">${getSafeTranslation('elderlyAccount')}</span>` : ''}
+                </div>
+                <div class="family-member-actions">
+                    <button class="family-member-btn switch" data-action="switch" data-id="${member.id}">
+                        <i class="fas fa-exchange-alt"></i>
+                        ${getSafeTranslation('switchAccount')}
+                    </button>
+                    <button class="family-member-btn remove" data-action="remove" data-id="${member.id}">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            `;
+
+            elements.familyMembersList.appendChild(card);
+        });
+    }
+
+    function filterAndSearchFamilyMembers() {
+        const loggedInUser = getLoggedInUser();
+        if (!loggedInUser) return;
+
+        let filtered = [...allFamilyMembers];
+
+        // Filter by user
+        filtered = filtered.filter(fm => fm.parentId === loggedInUser.tc);
+
+        // Search
+        if (searchTerm) {
+            const searchLower = searchTerm.toLowerCase();
+            filtered = filtered.filter(fm =>
+                (fm.name && fm.name.toLowerCase().includes(searchLower)) ||
+                (fm.tc && fm.tc.includes(searchTerm))
+            );
+        }
+
+        renderFamilyMemberCards(filtered);
+    }
+
+    function loadFamilyMembers() {
         let familyMembers = getLocalStorageItem('luminexFamilyMembers') || [];
 
         // If no family members exist, generate dummy data
@@ -107,70 +224,11 @@ document.addEventListener('DOMContentLoaded', function() {
             setLocalStorageItem('luminexFamilyMembers', familyMembers);
         }
 
-        const loggedInUser = getLoggedInUser();
-        if (!loggedInUser) return;
-
-        // Filter family members for current user
-        const userFamilyMembers = familyMembers.filter(fm => fm.parentId === loggedInUser.tc);
-
-        if (userFamilyMembers.length === 0) {
-            elements.familyMembersList.innerHTML = `
-                <div class="empty-family-state">
-                    <i class="fas fa-users"></i>
-                    <p>${getSafeTranslation('noFamilyMembers')}</p>
-                </div>
-            `;
-            return;
-        }
-
-        elements.familyMembersList.innerHTML = userFamilyMembers.map(member => {
-            const initials = getInitials(member.name);
-            const genderClass = getGenderClass(member.name);
-            const accountTypeClass = member.isChild ? 'child' : member.isElderly ? 'elderly' : '';
-            const relationshipText = getRelationshipTranslation(member.relationship);
-
-            const age = member.dateOfBirth
-                ? new Date().getFullYear() - new Date(member.dateOfBirth).getFullYear()
-                : '-';
-
-            return `
-                <div class="family-member-card">
-                    <div class="family-member-header">
-                        <div class="family-member-avatar ${accountTypeClass}">${initials}</div>
-                        <div class="family-member-info">
-                            <h4>${member.name}</h4>
-                            <p>${getSafeTranslation('dateOfBirth')}: ${new Date(member.dateOfBirth).toLocaleDateString('tr-TR')} (${age} ${getSafeTranslation('age') || 'yaş'})</p>
-                        </div>
-                    </div>
-                    <div class="family-member-badges">
-                        <span class="family-member-badge relation">${relationshipText}</span>
-                        ${member.isChild ? `<span class="family-member-badge child">${getSafeTranslation('childAccount')}</span>` : ''}
-                        ${member.isElderly ? `<span class="family-member-badge elderly">${getSafeTranslation('elderlyAccount')}</span>` : ''}
-                    </div>
-                    <div class="family-member-actions">
-                        <button class="btn-family-action" onclick="window.switchToAccount('${member.id}')">
-                            <i class="fas fa-exchange-alt"></i>
-                            ${getSafeTranslation('switchAccount')}
-                        </button>
-                        <button class="btn-family-action danger" onclick="window.removeFamilyMember('${member.id}')">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        // Re-init reveal animations
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('active');
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+        allFamilyMembers = familyMembers;
+        filterAndSearchFamilyMembers();
     }
 
-    // Global functions
-    window.showAddFamilyMemberModal = () => {
+    function showAddFamilyMemberModal() {
         Swal.fire({
             title: getSafeTranslation('addFamilyMember'),
             html: `
@@ -204,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showCancelButton: true,
             confirmButtonText: getSafeTranslation('registerButton'),
             cancelButtonText: getSafeTranslation('cancel'),
-            confirmButtonColor: 'var(--primary-color)',
+            confirmButtonColor: '#001F6B',
             preConfirm: () => {
                 const name = document.getElementById('familyMemberName').value;
                 const tc = document.getElementById('familyMemberTc').value;
@@ -255,12 +313,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     showConfirmButton: false
                 });
 
-                renderFamilyMembers();
+                loadFamilyMembers();
             }
         });
-    };
+    }
 
-    window.switchToAccount = (memberId) => {
+    function switchToAccount(memberId) {
         let familyMembers = getLocalStorageItem('luminexFamilyMembers') || [];
         const member = familyMembers.find(fm => fm.id === memberId);
 
@@ -273,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Create a pseudo-user for the family member
+        // Create a pseudo-user for family member
         const familyUser = {
             id: member.id,
             tc: member.tc,
@@ -295,9 +353,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }).then(() => {
             window.location.href = 'dashboard.html';
         });
-    };
+    }
 
-    window.removeFamilyMember = (memberId) => {
+    function removeFamilyMember(memberId) {
         Swal.fire({
             title: getSafeTranslation('removeFamilyMemberConfirm'),
             text: 'Bu işlem geri alınamaz',
@@ -319,14 +377,44 @@ document.addEventListener('DOMContentLoaded', function() {
                     showConfirmButton: false
                 });
 
-                renderFamilyMembers();
+                loadFamilyMembers();
             }
         });
-    };
+    }
+
+    // Search input event
+    if (elements.searchInput) {
+        elements.searchInput.addEventListener('input', (e) => {
+            searchTerm = e.target.value;
+            filterAndSearchFamilyMembers();
+        });
+    }
+
+    // Add family member button
+    if (elements.addFamilyMemberBtn) {
+        elements.addFamilyMemberBtn.addEventListener('click', showAddFamilyMemberModal);
+    }
+
+    // Family member card click events
+    if (elements.familyMembersList) {
+        elements.familyMembersList.addEventListener('click', (e) => {
+            const button = e.target.closest('.family-member-btn');
+            if (!button) return;
+
+            const action = button.dataset.action;
+            const memberId = button.dataset.id;
+
+            if (action === 'switch') {
+                switchToAccount(memberId);
+            } else if (action === 'remove') {
+                removeFamilyMember(memberId);
+            }
+        });
+    }
 
     // Initial render
     renderCurrentAccount();
-    renderFamilyMembers();
+    loadFamilyMembers();
 
     // Reveal animations
     const revealObserver = new IntersectionObserver((entries) => {

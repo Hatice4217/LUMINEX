@@ -323,7 +323,13 @@ export function setupHeader() {
         const langOptionsDropdown = langSwitcher.querySelector('.lang-options');
         const langOptions = langSwitcher.querySelectorAll('.lang-options li');
 
-        selectedLang.addEventListener('click', (e) => {
+        // Lang switcher container'ına tıklama olayı ekle
+        langSwitcher.addEventListener('click', (e) => {
+            // Eğer bir dil seçeneğine tıklandıysa, dropdown'ı kapat
+            if (e.target.closest('.lang-options li')) {
+                return; // Dil seçeneği için olay ayrı işleniyor
+            }
+
             e.stopPropagation();
             const isActive = langSwitcher.classList.toggle('active');
 
@@ -375,7 +381,6 @@ export function setupHeader() {
                 }
             }
         }
-    });
     });
 
     const mainLogoLink = document.getElementById('mainLogoLink');
@@ -600,6 +605,14 @@ export function setupHeader() {
             `;
         }
         dynamicSideMenu.innerHTML = menuHtml;
+
+        // Fallback menüyü gizle (dinamik menü yüklendi)
+        const fallbackSideMenu = document.getElementById('fallbackSideMenu');
+        if (fallbackSideMenu) {
+            fallbackSideMenu.style.display = 'none';
+            fallbackSideMenu.style.visibility = 'hidden';
+            fallbackSideMenu.style.opacity = '0';
+        }
     }
 
     updateActiveMenuItem();

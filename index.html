@@ -62,12 +62,12 @@
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "Merkez Mah. Sağlık Sok. No:123",
-        "addressLocality": "İstanbul",
+        "addressLocality": "Karaman",
         "addressCountry": "TR"
       },
       "contactPoint": {
         "@type": "ContactPoint",
-        "telephone": "+90-212-555-00-00",
+        "telephone": "+90-551-952-16-22",
         "contactType": "customer service",
         "availableLanguage": ["Turkish", "English"]
       }
@@ -114,8 +114,8 @@
                     <i class="fas fa-moon"></i>
                 </button>
 
-                <a href="login.html" class="btn btn-login" data-lang="login" aria-label="Giriş Yap">Giriş Yap</a>
-                <a href="register.html" class="btn btn-register" data-lang="register" aria-label="Kayıt Ol">Kayıt Ol</a>
+                <a href="login.html" class="btn btn-login" data-lang="login">Login</a>
+                <a href="register.html" class="btn btn-register" data-lang="register">Register</a>
             </div>
         </div>
     </nav>
@@ -703,19 +703,19 @@
             </div>
         </div>
 
-        <button id="scrollTopBtn" class="scroll-top-btn" title="Yukarı Çık"><i class="fas fa-arrow-up"></i></button>
+        <button id="scrollTopBtn" class="scroll-top-btn" title="Scroll to Top"><i class="fas fa-arrow-up"></i></button>
     </footer>
 
     <!-- Scripts -->
     <script src="js/language-manager.js"></script>
     <script>
-        // Dil switcher'ı başlat - language-manager.js yüklendikten sonra
+        // Initialize language switcher - after language-manager.js is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            // Dil switcher'ı manuel başlat
+            // Manually initialize language switcher
             if (window.initLanguageSwitcher) {
                 window.initLanguageSwitcher();
             }
-            // Kayıtlı dili ayarla
+            // Set saved language
             if (window.setLanguage) {
                 const savedLang = localStorage.getItem('language') || 'tr';
                 window.setLanguage(savedLang);
@@ -729,7 +729,7 @@
     <script src="js/socket-client.js"></script>
     <!-- SweetAlert: Enhanced Loading with Better Error Handling -->
     <script>
-        // SweetAlert'i sadece form varsa yükle (production-ready approach)
+        // Load SweetAlert only if form exists (production-ready approach)
         if (document.getElementById('contactForm')) {
             function loadSweetAlert() {
                 return new Promise((resolve, reject) => {

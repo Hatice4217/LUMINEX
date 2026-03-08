@@ -7,8 +7,51 @@ import {
 
 document.addEventListener('DOMContentLoaded', function() {
     setupHeader();
+
+    const elements = {
+        prescriptionsListContainer: document.getElementById('prescriptions-list'),
+        startDateInput: document.getElementById('startDate'),
+        endDateInput: document.getElementById('endDate'),
+        doctorInput: document.getElementById('doctor-search'),
+        applyFiltersBtn: document.getElementById('applyFilters'),
+        clearFiltersBtn: document.getElementById('clearFilters'),
+        activeFiltersContainer: document.getElementById('active-filters'),
+        statTotal: document.getElementById('statTotal'),
+        statActive: document.getElementById('statActive'),
+        statCompleted: document.getElementById('statCompleted'),
+        statExpired: document.getElementById('statExpired')
+    };
+
     function getSafeTranslation(key) {
         return window.getTranslation ? window.getTranslation(key) : key;
+    }
+
+    function createPill(text, key) {
+        const pill = document.createElement('div');
+        pill.className = 'filter-pill';
+        pill.innerHTML = `<span>${text}</span><span class="remove-pill" data-filter-key="${key}">&times;</span>`;
+        elements.activeFiltersContainer.appendChild(pill);
+    }
+
+    function updateStats(prescriptions) {
+        const now = new Date();
+        const total = prescriptions.length;
+        const active = prescriptions.filter(p => {
+            const expDate = p.expiryDate ? new Date(p.expiryDate) : new Date(p.date);
+            expDate.setDate(expDate.getDate() + 30);
+            return expDate > now;
+        }).length;
+        const completed = prescriptions.filter(p => {
+            const expDate = p.expiryDate ? new Date(p.expiryDate) : new Date(p.date);
+            expDate.setDate(expDate.getDate() + 30);
+            return expDate <= now;
+        }).length;
+        const expired = prescriptions.filter(p => p.status === 'expired' || p.status === 'Süresi Geçmiş').length;
+
+        if (elements.statTotal) elements.statTotal.textContent = total;
+        if (elements.statActive) elements.statActive.textContent = active;
+        if (elements.statCompleted) elements.statCompleted.textContent = completed;
+        if (elements.statExpired) elements.statExpired.textContent = expired;
     }
 
     function renderPrescriptions(prescriptions) {
@@ -121,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (filters.endDate) userPrescriptions = userPrescriptions.filter(p => p.date <= filters.endDate);
         if (filters.doctor) userPrescriptions = userPrescriptions.filter(p => p.doctorName.toLowerCase().includes(filters.doctor));
         
+        updateStats(allPrescriptions);
         renderPrescriptions(userPrescriptions);
         updateActiveFilterPills(filters);
     }
@@ -145,20 +189,6 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.activeFiltersContainer.style.display = hasFilters ? 'flex' : 'none';
     }
 
-    function createPill(text, key) {
-        const pill = document.createElement('div');
-        pill.className = 'filter-pill';
-        pill.innerHTML = `<span>${text}</span><span class="remove-pill" data-filter-key="${key}">&times;</span>`;
-        elements.activeFiltersContainer.appendChild(pill);
-    }
-    
-    if (elements.filterCardHeader) {
-        const filterCard = elements.filterCardHeader.closest('.filter-card');
-        elements.filterCardHeader.addEventListener('click', () => {
-            filterCard.classList.toggle('collapsed');
-        });
-    }
-
     if (elements.applyFiltersBtn) {
         elements.applyFiltersBtn.addEventListener('click', loadPrescriptions);
     }
@@ -171,24 +201,31 @@ document.addEventListener('DOMContentLoaded', function() {
             loadPrescriptions();
         });
     }
-    
-    elements.activeFiltersContainer.addEventListener('click', (e) => {
+
+    if (elements.activeFiltersContainer) {
+        elements.activeFiltersContainer.addEventListener('click', (e) => {
         if (e.target.classList.contains('remove-pill')) {
             const keyToRemove = e.target.dataset.filterKey;
-            if(elements[`${keyToRemove}Input`]) {
-                elements[`${keyToRemove}Input`].value = '';
+            const inputElement = elements[`${keyToRemove}Input`];
+            if (inputElement) {
+                inputElement.value = '';
             } else if (keyToRemove === 'doctor' && elements.doctorInput) {
                 elements.doctorInput.value = '';
             }
             loadPrescriptions();
         }
     });
+    }
 
-    [elements.startDateInput, elements.endDateInput, elements.doctorInput].forEach(input => {
-        if (input) {
-            input.addEventListener('input', loadPrescriptions);
-        }
-    });
+    if (elements.startDateInput) {
+        elements.startDateInput.addEventListener('input', loadPrescriptions);
+    }
+    if (elements.endDateInput) {
+        elements.endDateInput.addEventListener('input', loadPrescriptions);
+    }
+    if (elements.doctorInput) {
+        elements.doctorInput.addEventListener('input', loadPrescriptions);
+    }
     
     if (elements.prescriptionsListContainer) {
         elements.prescriptionsListContainer.addEventListener('click', (event) => {

@@ -1,4 +1,4 @@
-import { getActiveProfile, getLuminexAppointments, setLuminexAppointments, getLuminexUsers, getLocalStorageItem, setLocalStorageItem } from './utils/storage-utils.js';
+import { getActiveProfile, getLuminexAppointments, setLuminexAppointments, getLocalStorageItem, setLocalStorageItem, getDoctorDisplayName } from './utils/storage-utils.js';
 import { setupHeader } from './utils/header-manager.js';
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -6,16 +6,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const elements = {
         appointmentsListContainer: document.getElementById('appointments-list'),
-        startDateInput: document.getElementById('filter-start-date'),
-        endDateInput: document.getElementById('filter-end-date'),
-        doctorInput: document.getElementById('filter-doctor'),
-        statusInput: document.getElementById('filter-status'),
-        activeFiltersContainer: document.getElementById('active-filters-container'),
-        filterCardHeader: document.querySelector('.filter-card-header'),
-        filterCardBody: document.getElementById('filter-card-body'),
-        toggleFilterBtn: document.getElementById('toggle-filter-body'),
+        statusInput: document.getElementById('statusFilter') || { value: 'all' },
+        searchInput: document.getElementById('searchInput') || { value: '' },
         applyFiltersBtn: document.getElementById('applyFilters'),
-        clearFiltersBtn: document.getElementById('clearFilters')
+        clearFiltersBtn: document.getElementById('clearFilters'),
+        statTotal: document.getElementById('statTotal'),
+        statUpcoming: document.getElementById('statUpcoming'),
+        statCompleted: document.getElementById('statCompleted'),
+        statCancelled: document.getElementById('statCancelled')
     };
 
     function getSafeTranslation(key) {
@@ -51,14 +49,40 @@ document.addEventListener('DOMContentLoaded', function() {
         return key ? getSafeTranslation(key) : branchName;
     }
 
-    // --- REVEAL ANIMATIONS ---
-    const revealObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('active');
-            }
-        });
-    }, { threshold: 0.1 });
+    function updateStats(appointments) {
+        const now = new Date();
+
+        const total = appointments.length;
+        const upcoming = appointments.filter(app => {
+            const appDate = new Date(`${app.date}T${app.time}`);
+            return appDate >= now && app.status !== 'İptal Edildi';
+        }).length;
+        const completed = appointments.filter(app => {
+            const appDate = new Date(`${app.date}T${app.time}`);
+            return appDate < now || app.status === 'Tamamlandı';
+        }).length;
+        const cancelled = appointments.filter(app => app.status === 'İptal Edildi').length;
+
+        if (elements.statTotal) elements.statTotal.textContent = total;
+        if (elements.statUpcoming) elements.statUpcoming.textContent = upcoming;
+        if (elements.statCompleted) elements.statCompleted.textContent = completed;
+        if (elements.statCancelled) elements.statCancelled.textContent = cancelled;
+    }
+
+    function getStatusBadge(status, isPast) {
+        const statusMap = {
+            'Onaylandı': { class: 'confirmed', text: getSafeTranslation('statusApproved') },
+            'Tamamlandı': { class: 'completed', text: getSafeTranslation('statusPast') },
+            'İptal Edildi': { class: 'cancelled', text: getSafeTranslation('statusCancelled') },
+            'Beklemede': { class: 'pending', text: getSafeTranslation('statusWaiting') }
+        };
+
+        if (!status) {
+            return { class: isPast ? 'completed' : 'pending', text: isPast ? getSafeTranslation('statusPast') : getSafeTranslation('statusWaiting') };
+        }
+
+        return statusMap[status] || { class: 'pending', text: status };
+    }
 
     function renderAppointments(appointments) {
         elements.appointmentsListContainer.innerHTML = '';
@@ -67,67 +91,78 @@ document.addEventListener('DOMContentLoaded', function() {
         const dateLocale = currentLang === 'tr' ? 'tr-TR' : 'en-GB';
 
         if (!activeProfile) {
-            elements.appointmentsListContainer.innerHTML = `<p>${getSafeTranslation('loginToSeeReviews')}</p>`;
+            elements.appointmentsListContainer.innerHTML = `<div class="empty-state"><i class="fas fa-calendar-xmark"></i><h3>${getSafeTranslation('loginRequired')}</h3><p>${getSafeTranslation('loginToSeeAppointments')}</p></div>`;
             return;
         }
 
         if (appointments.length === 0) {
-            elements.appointmentsListContainer.innerHTML = `<div class="card no-results-card"><i class="fas fa-search"></i><p>${getSafeTranslation('noAppointmentsFound')}</p></div>`;
+            elements.appointmentsListContainer.innerHTML = `<div class="empty-state"><i class="fas fa-calendar-xmark"></i><h3>${getSafeTranslation('noAppointments')}</h3><p>${getSafeTranslation('noAppointmentsDesc')}</p><a href="doctors.html" class="btn btn-primary">${getSafeTranslation('bookAppointment')}</a></div>`;
             return;
         }
 
         const allRatings = getLocalStorageItem('doctorRatings') || [];
-        appointments.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(app => {
-            const appEl = document.createElement('div');
-            appEl.className = 'appointment-item reveal';
+
+        // Sort: upcoming first, then by date
+        appointments.sort((a, b) => {
+            const dateA = new Date(`${a.date}T${a.time}`);
+            const dateB = new Date(`${b.date}T${b.time}`);
+            return dateA - dateB;
+        });
+
+        appointments.forEach(app => {
             const now = new Date();
             const appDate = new Date(`${app.date}T${app.time}`);
             const isPast = appDate < now || app.status === 'Tamamlandı';
+            const isCancelled = app.status === 'İptal Edildi';
 
-            if (isPast) appEl.classList.add('past');
+            let cardClass = 'upcoming';
+            if (isPast && !isCancelled) cardClass = 'completed';
+            else if (isCancelled) cardClass = 'cancelled';
 
-            const displayDate = new Date(app.date).toLocaleDateString(dateLocale, { year: 'numeric', month: 'long', day: 'numeric' });
+            const dateObj = new Date(app.date);
+            const day = dateObj.getDate();
+            const monthName = dateObj.toLocaleDateString(dateLocale, { month: 'short' });
+
+            const statusBadge = getStatusBadge(app.status, isPast);
             const existingReview = allRatings.find(r => r.appointmentId === app.id);
 
             let actionsHtml = '';
-            if (isPast) {
-                actionsHtml += `<button class="btn btn-sm btn-secondary" data-action="details" data-id="${app.id}">${getSafeTranslation('details')}</button>`;
+            if (isCancelled) {
+                actionsHtml = '';
+            } else if (isPast) {
+                actionsHtml += `<button class="action-btn details" data-action="details" data-id="${app.id}" title="${getSafeTranslation('details')}"><i class="fas fa-info-circle"></i></button>`;
                 if (existingReview) {
-                    actionsHtml += `<button class="btn btn-sm btn-danger" data-action="delete-review" data-rating-id="${existingReview.id}">${getSafeTranslation('deleteReview')}</button>`;
+                    actionsHtml += `<button class="action-btn review" data-action="view-review" data-rating-id="${existingReview.id}" title="${getSafeTranslation('viewReview')}"><i class="fas fa-star"></i></button>`;
                 } else {
-                    actionsHtml += `<button class="btn btn-sm btn-success" data-action="review" data-id="${app.id}">${getSafeTranslation('evaluate') || 'Değerlendir'}</button>`;
+                    actionsHtml += `<button class="action-btn review" data-action="review" data-id="${app.id}" title="${getSafeTranslation('evaluate')}"><i class="fas fa-star"></i></button>`;
                 }
             } else {
-                actionsHtml = `
-                    <button class="btn btn-sm btn-info" data-action="calendar" data-id="${app.id}"><i class="fas fa-calendar-plus"></i> Takvime Ekle</button>
-                    <button class="btn btn-sm btn-warning" data-action="reschedule" data-id="${app.id}">${getSafeTranslation('reschedule') || 'Yeniden Planla'}</button>
-                    <button class="btn btn-sm btn-danger" data-action="cancel" data-id="${app.id}">${getSafeTranslation('cancelAppointment')}</button>
-                `;
+                actionsHtml += `<button class="action-btn calendar" data-action="calendar" data-id="${app.id}" title="${getSafeTranslation('addToCalendar')}"><i class="fas fa-calendar-plus"></i></button>`;
+                actionsHtml += `<button class="action-btn reschedule" data-action="reschedule" data-id="${app.id}" title="${getSafeTranslation('reschedule')}"><i class="fas fa-clock"></i></button>`;
+                actionsHtml += `<button class="action-btn cancel" data-action="cancel" data-id="${app.id}" title="${getSafeTranslation('cancelAppointment')}"><i class="fas fa-times"></i></button>`;
             }
 
-            const statusClass = (app.status === 'Onaylandı' || app.status === 'Tamamlandı') ? 'badge-success' : 'badge-warning';
-            
-            // Comprehensive status translation
-            let statusText = app.status;
-            if (app.status === 'İptal Edildi') statusText = getSafeTranslation('statusCancelled');
-            else if (app.status === 'Onaylandı') statusText = getSafeTranslation('statusApproved');
-            else if (app.status === 'Tamamlandı') statusText = getSafeTranslation('statusPast');
-            else if (!app.status) statusText = isPast ? getSafeTranslation('statusPast') : getSafeTranslation('statusWaiting');
-
-            const statusIcon = isPast ? '<i class="fas fa-check-circle" style="color: #2ecc71; margin-right: 8px;"></i>' : '';
+            const appEl = document.createElement('div');
+            appEl.className = `appointment-card ${cardClass}`;
+            appEl.dataset.id = app.id;
 
             appEl.innerHTML = `
-                <div class="appointment-details">
-                    <h3>${statusIcon}${translateBranch(app.branch)}</h3>
-                    <p><i class="fas fa-user-md"></i> Dr. ${app.doctor}</p>
-                    <p><i class="fas fa-calendar-alt"></i> ${displayDate} | <i class="fas fa-clock"></i> ${app.time}</p>
-                    ${app.healthInfo ? `<p class="health-info-display"><strong>${getSafeTranslation('healthInfo') || 'Sağlık Bilgisi'}:</strong> ${app.healthInfo}</p>` : ''}
-                    <p><strong>${getSafeTranslation('statusLabel') || 'Durum'}:</strong> <span class="badge ${statusClass}">${statusText}</span></p>
+                <div class="date-badge">
+                    <div class="day">${day}</div>
+                    <div class="month">${monthName}</div>
+                </div>
+                <div class="appointment-info">
+                    <h3>
+                        ${translateBranch(app.branch)}
+                        <span class="status-badge ${statusBadge.class}">${statusBadge.text}</span>
+                    </h3>
+                    <div class="doctor"><i class="fas fa-user-md"></i> ${getDoctorDisplayName(app.doctor)}</div>
+                    <div class="time"><i class="fas fa-clock"></i> ${app.time}</div>
                 </div>
                 <div class="appointment-actions">${actionsHtml}</div>
             `;
+
             elements.appointmentsListContainer.appendChild(appEl);
-            revealObserver.observe(appEl);
         });
     }
 
@@ -139,86 +174,55 @@ document.addEventListener('DOMContentLoaded', function() {
         let userAppointments = allAppointments.filter(app => app.patientTc === activeProfile.tc);
 
         const filters = {
-            startDate: elements.startDateInput.value,
-            endDate: elements.endDateInput.value,
-            doctor: elements.doctorInput.value.toLowerCase(),
-            status: elements.statusInput.value
+            status: elements.statusInput.value,
+            search: elements.searchInput.value.toLowerCase()
         };
 
-        if (filters.startDate) userAppointments = userAppointments.filter(app => app.date >= filters.startDate);
-        if (filters.endDate) userAppointments = userAppointments.filter(app => app.date <= filters.endDate);
-        if (filters.doctor) userAppointments = userAppointments.filter(app => app.doctor.toLowerCase().includes(filters.doctor));
-        
+        // Status filter
         if (filters.status === 'upcoming') {
-            userAppointments = userAppointments.filter(app => new Date(app.date) >= new Date() && app.status !== 'İptal Edildi');
+            userAppointments = userAppointments.filter(app => {
+                const appDate = new Date(`${app.date}T${app.time}`);
+                return appDate >= new Date() && app.status !== 'İptal Edildi';
+            });
         } else if (filters.status === 'past') {
-            userAppointments = userAppointments.filter(app => new Date(app.date) < new Date());
+            userAppointments = userAppointments.filter(app => {
+                const appDate = new Date(`${app.date}T${app.time}`);
+                return appDate < new Date() || app.status === 'Tamamlandı';
+            });
+        } else if (filters.status === 'cancelled') {
+            userAppointments = userAppointments.filter(app => app.status === 'İptal Edildi');
         }
 
+        // Search filter
+        if (filters.search) {
+            userAppointments = userAppointments.filter(app =>
+                app.doctor.toLowerCase().includes(filters.search) ||
+                app.branch.toLowerCase().includes(filters.search)
+            );
+        }
+
+        updateStats(allAppointments.filter(app => app.patientTc === activeProfile.tc));
         renderAppointments(userAppointments);
-        updateActiveFilterPills(filters);
     }
 
-    function updateActiveFilterPills(filters) {
-        elements.activeFiltersContainer.innerHTML = '';
-        let hasFilters = false;
-
-        if (filters.startDate) {
-            hasFilters = true;
-            createPill(`${getSafeTranslation('startDate')}: ${filters.startDate}`, 'startDate');
-        }
-        if (filters.endDate) {
-            hasFilters = true;
-            createPill(`${getSafeTranslation('endDate')}: ${filters.endDate}`, 'endDate');
-        }
-        if (filters.doctor) {
-            hasFilters = true;
-            createPill(`${getSafeTranslation('doctorLabel')}: "${filters.doctor}"`, 'doctor');
-        }
-        if (filters.status !== 'all') {
-            hasFilters = true;
-            const statusLabel = filters.status === 'upcoming' ? getSafeTranslation('statusUpcoming') : getSafeTranslation('statusPast');
-            createPill(`${getSafeTranslation('statusLabel') || 'Durum'}: ${statusLabel}`, 'status');
-        }
-
-        elements.activeFiltersContainer.style.display = hasFilters ? 'flex' : 'none';
-    }
-
-    function createPill(text, key) {
-        const pill = document.createElement('div');
-        pill.className = 'filter-pill';
-        pill.innerHTML = `<span>${text}</span><span class="remove-pill" data-filter-key="${key}">&times;</span>`;
-        elements.activeFiltersContainer.appendChild(pill);
-    }
-
-    if (elements.filterCardHeader) {
-        const filterCard = elements.filterCardHeader.closest('.filter-card');
-        elements.filterCardHeader.addEventListener('click', (e) => {
-            if (e.target.closest('.filter-form-compact')) return;
-            filterCard.classList.toggle('collapsed');
-        });
-    }
-
+    // Event Listeners
     if (elements.applyFiltersBtn) elements.applyFiltersBtn.addEventListener('click', loadAppointments);
+
     if (elements.clearFiltersBtn) {
         elements.clearFiltersBtn.addEventListener('click', () => {
-            elements.startDateInput.value = '';
-            elements.endDateInput.value = '';
-            elements.doctorInput.value = '';
-            elements.statusInput.value = 'all';
+            if (elements.statusInput) elements.statusInput.value = 'all';
+            if (elements.searchInput) elements.searchInput.value = '';
             loadAppointments();
         });
     }
 
-    elements.activeFiltersContainer.addEventListener('click', (e) => {
-        if (e.target.classList.contains('remove-pill')) {
-            const key = e.target.dataset.filterKey;
-            if (key === 'status') elements.statusInput.value = 'all';
-            else if (elements[`${key}Input`]) elements[`${key}Input`].value = '';
-            loadAppointments();
-        }
-    });
+    if (elements.searchInput) {
+        elements.searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') loadAppointments();
+        });
+    }
 
+    // Button Actions
     document.addEventListener('click', function(event) {
         const button = event.target.closest('button[data-action]');
         if (!button) return;
@@ -227,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const appointmentId = button.dataset.id;
         const allAppointments = getLuminexAppointments();
         const appointment = allAppointments.find(app => String(app.id) === String(appointmentId));
-        
+
         if (!appointment) return;
 
         if (action === 'cancel') {
@@ -236,68 +240,59 @@ document.addEventListener('DOMContentLoaded', function() {
                 text: getSafeTranslation('confirmCancelText'),
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
+                confirmButtonColor: '#e74c3c',
+                cancelButtonColor: '#3085d6',
                 confirmButtonText: getSafeTranslation('yesCancel'),
-                cancelButtonText: getSafeTranslation('noStay')
+                cancelButtonText: getSafeTranslation('noStay'),
+                customClass: { confirmButton: 'btn-danger', cancelButton: 'btn-primary' }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    let allApps = getLuminexAppointments();
-                    const appIndex = allApps.findIndex(app => String(app.id) === String(appointmentId));
+                    const appIndex = allAppointments.findIndex(app => String(app.id) === String(appointmentId));
                     if (appIndex !== -1) {
-                        allApps[appIndex].status = 'İptal Edildi';
-                        setLuminexAppointments(allApps);
+                        allAppointments[appIndex].status = 'İptal Edildi';
+                        setLuminexAppointments(allAppointments);
                         loadAppointments();
                         Swal.fire(getSafeTranslation('cancelledTitle'), getSafeTranslation('cancelledText'), 'success');
                     }
                 }
             });
         } else if (action === 'reschedule') {
-            const branchName = button.closest('.appointment-item').dataset.branchName || appointment.branch;
-            window.location.href = `appointment.html?reschedule=true&appointmentId=${appointmentId}&branchName=${encodeURIComponent(branchName)}`;
+            window.location.href = `appointment.html?reschedule=true&appointmentId=${appointmentId}&branchName=${encodeURIComponent(appointment.branch)}`;
         } else if (action === 'details') {
             const displayDate = new Date(appointment.date).toLocaleDateString(localStorage.getItem('language') || 'tr-TR', { year: 'numeric', month: 'long', day: 'numeric' });
             Swal.fire({
-                title: '',
+                title: getSafeTranslation('appointmentDetails'),
                 html: `
-                    <div class="swal-patient-header" style="margin-bottom: 15px;">
-                        <div class="swal-patient-avatar"><i class="fas fa-calendar-check"></i></div>
-                        <div class="swal-patient-info">
-                            <h3>${getSafeTranslation('appointmentDetails')}</h3>
-                            <span>Dr. ${appointment.doctor}</span>
-                        </div>
-                    </div>
-                    <div class="swal-details-grid">
-                        <div class="swal-detail-item">
-                            <span class="swal-detail-label">${getSafeTranslation('branchSelection')}</span>
-                            <span class="swal-detail-value">${appointment.branch}</span>
-                        </div>
-                        <div class="swal-detail-item">
-                            <span class="swal-detail-label">${getSafeTranslation('dateLabel')}</span>
-                            <span class="swal-detail-value">${displayDate}</span>
-                        </div>
-                        <div class="swal-detail-item">
-                            <span class="swal-detail-label">${getSafeTranslation('timeLabel')}</span>
-                            <span class="swal-detail-value">${appointment.time}</span>
-                        </div>
-                         <div class="swal-detail-item">
-                            <span class="swal-detail-label">${getSafeTranslation('statusLabel')}</span>
-                            <span class="swal-detail-value">${appointment.status}</span>
-                        </div>
-                        ${appointment.healthInfo ? `<div class="swal-detail-full"><strong>${getSafeTranslation('healthInfo')}</strong><p>${appointment.healthInfo}</p></div>` : ''}
+                    <div style="text-align: left; font-family: 'Poppins', sans-serif;">
+                        <p style="margin-bottom: 12px;"><strong style="color: #001F6B;">${getSafeTranslation('branchSelection')}:</strong> ${translateBranch(appointment.branch)}</p>
+                        <p style="margin-bottom: 12px;"><strong style="color: #001F6B;">${getSafeTranslation('doctorLabel')}:</strong> ${getDoctorDisplayName(appointment.doctor)}</p>
+                        <p style="margin-bottom: 12px;"><strong style="color: #001F6B;">${getSafeTranslation('dateLabel')}:</strong> ${displayDate}</p>
+                        <p style="margin-bottom: 12px;"><strong style="color: #001F6B;">${getSafeTranslation('timeLabel')}:</strong> ${appointment.time}</p>
+                        <p style="margin-bottom: 0;"><strong style="color: #001F6B;">${getSafeTranslation('statusLabel')}:</strong> <span style="color: ${appointment.status === 'İptal Edildi' ? '#e74c3c' : '#2ecc71'}">${appointment.status || getSafeTranslation('statusWaiting')}</span></p>
+                        ${appointment.healthInfo ? `<p style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee;"><strong style="color: #001F6B;">${getSafeTranslation('healthInfo')}:</strong><br><span style="color: #64748b;">${appointment.healthInfo}</span></p>` : ''}
                     </div>
                 `,
-                customClass: { popup: 'swal-premium-details' }
+                confirmButtonText: getSafeTranslation('close'),
+                confirmButtonColor: '#001F6B'
             });
         } else if (action === 'review') {
             Swal.fire({
-                title: `${getSafeTranslation('evaluate')} Dr. ${appointment.doctor}`,
+                title: `${getSafeTranslation('evaluate')} ${getDoctorDisplayName(appointment.doctor)}`,
                 html: `
-                    <div id="star-rating" class="star-rating" style="font-size: 2.5rem; margin-bottom: 25px; cursor: pointer;">
-                        <i class="fas fa-star" data-value="1"></i><i class="fas fa-star" data-value="2"></i><i class="fas fa-star" data-value="3"></i><i class="fas fa-star" data-value="4"></i><i class="fas fa-star" data-value="5"></i>
+                    <div id="star-rating" style="font-size: 2rem; margin-bottom: 20px; cursor: pointer;">
+                        <i class="fas fa-star" data-value="1" style="color: #ddd;"></i>
+                        <i class="fas fa-star" data-value="2" style="color: #ddd;"></i>
+                        <i class="fas fa-star" data-value="3" style="color: #ddd;"></i>
+                        <i class="fas fa-star" data-value="4" style="color: #ddd;"></i>
+                        <i class="fas fa-star" data-value="5" style="color: #ddd;"></i>
                     </div>
-                    <textarea id="review-comment" class="form-control" style="min-height: 120px;" placeholder="${getSafeTranslation('yourMessage')}"></textarea>
+                    <textarea id="review-comment" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: 'Poppins', sans-serif; resize: vertical;" rows="4" placeholder="${getSafeTranslation('yourMessage')}"></textarea>
                 `,
-                customClass: { popup: 'swal-premium-details' },
+                confirmButtonText: getSafeTranslation('submit'),
+                cancelButtonText: getSafeTranslation('cancel'),
+                showCancelButton: true,
+                confirmButtonColor: '#001F6B',
+                cancelButtonColor: '#64748b',
                 didOpen: () => {
                     const stars = document.querySelectorAll('#star-rating .fa-star');
                     stars.forEach(star => {
@@ -318,12 +313,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 preConfirm: () => {
                     const rating = document.getElementById('star-rating').dataset.rating;
                     if (!rating) {
-                        Swal.showValidationMessage('Lütfen yıldıza tıklayarak puan verin.');
+                        Swal.showValidationMessage(getSafeTranslation('pleaseRate'));
                         return false;
                     }
                     return { rating: parseInt(rating), comment: document.getElementById('review-comment').value };
-                },
-                showCancelButton: true
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
                     const activeProfile = getActiveProfile();
@@ -340,12 +334,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     };
                     allRatings.push(newRating);
                     setLocalStorageItem('doctorRatings', allRatings);
-                    Swal.fire('Teşekkürler!', 'Değerlendirmeniz alındı.', 'success');
+                    Swal.fire(getSafeTranslation('thankYou'), getSafeTranslation('reviewSubmitted'), 'success');
                     loadAppointments();
                 }
             });
+        } else if (action === 'calendar') {
+            const appDate = new Date(`${appointment.date}T${appointment.time}`);
+            const title = `Randevu: ${getDoctorDisplayName(appointment.doctor)} - ${translateBranch(appointment.branch)}`;
+            const location = 'LUMINEX Hastanesi';
+
+            // Create Google Calendar link
+            const startDate = appDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            const endDate = new Date(appDate.getTime() + 60 * 60 * 1000).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent('Sağlık randevunuz')}&location=${encodeURIComponent(location)}`;
+
+            window.open(googleCalendarUrl, '_blank');
         }
     });
 
+    // Initial load
     loadAppointments();
 });

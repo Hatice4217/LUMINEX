@@ -76,107 +76,107 @@
                     <h1 data-lang="kvkkMainHeader">🔐 KVKK AYDINLATMA METNİ</h1>
                 </div>
                 
-                <div class="legal-tabs-wrapper">
-                    <aside class="legal-tabs-nav">
-                        <button class="tab-btn active" onclick="openTab(event, 'intro')">
-                            <i class="fas fa-info-circle"></i> Genel Bilgilendirme
+                <div class=”legal-tabs-wrapper”>
+                    <aside class=”legal-tabs-nav”>
+                        <button class=”tab-btn active” onclick=”openTab(event, 'intro')” data-lang=”tabIntro”>
+                            <i class=”fas fa-info-circle”></i> <span data-lang=”tabIntro”>Genel Bilgilendirme</span>
                         </button>
-                        <button class="tab-btn" onclick="openTab(event, 'data')">
-                            <i class="fas fa-database"></i> Toplanan Veriler
+                        <button class=”tab-btn” onclick=”openTab(event, 'data')” data-lang=”tabData”>
+                            <i class=”fas fa-database”></i> <span data-lang=”tabData”>Toplanan Veriler</span>
                         </button>
-                        <button class="tab-btn" onclick="openTab(event, 'articles')">
-                            <i class="fas fa-gavel"></i> Hukuki Maddeler
+                        <button class=”tab-btn” onclick=”openTab(event, 'articles')” data-lang=”tabArticles”>
+                            <i class=”fas fa-gavel”></i> <span data-lang=”tabArticles”>Hukuki Maddeler</span>
                         </button>
-                        <button class="tab-btn" onclick="openTab(event, 'purpose')">
-                            <i class="fas fa-tasks"></i> İşleme ve Paylaşım
+                        <button class=”tab-btn” onclick=”openTab(event, 'purpose')” data-lang=”tabPurpose”>
+                            <i class=”fas fa-tasks”></i> <span data-lang=”tabPurpose”>İşleme ve Paylaşım</span>
                         </button>
                     </aside>
 
-                    <div class="legal-content">
+                    <div class=”legal-content”>
                         <!-- Intro -->
-                        <div id="intro" class="legal-content-pane active">
-                            <h2>Veri Güvenliğinde Şeffaf Dönem</h2>
-                            <p>LUMINEX Sağlık Teknolojileri A.Ş. olarak, verilerinizin korunmasını bir yasal zorunluluktan öte, kullanıcılarımıza karşı en temel insani ve etik sorumluluğumuz olarak görüyoruz. 6698 Sayılı Kişisel Verilerin Korunması Kanunu (“KVKK”) uyarınca, "Veri Sorumlusu" sıfatıyla hareket ederek, tüm dijital operasyonlarımızı en yüksek güvenlik standartlarına göre kurgulamaktayız.</p>
-                            <p>Platformumuz üzerinden aldığınız her hizmette (randevu, tahlil takibi, AI triyaj vb.), verilerinizin hangi hukuki dayanaklarla işlendiğini, kimlerle paylaşıldığını ve bu veriler üzerindeki mutlak kontrol haklarınızı bu metin aracılığıyla beyan ediyoruz.</p>
-                            <div class="article-block">
-                                <h3 class="article-title">Kurumsal Kimlik ve İletişim</h3>
-                                <p><strong>Veri Sorumlusu:</strong> LUMINEX Sağlık Teknolojileri Anonim Şirketi</p>
-                                <p><strong>Hukuki Adres:</strong> Merkez Mah. Sağlık Sok. No:123, Kat:12, Şişli, İstanbul</p>
-                                <p><strong>KVKK İletişim Hattı:</strong> kvkk@luminex.com.tr</p>
-                                <p><strong>Denetim Makamı:</strong> Kişisel Verileri Koruma Kurumu (KVKK) - Ankara</p>
+                        <div id=”intro” class=”legal-content-pane active”>
+                            <h2 data-lang=”dataSecurityTitle”>Veri Güvenliğinde Şeffaf Dönem</h2>
+                            <p data-lang=”dataSecurityText1”>LUMINEX Sağlık Teknolojileri A.Ş. olarak, verilerinizin korunmasını bir yasal zorunluluktan öte, kullanıcılarımıza karşı en temel insani ve etik sorumluluğumuz olarak görüyoruz. 6698 Sayılı Kişisel Verilerin Korunması Kanunu (“KVKK”) uyarınca, “Veri Sorumlusu” sıfatıyla hareket ederek, tüm dijital operasyonlarımızı en yüksek güvenlik standartlarına göre kurgulamaktayız.</p>
+                            <p data-lang=”dataSecurityText2”>Platformumuz üzerinden aldığınız her hizmette (randevu, tahlil takibi, AI triyaj vb.), verilerinizin hangi hukuki dayanaklarla işlendiğini, kimlerle paylaşıldığını ve bu veriler üzerindeki mutlak kontrol haklarınızı bu metin aracılığıyla beyan ediyoruz.</p>
+                            <div class=”article-block”>
+                                <h3 class=”article-title” data-lang=”corporateIdentity”>Kurumsal Kimlik ve İletişim</h3>
+                                <p><strong data-lang=”dataControllerLabel”>Veri Sorumlusu:</strong> <span data-lang=”dataControllerValue”>LUMINEX Sağlık Teknolojileri Anonim Şirketi</span></p>
+                                <p><strong data-lang=”legalAddressLabel”>Hukuki Adres:</strong> <span data-lang=”legalAddressValue”>Merkez Mah. Sağlık Sok. No:123, Kat:12, Şişli, İstanbul</span></p>
+                                <p><strong data-lang=”kvkkContactLineLabel”>KVKK İletişim Hattı:</strong> <span data-lang=”kvkkContactLineValue”>kvkk@luminex.com.tr</span></p>
+                                <p><strong data-lang=”auditAuthorityLabel”>Denetim Makamı:</strong> <span data-lang=”auditAuthorityValue”>Kişisel Verileri Koruma Kurumu (KVKK) - Ankara</span></p>
                             </div>
-                            <p>LUMINEX, veri işleme süreçlerinde "Sınırlı Süreli Saklama" ve "Açık Rıza" prensiplerine sadık kalarak, dijital sağlık ekosisteminde güven inşa etmeyi hedeflemektedir.</p>
+                            <p data-lang=”dataPrinciples”>LUMINEX, veri işleme süreçlerinde “Sınırlı Süreli Saklama” ve “Açık Rıza” prensiplerine sadık kalarak, dijital sağlık ekosisteminde güven inşa etmeyi hedeflemektedir.</p>
                         </div>
 
                         <!-- Data Detailed -->
-                        <div id="data" class="legal-content-pane">
-                            <h2>Veri Envanterimiz ve Kategoriler</h2>
-                            <p>Hizmet kalitemizi artırmak ve size kesintisiz bir sağlık serüveni sunmak adına işlediğimiz veriler şu kategorilere ayrılmaktadır:</p>
-                            
-                            <div class="data-grid">
-                                <div class="article-block">
-                                    <h3 class="article-title"><i class="fas fa-id-badge"></i> Kimlik & İletişim</h3>
-                                    <p>Ad-soyad, T.C. Kimlik Numarası (Sağlık Bakanlığı sistemleri ile doğrulama için), doğum tarihi, cinsiyet, telefon numarası ve güncel e-posta adresiniz.</p>
+                        <div id=”data” class=”legal-content-pane”>
+                            <h2 data-lang=”dataInventoryTitle”>Veri Envanterimiz ve Kategoriler</h2>
+                            <p data-lang=”dataInventoryText”>Hizmet kalitemizi artırmak ve size kesintisiz bir sağlık serüveni sunmak adına işlediğimiz veriler şu kategorilere ayrılmaktadır:</p>
+
+                            <div class=”data-grid”>
+                                <div class=”article-block”>
+                                    <h3 class=”article-title”><i class=”fas fa-id-badge”></i> <span data-lang=”identityContact”>Kimlik & İletişim</span></h3>
+                                    <p data-lang=”identityContactText”>Ad-soyad, T.C. Kimlik Numarası (Sağlık Bakanlığı sistemleri ile doğrulama için), doğum tarihi, cinsiyet, telefon numarası ve güncel e-posta adresiniz.</p>
                                 </div>
-                                <div class="article-block">
-                                    <h3 class="article-title"><i class="fas fa-heartbeat"></i> Özel Nitelikli Sağlık Verileri</h3>
-                                    <p>Geçmiş tanı ve tedavi kayıtları, laboratuvar sonuçları, radyolojik görüntüler, semptom geçmişi ve doktorlarınızın sizin için oluşturduğu notlar.</p>
+                                <div class=”article-block”>
+                                    <h3 class=”article-title”><i class=”fas fa-heartbeat”></i> <span data-lang=”healthData”>Özel Nitelikli Sağlık Verileri</span></h3>
+                                    <p data-lang=”healthDataText”>Geçmiş tanı ve tedavi kayıtları, laboratuvar sonuçları, radyolojik görüntüler, semptom geçmişi ve doktorlarınızın sizin için oluşturduğu notlar.</p>
                                 </div>
-                                <div class="article-block">
-                                    <h3 class="article-title"><i class="fas fa-user-lock"></i> İşlem Güvenliği</h3>
-                                    <p>Kullanıcı adı, şifre özetleri (hash), IP adresi, giriş-çıkış logları ve platform içinde gerçekleştirilen tüm işlemlerin zaman damgalı kayıtları.</p>
+                                <div class=”article-block”>
+                                    <h3 class=”article-title”><i class=”fas fa-user-lock”></i> <span data-lang=”operationSecurity”>İşlem Güvenliği</span></h3>
+                                    <p data-lang=”operationSecurityText”>Kullanıcı adı, şifre özetleri (hash), IP adresi, giriş-çıkış logları ve platform içinde gerçekleştirilen tüm işlemlerin zaman damgalı kayıtları.</p>
                                 </div>
-                                <div class="article-block">
-                                    <h3 class="article-title"><i class="fas fa-cookie"></i> Teknik ve Çerez Verileri</h3>
-                                    <p>Kullandığınız cihazın işletim sistemi, tarayıcı türü, ekran çözünürlüğü ve platform içi kullanım alışkanlıklarını gösteren anonim veriler.</p>
+                                <div class=”article-block”>
+                                    <h3 class=”article-title”><i class=”fas fa-cookie”></i> <span data-lang=”technicalCookies”>Teknik ve Çerez Verileri</span></h3>
+                                    <p data-lang=”technicalCookiesText”>Kullandığınız cihazın işletim sistemi, tarayıcı türü, ekran çözünürlüğü ve platform içi kullanım alışkanlıklarını gösteren anonim veriler.</p>
                                 </div>
                             </div>
-                            <p style="margin-top: 20px;">Bu veriler, "Veri Minimizasyonu" ilkesi gereği, sadece ilgili hizmetin sunulması için gerekli olduğu ölçüde toplanmaktadır.</p>
+                            <p style=”margin-top: 20px;” data-lang=”dataMinimization”>Bu veriler, “Veri Minimizasyonu” ilkesi gereği, sadece ilgili hizmetin sunulması için gerekli olduğu ölçüde toplanmaktadır.</p>
                         </div>
 
                         <!-- Articles Consolidated -->
-                        <div id="articles" class="legal-content-pane">
-                            <h2>Hukuki Dayanak ve Temel Maddeler</h2>
-                            <p>Tüm veri işleme faaliyetlerimiz, KVKK'nın 5, 6 ve 11. maddeleri tarafından çizilen sınırlar dahilinde gerçekleştirilir:</p>
+                        <div id=”articles” class=”legal-content-pane”>
+                            <h2 data-lang=”legalBasis”>Hukuki Dayanak ve Temel Maddeler</h2>
+                            <p data-lang=”legalBasisText”>Tüm veri işleme faaliyetlerimiz, KVKK'nın 5, 6 ve 11. maddeleri tarafından çizilen sınırlar dahilinde gerçekleştirilir:</p>
 
-                            <div class="article-block">
-                                <div class="article-title"><i class="fas fa-balance-scale"></i> Madde 5: Genel İşleme Şartları</div>
-                                <p>Kişisel verileriniz; kanunlarda açıkça öngörülmesi, bir sözleşmenin kurulması (Randevu oluşturma) ve veri sorumlusunun hukuki yükümlülüklerini yerine getirebilmesi için meşru menfaatler çerçevesinde işlenir.</p>
+                            <div class=”article-block”>
+                                <div class=”article-title”><i class=”fas fa-balance-scale”></i> <span data-lang=”article5”>Madde 5: Genel İşleme Şartları</span></div>
+                                <p data-lang=”article5Text”>Kişisel verileriniz; kanunlarda açıkça öngörülmesi, bir sözleşmenin kurulması (Randevu oluşturma) ve veri sorumlusunun hukuki yükümlülüklerini yerine getirebilmesi için meşru menfaatler çerçevesinde işlenir.</p>
                             </div>
 
-                            <div class="article-block">
-                                <div class="article-title"><i class="fas fa-notes-medical"></i> Madde 6: Sağlık Verileri (Özel Nitelikli)</div>
-                                <p>Sağlık verileriniz, Kanun'un öngördüğü üzere sadece kamu sağlığının korunması, tıbbi teşhis, tedavi ve bakım hizmetlerinin yürütülmesi amacıyla, sır saklama yükümlülüğü altındaki uzmanlar tarafından işlenmektedir.</p>
+                            <div class=”article-block”>
+                                <div class=”article-title”><i class=”fas fa-notes-medical”></i> <span data-lang=”article6”>Madde 6: Sağlık Verileri (Özel Nitelikli)</span></div>
+                                <p data-lang=”article6Text”>Sağlık verileriniz, Kanun'un öngördüğü üzere sadece kamu sağlığının korunması, tıbbi teşhis, tedavi ve bakım hizmetlerinin yürütülmesi amacıyla, sır saklama yükümlülüğü altındaki uzmanlar tarafından işlenmektedir.</p>
                             </div>
 
-                            <div class="article-block">
-                                <div class="article-title"><i class="fas fa-user-check"></i> Madde 11: Veri Sahibi Hakları</div>
-                                <p>Her kullanıcımız; verilerinin silinmesini isteme, yanlış verilerin düzeltilmesini talep etme, verilerin işlenmesine itiraz etme ve herhangi bir zarara uğraması durumunda tazminat talep etme haklarına sahiptir.</p>
+                            <div class=”article-block”>
+                                <div class=”article-title”><i class=”fas fa-user-check”></i> <span data-lang=”article11”>Madde 11: Veri Sahibi Hakları</span></div>
+                                <p data-lang=”article11Text”>Her kullanıcımız; verilerinin silinmesini isteme, yanlış verilerin düzeltilmesini talep etme, verilerin işlenmesine itiraz etme ve herhangi bir zarara uğraması durumunda tazminat talep etme haklarına sahiptir.</p>
                             </div>
                         </div>
 
                         <!-- Purpose and Transfer Detailed -->
-                        <div id="purpose" class="legal-content-pane">
-                            <h2>Veri İşleme Amaçları ve Aktarım Protokolü</h2>
-                            <p>Verileriniz, LUMINEX ekosisteminin "Akıllı ve Güvenli" çalışabilmesi için şu stratejik amaçlarla işlenir:</p>
+                        <div id=”purpose” class=”legal-content-pane”>
+                            <h2 data-lang=”processingPurposeTitle”>Veri İşleme Amaçları ve Aktarım Protokolü</h2>
+                            <p data-lang=”processingPurposeText”>Verileriniz, LUMINEX ekosisteminin “Akıllı ve Güvenli” çalışabilmesi için şu stratejik amaçlarla işlenir:</p>
                             <ul>
-                                <li><strong>Hizmet İfası:</strong> Randevu takviminizin oluşturulması, hekiminizle olan iletişim köprüsünün kurulması ve tıbbi raporlarınızın dijital olarak arşivlenmesi.</li>
-                                <li><strong>AI Algoritma Geliştirme:</strong> Şikayetlerinizden branş öneren yapay zeka modellerimizin, tıbbi doğruluğunu anonim veriler üzerinden artırmak.</li>
-                                <li><strong>Yasal Uyumluluk:</strong> Sağlık Bakanlığı'nın HMS (Hasta Yönetim Sistemi) protokollerine ve mali mevzuatlara tam uyum sağlamak.</li>
-                                <li><strong>Sistem Güvenliği:</strong> Platforma yönelik yetkisiz erişimlerin engellenmesi ve siber güvenliğin maksimize edilmesi.</li>
+                                <li><strong data-lang=”serviceProvision”>Hizmet İfası:</strong> <span data-lang=”serviceProvisionText”>Randevu takviminizin oluşturulması, hekiminizle olan iletişim köprüsünün kurulması ve tıbbi raporlarınızın dijital olarak arşivlenmesi.</span></li>
+                                <li><strong data-lang=”algorithmDev”>AI Algoritma Geliştirme:</strong> <span data-lang=”algorithmDevText”>Şikayetlerinizden branş öneren yapay zeka modellerimizin, tıbbi doğruluğunu anonim veriler üzerinden artırmak.</span></li>
+                                <li><strong data-lang=”legalCompliance”>Yasal Uyumluluk:</strong> <span data-lang=”legalComplianceText”>Sağlık Bakanlığı'nın HMS (Hasta Yönetim Sistemi) protokollerine ve mali mevzuatlara tam uyum sağlamak.</span></li>
+                                <li><strong data-lang=”systemSecurity”>Sistem Güvenliği:</strong> <span data-lang=”systemSecurityText”>Platforma yönelik yetkisiz erişimlerin engellenmesi ve siber güvenliğin maksimize edilmesi.</span></li>
                             </ul>
-                            
-                            <h3 style="margin-top: 30px; color: var(--accent-color);">Veri Aktarımı (Kiminle Paylaşıyoruz?)</h3>
-                            <p>LUMINEX, verilerinizi asla üçüncü taraflara ticari bir meta olarak satmaz. Veri aktarımı sadece şu paydaşlarla sınırlıdır:</p>
-                            <div class="article-block">
+
+                            <h3 style=”margin-top: 30px; color: var(--accent-color);” data-lang=”dataTransferTitle”>Veri Aktarımı (Kiminle Paylaşıyoruz?)</h3>
+                            <p data-lang=”dataTransferText”>LUMINEX, verilerinizi asla üçüncü taraflara ticari bir meta olarak satmaz. Veri aktarımı sadece şu paydaşlarla sınırlıdır:</p>
+                            <div class=”article-block”>
                                 <ul>
-                                    <li>Randevu aldığınız ilgili uzman doktorlar ve sağlık kuruluşları,</li>
-                                    <li>Teknik altyapı hizmeti aldığımız güvenli bulut sağlayıcıları (Sadece veri saklama amaçlı),</li>
-                                    <li>Yasal bir talep olması durumunda adli makamlar ve Sağlık Bakanlığı yetkilileri.</li>
+                                    <li data-lang=”dataTransferItem1”>Randevu aldığınız ilgili uzman doktorlar ve sağlık kuruluşları,</li>
+                                    <li data-lang=”dataTransferItem2”>Teknik altyapı hizmeti aldığımız güvenli bulut sağlayıcıları (Sadece veri saklama amaçlı),</li>
+                                    <li data-lang=”dataTransferItem3”>Yasal bir talep olması durumunda adli makamlar ve Sağlık Bakanlığı yetkilileri.</li>
                                 </ul>
                             </div>
-                            <div class="legal-footer">
-                                <p>🛡️ LUMINEX ile sağlığınız da verileriniz de güvence altındadır.</p>
+                            <div class=”legal-footer”>
+                                <p data-lang=”legalFooterNote”>🛡️ LUMINEX ile sağlığınız da verileriniz de güvence altındadır.</p>
                             </div>
                         </div>
                     </div>

@@ -326,35 +326,152 @@ export const initialLuminexPrescriptions = [
         id: 'pres_default_1',
         doctorName: 'Dr. Ayşe Yılmaz',
         date: '2023-11-15',
+        expiryDate: '2023-12-15',
         medications: [
-            { name: 'Parol 500 mg', dosage: 'Günde 2 kez', duration: '5 gün' },
-            { name: 'Augmentin BID 1000 mg', dosage: 'Günde 2 kez', duration: '7 gün' }
+            {
+                name: 'Parol 500 mg',
+                dosage: 'Günde 2 kez',
+                duration: '5 gün',
+                instructions: 'Yemekten sonra, bol su ile alın.',
+                stock: true
+            },
+            {
+                name: 'Augmentin BID 1000 mg',
+                dosage: 'Günde 2 kez',
+                duration: '7 gün',
+                instructions: 'Aç karnından içebilirsiniz.',
+                stock: true
+            }
         ],
-        notes: 'Boğaz ağrısı ve yüksek ateş şikayetiyle başvurdu.',
-        status: 'Onaylandı',
-        diagnosis: 'Akut Tonsillit' // Yeni eklendi
+        notes: 'Boğaz ağrısı ve yüksek ateş şikayetiyle başvurdu. İlaç alırken alkol kullanmayın.',
+        status: 'active',
+        diagnosis: 'Akut Tonsillit',
+        diagnosisCode: 'J03.9',
+        doctorBranch: 'Kardiyoloji',
+        doctorHospital: 'LUMINEX Hastanesi',
+        pharmacyName: 'Eczacı Güler Eczanesi',
+        pharmacyAddress: 'Bağdat Caddesi No: 123, İstanbul',
+        pharmacyPhone: '+90 212 345 67 89',
+        prescriptionNumber: 'REC-2023-001',
+        refillCount: 0,
+        maxRefills: 2,
+        hasRefill: true,
+        qrCode: 'REC2023001',
+        prescriptionType: 'Normal',
+        usageWarnings: ['Araç kullanma', 'Aşırı doz aşmayın', 'Hafifas araç kullanmayın']
     },
     {
         id: 'pres_default_2',
         doctorName: 'Dr. Mehmet Öz',
         date: '2023-10-20',
+        expiryDate: '2023-11-20',
         medications: [
-            { name: 'İbuprofen 400 mg', dosage: 'Günde 3 kez', duration: '3 gün' }
+            {
+                name: 'İbuprofen 400 mg',
+                dosage: 'Günde 3 kez',
+                duration: '3 gün',
+                instructions: 'Yemekten sonra, bol su ile alın.',
+                stock: true
+            }
         ],
-        notes: 'Kas ağrısı şikayetiyle başvurdu.',
-        status: 'Onaylandı',
-        diagnosis: 'Miyalji' // Yeni eklendi
+        notes: 'Kas ağrısı şikayetiyle başvurdu. İlaç alırken sulama yapabilirsiniz.',
+        status: 'active',
+        diagnosis: 'Miyalji',
+        diagnosisCode: 'M54.5',
+        doctorBranch: 'Dahiliye',
+        doctorHospital: 'LUMINEX Hastanesi',
+        pharmacyName: 'Nobel Eczanesi',
+        pharmacyAddress: 'Beşiktaş Caddesi No: 45, Ankara',
+        pharmacyPhone: '+90 312 987 65 43',
+        prescriptionNumber: 'REC-2023-002',
+        refillCount: 1,
+        maxRefills: 2,
+        hasRefill: false,
+        qrCode: 'REC2023002',
+        prescriptionType: 'Normal',
+        usageWarnings: ['Bol su ile alın', 'Yemekten 30 dakika önce alın']
     },
     {
         id: 'pres_default_3',
         doctorName: 'Dr. Elif Güneş',
         date: '2023-09-01',
+        expiryDate: '2023-10-01',
         medications: [
-            { name: 'Amoklavin 1000 mg', dosage: 'Günde 2 kez', duration: '10 gün' },
-            { name: 'Prednol 16 mg', dosage: 'Günde 1 kez', duration: '5 gün' }
+            {
+                name: 'Amoklavin 1000 mg',
+                dosage: 'Günde 2 kez',
+                duration: '10 gün',
+                instructions: 'Aç karnından içebilirsiniz. Günlük kullanın.',
+                stock: false
+            },
+            {
+                name: 'Prednol 16 mg',
+                dosage: 'Günde 1 kez',
+                duration: '5 gün',
+                instructions: 'Akşam yatmadan alın.',
+                stock: true
+            }
         ],
-        notes: 'Kulak enfeksiyonu tanısı kondu.',
-        status: 'Onaylandı',
-        diagnosis: 'Otitis Media' // Yeni eklendi
+        notes: 'Kulak enfeksiyonu tanısı kondu. Antibiyotik etkin olduğu için tüm ilacı bitirin.',
+        status: 'completed',
+        diagnosis: 'Otitis Media',
+        diagnosisCode: 'H66.9',
+        doctorBranch: 'Kulak Burun Boğaz',
+        doctorHospital: 'LUMINEX Hastanesi',
+        pharmacyName: 'Sağlık Eczanesi',
+        pharmacyAddress: 'İzmir Caddesi No: 78, İzmir',
+        pharmacyPhone: '+90 232 654 32 10',
+        prescriptionNumber: 'REC-2023-003',
+        refillCount: 0,
+        maxRefills: 2,
+        hasRefill: false,
+        qrCode: 'REC2023003',
+        prescriptionType: 'Normal',
+        usageWarnings: ['Güneş koruyun', 'Sütektin günde kullanın']
+    },
+    {
+        id: 'pres_default_4',
+        doctorName: 'Dr. Can Kaya',
+        date: '2023-12-05',
+        expiryDate: '2024-01-05',
+        medications: [
+            {
+                name: 'Metformin 850 mg',
+                dosage: 'Günde 2 kez',
+                duration: '30 gün',
+                instructions: 'Yemekten 30 dk sonra alın. Düzenli kullanın.',
+                stock: true
+            },
+            {
+                name: 'Sitagliptin 50 mg',
+                dosage: 'Günde 2 kez',
+                duration: '30 gün',
+                instructions: 'Yemekten 30 dk sonra alın.',
+                stock: true
+            },
+            {
+                name: 'Glimepirid 4 mg',
+                dosage: 'Akşam 1 kez',
+                duration: 'Sürekli',
+                instructions: 'Uyku saat sabah aynı saatte alın.',
+                stock: true
+            }
+        ],
+        notes: 'Diyabet yönetimi için. Düzenli kullanmak önemlidir.',
+        status: 'active',
+        diagnosis: 'Tip 2 Diabetes Mellitus',
+        diagnosisCode: 'E11.9',
+        doctorBranch: 'Endokrinoloji',
+        doctorHospital: 'LUMINEX Hastanesi',
+        pharmacyName: 'Güneş Eczanesi',
+        pharmacyAddress: 'Ankara Caddesi No: 234, Ankara',
+        pharmacyPhone: '+90 312 543 21 98',
+        prescriptionNumber: 'REC-2023-004',
+        refillCount: 0,
+        maxRefills: 2,
+        hasRefill: true,
+        qrCode: 'REC2024001',
+        prescriptionType: 'Kronik',
+        usageWarnings: ['Kan şekeri kontrolü', 'Düzenli kullanın', 'Aşırı doz aşmayın']
     }
 ];

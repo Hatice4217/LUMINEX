@@ -8,9 +8,9 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dark-mode.css">
     <link rel="stylesheet" href="css/skeleton.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <script>
         try {
@@ -20,293 +20,490 @@
         } catch (e) {}
     </script>
     <style>
-        .feedback-container {
-            max-width: 1200px;
-            margin: 0 auto;
+        /* Modern Feedback Page Styles */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #001F6B 0%, #003B8E 100%);
+            --accent-gradient: linear-gradient(135deg, #78C7C7 0%, #5BA8A8 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --card-shadow: 0 10px 40px rgba(0, 31, 107, 0.08);
+            --hover-shadow: 0 20px 60px rgba(0, 31, 107, 0.15);
         }
 
-        .feedback-grid {
+        .feedback-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
-            margin-bottom: 30px;
         }
 
-        @media (max-width: 768px) {
-            .feedback-grid {
+        @media (max-width: 992px) {
+            .feedback-container {
                 grid-template-columns: 1fr;
             }
         }
 
+        /* Feedback Form Card */
         .feedback-form-card {
-            background: var(--white-color);
-            border-radius: 20px;
-            padding: 30px;
-            border: 1px solid var(--border-color);
+            background: var(--glass-bg);
+            border-radius: 24px;
+            padding: 35px;
+            border: 1px solid rgba(0, 31, 107, 0.08);
+            position: relative;
+            overflow: hidden;
         }
 
-        .feedback-form-card h2 {
-            margin: 0 0 25px 0;
-            color: var(--text-color);
+        .feedback-form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-gradient);
+        }
+
+        .card-header {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
+            margin-bottom: 30px;
         }
 
-        .feedback-form-card h2 i {
-            color: var(--primary-color);
+        .card-header-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #001F6B;
+            margin: 0;
+            line-height: 1.3;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--text-color);
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
         }
 
         .form-control,
         .form-select {
             width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            background: var(--input-bg);
-            color: var(--text-color);
+            padding: 16px 18px;
+            border: 2px solid rgba(0, 31, 107, 0.1);
+            border-radius: 14px;
+            background: white;
+            color: #001F6B;
             font-size: 0.95rem;
-            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
         }
 
         .form-control:focus,
         .form-select:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+            border-color: #78C7C7;
+            box-shadow: 0 0 0 4px rgba(120, 199, 199, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: #94a3b8;
         }
 
         textarea.form-control {
-            min-height: 120px;
+            min-height: 140px;
             resize: vertical;
         }
 
+        /* Feedback Type Buttons */
         .feedback-type-buttons {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .feedback-type-btn {
-            padding: 15px;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            background: var(--white-color);
-            color: var(--text-color);
+            padding: 18px;
+            border: 2px solid rgba(0, 31, 107, 0.1);
+            border-radius: 16px;
+            background: white;
+            color: #64748b;
             cursor: pointer;
             font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 10px;
         }
 
+        .feedback-type-btn i {
+            font-size: 1.4rem;
+            transition: all 0.3s ease;
+        }
+
         .feedback-type-btn:hover {
-            border-color: var(--primary-color);
-            background: rgba(var(--primary-color-rgb), 0.05);
+            border-color: #78C7C7;
+            background: rgba(120, 199, 199, 0.05);
+            color: #78C7C7;
+        }
+
+        .feedback-type-btn:hover i {
+            transform: scale(1.15);
         }
 
         .feedback-type-btn.active {
-            border-color: var(--primary-color);
-            background: var(--primary-color);
+            border-color: #78C7C7;
+            background: var(--accent-gradient);
             color: white;
         }
 
+        .feedback-type-btn.active i {
+            transform: scale(1.15);
+        }
+
+        /* Type-specific colors for active state */
+        .feedback-type-btn[data-type="compliment"].active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .feedback-type-btn[data-type="complaint"].active {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .feedback-type-btn[data-type="suggestion"].active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .feedback-type-btn[data-type="question"].active {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        /* Rating Stars */
         .rating-stars {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
             margin: 20px 0;
         }
 
         .rating-star {
             font-size: 2rem;
-            color: #dfe4ea;
+            color: #e2e8f0;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
 
-        .rating-star:hover,
+        .rating-star:hover {
+            color: #fcd34d;
+            transform: scale(1.15);
+        }
+
         .rating-star.active {
-            color: #ffb800;
-            transform: scale(1.1);
+            color: #fbbf24;
         }
 
+        /* Submit Button */
         .btn-submit-feedback {
             width: 100%;
-            padding: 15px;
-            background: var(--primary-color);
+            padding: 18px 28px;
+            background: var(--primary-gradient);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
+            box-shadow: 0 8px 25px rgba(0, 31, 107, 0.25);
         }
 
         .btn-submit-feedback:hover {
-            background: var(--primary-color-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(var(--primary-color-rgb), 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 31, 107, 0.35);
         }
 
+        .btn-submit-feedback:active {
+            transform: translateY(-1px);
+        }
+
+        /* Feedback History Card */
         .feedback-history-card {
-            background: var(--white-color);
-            border-radius: 20px;
-            padding: 30px;
-            border: 1px solid var(--border-color);
-        }
-
-        .feedback-history-card h2 {
-            margin: 0 0 25px 0;
-            color: var(--text-color);
+            background: var(--glass-bg);
+            border-radius: 24px;
+            padding: 35px;
+            border: 1px solid rgba(0, 31, 107, 0.08);
+            max-height: calc(100vh - 200px);
             display: flex;
-            align-items: center;
-            gap: 12px;
+            flex-direction: column;
         }
 
-        .feedback-history-card h2 i {
-            color: var(--primary-color);
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
         }
 
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: rgba(0, 31, 107, 0.05);
+            border-radius: 10px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: rgba(120, 199, 199, 0.3);
+            border-radius: 10px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(120, 199, 199, 0.5);
+        }
+
+        /* Feedback Item */
         .feedback-item {
-            background: var(--input-bg);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s;
+            background: rgba(0, 31, 107, 0.03);
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(0, 31, 107, 0.06);
+            transition: all 0.3s ease;
         }
 
         .feedback-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            transform: translateY(-4px);
+            box-shadow: var(--card-shadow);
+            border-color: rgba(120, 199, 199, 0.2);
         }
 
         .feedback-item-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
+            align-items: flex-start;
+            margin-bottom: 14px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        .feedback-item-type {
+        .feedback-type-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 14px;
-            border-radius: 20px;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .feedback-type-badge.compliment {
+            background: rgba(16, 185, 129, 0.15);
+            color: #059669;
+        }
+
+        .feedback-type-badge.complaint {
+            background: rgba(239, 68, 68, 0.15);
+            color: #dc2626;
+        }
+
+        .feedback-type-badge.suggestion {
+            background: rgba(59, 130, 246, 0.15);
+            color: #2563eb;
+        }
+
+        .feedback-type-badge.question {
+            background: rgba(245, 158, 11, 0.15);
+            color: #d97706;
+        }
+
+        .feedback-date {
             font-size: 0.8rem;
+            color: #94a3b8;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+        }
+
+        .feedback-content h4 {
+            margin: 0 0 10px 0;
+            color: #001F6B;
+            font-size: 1.05rem;
             font-weight: 600;
         }
 
-        .feedback-item-type.compliment {
-            background: #d4edda;
-            color: #28a745;
-        }
-
-        .feedback-item-type.complaint {
-            background: #f8d7da;
-            color: #dc3545;
-        }
-
-        .feedback-item-type.suggestion {
-            background: #d1ecf1;
-            color: #17a2b8;
-        }
-
-        .feedback-item-type.question {
-            background: #fff3cd;
-            color: #ffc107;
-        }
-
-        .feedback-item-date {
-            font-size: 0.8rem;
-            color: var(--text-light);
-        }
-
-        .feedback-item-content h4 {
-            margin: 0 0 8px 0;
-            color: var(--text-color);
-            font-size: 1rem;
-        }
-
-        .feedback-item-content p {
-            margin: 0 0 12px 0;
-            color: var(--text-light);
+        .feedback-content p {
+            margin: 0 0 14px 0;
+            color: #64748b;
             font-size: 0.9rem;
-            line-height: 1.5;
+            line-height: 1.6;
+            font-family: 'Inter', sans-serif;
         }
 
-        .feedback-item-footer {
+        .feedback-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 12px;
-            border-top: 1px solid var(--border-color);
+            padding-top: 14px;
+            border-top: 1px solid rgba(0, 31, 107, 0.08);
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .feedback-item-rating {
+        .feedback-rating {
             display: flex;
-            gap: 3px;
+            gap: 4px;
         }
 
-        .feedback-item-rating i {
+        .feedback-rating i {
             font-size: 0.9rem;
-            color: #ffb800;
+            color: #fbbf24;
         }
 
-        .feedback-item-status {
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.75rem;
+        .feedback-status {
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
             font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .feedback-item-status.pending {
-            background: #fff3cd;
-            color: #ffc107;
+        .feedback-status.pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: #d97706;
         }
 
-        .feedback-item-status.resolved {
-            background: #d4edda;
-            color: #28a745;
+        .feedback-status.resolved {
+            background: rgba(16, 185, 129, 0.15);
+            color: #059669;
         }
 
-        .feedback-item-status.rejected {
-            background: #f8d7da;
-            color: #dc3545;
+        .feedback-status.rejected {
+            background: rgba(239, 68, 68, 0.15);
+            color: #dc2626;
         }
 
+        /* Empty State */
         .empty-feedback-state {
             text-align: center;
-            padding: 60px 20px;
-            color: var(--text-light);
+            padding: 60px 30px;
+            color: #94a3b8;
         }
 
         .empty-feedback-state i {
             font-size: 4rem;
-            opacity: 0.2;
+            color: rgba(0, 31, 107, 0.1);
             margin-bottom: 20px;
+        }
+
+        .empty-feedback-state h3 {
+            color: #001F6B;
+            margin: 0 0 8px 0;
+            font-size: 1.2rem;
+        }
+
+        .empty-feedback-state p {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* Dark Mode */
+        body.theme-dark :root {
+            --glass-bg: rgba(30, 41, 59, 0.9);
+            --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            --hover-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        body.theme-dark .feedback-form-card,
+        body.theme-dark .feedback-history-card {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: rgba(120, 199, 199, 0.15);
+        }
+
+        body.theme-dark .card-header h2,
+        body.theme-dark .feedback-content h4,
+        body.theme-dark .empty-feedback-state h3 {
+            color: #f1f5f9;
+        }
+
+        body.theme-dark .form-group label {
+            color: #cbd5e1;
+        }
+
+        body.theme-dark .form-control,
+        body.theme-dark .form-select {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: rgba(120, 199, 199, 0.2);
+            color: #f1f5f9;
+        }
+
+        body.theme-dark .form-control:focus,
+        body.theme-dark .form-select:focus {
+            border-color: #78C7C7;
+        }
+
+        body.theme-dark .form-control::placeholder {
+            color: #64748b;
+        }
+
+        body.theme-dark .feedback-type-btn {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: rgba(120, 199, 199, 0.2);
+            color: #94a3b8;
+        }
+
+        body.theme-dark .feedback-type-btn:hover {
+            background: rgba(120, 199, 199, 0.1);
+            border-color: #78C7C7;
+            color: #78C7C7;
+        }
+
+        body.theme-dark .rating-star {
+            color: rgba(120, 199, 199, 0.3);
+        }
+
+        body.theme-dark .feedback-item {
+            background: rgba(15, 23, 42, 0.6);
+            border-color: rgba(120, 199, 199, 0.1);
+        }
+
+        body.theme-dark .feedback-item:hover {
+            border-color: rgba(120, 199, 199, 0.3);
+        }
+
+        body.theme-dark .feedback-content p {
+            color: #94a3b8;
+        }
+
+        body.theme-dark .empty-feedback-state i {
+            color: rgba(120, 199, 199, 0.2);
         }
     </style>
 </head>
@@ -314,22 +511,58 @@
     <div class="dashboard-container">
         <header class="top-bar">
             <div class="logo">
-                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" style="display: flex; align-items: center; gap: 2px; margin-left: -30px;">
-                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); -webkit-mask: url(clean-logo.png) no-repeat center / contain; mask: url(clean-logo.png) no-repeat center / contain; display: inline-block;"></div>
-                    <span style="font-family: 'Exo 2', sans-serif; font-size: 2.5rem; font-weight: 700; color: #001F6B; letter-spacing: 1px;">LUMINEX</span>
+                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" class="logo-link">
+                    <span class="logo-text">LUMINEX</span>
                 </a>
             </div>
             <div class="user-info">
-                <span id="welcomeMessage"></span>
-                <div class="icons">
-                    <i id="themeToggleButton" class="fas fa-moon"></i>
-                    <div class="notification-wrapper" style="position: relative; display: inline-block;">
-                        <i class="fas fa-bell" style="cursor: pointer;"></i>
-                        <span class="notification-badge" style="display: none; position: absolute; top: -8px; right: -8px; background: #ff4757; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; align-items: center; justify-content: center; font-weight: bold; border: 2px solid var(--white-color);"></span>
-                        <div class="notification-dropdown dropdown" style="position: absolute; top: 100%; right: 0; width: 320px; background: var(--white-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; z-index: 1000; flex-direction: column; overflow: hidden; margin-top: 15px;"></div>
+                <span id="welcomeMessage" class="welcome-text"></span>
+                <div class="top-bar-actions">
+                    <!-- Dil Switcher -->
+                    <div class="lang-switcher">
+                        <button type="button" class="selected-lang">
+                            <img src="https://flagcdn.com/tr.svg" alt="TR Flag">
+                            <span>Türkçe</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <ul class="lang-options">
+                            <li data-lang="tr"><img src="https://flagcdn.com/tr.svg" alt="TR Flag"> Türkçe</li>
+                            <li data-lang="en"><img src="https://flagcdn.com/gb.svg" alt="GB Flag"> English</li>
+                        </ul>
                     </div>
-                    <i class="fas fa-cog"></i>
-                    <i id="logoutButton" class="fas fa-sign-out-alt"></i>
+                    <button id="themeToggleButton" class="top-bar-btn" title="Tema Değiştir">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="notification-wrapper" style="position: relative !important; display: inline-block !important;">
+                        <button class="top-bar-btn" title="Bildirimler" style="position: relative !important;">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                        <span class="notification-badge" style="
+                            position: absolute !important;
+                            top: -6px !important;
+                            right: -6px !important;
+                            z-index: 100 !important;
+                            background: linear-gradient(135deg, #ff4757, #ff6b7a) !important;
+                            color: white !important;
+                            border-radius: 50% !important;
+                            width: 18px !important;
+                            height: 18px !important;
+                            display: flex !important;
+                            justify-content: center !important;
+                            align-items: center !important;
+                            font-size: 10px !important;
+                            font-weight: bold !important;
+                            border: 2px solid white !important;
+                            pointer-events: none !important;
+                        ">4</span>
+                        <div class="notification-dropdown dropdown"></div>
+                    </div>
+                    <button class="top-bar-btn" onclick="window.location.href='profile-settings.html'" title="Ayarlar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button id="logoutButton" class="top-bar-btn" title="Çıkış Yap">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
                 </div>
             </div>
         </header>
@@ -337,7 +570,7 @@
         <div class="main-wrapper">
             <aside class="side-menu">
                 <ul id="dynamicSideMenu">
-                    <!-- header-manager.js will fill this -->
+                    <!-- Dinamik menü öğeleri buraya yüklenecek -->
                 </ul>
                 <!-- Yedek menü -->
                 <ul id="fallbackSideMenu" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
@@ -349,7 +582,7 @@
                     <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Ödemeler & Faturalar</span></a></li>
                     <li><a href="family-accounts.html"><i class="fas fa-users"></i> <span>Bağlı Hesaplar</span></a></li>
                     <li><a href="my-reviews.html"><i class="fas fa-star"></i> <span>Değerlendirmelerim</span></a></li>
-                    <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> <span>Geri Bildirim</span></a></li>
+                    <li><a href="feedback.html" class="active"><i class="fas fa-comment-dots"></i> <span>Geri Bildirim</span></a></li>
                     <li><a href="contact.html"><i class="fas fa-headset"></i> <span>İletişim / Destek</span></a></li>
                 </ul>
                 <div class="sidebar-toggle-wrapper">
@@ -364,72 +597,80 @@
                 <h1 data-lang="feedbackTitle" class="reveal">Geri Bildirim / Şikayet</h1>
 
                 <div class="feedback-container reveal">
-                    <div class="feedback-grid">
-                        <!-- Feedback Form -->
-                        <div class="feedback-form-card">
-                            <h2><i class="fas fa-paper-plane"></i> <span data-lang="submitFeedback">Geri Bildirim Gönder</span></h2>
-
-                            <form id="feedbackForm">
-                                <div class="form-group">
-                                    <label data-lang="feedbackType">Geri Bildirim Türü</label>
-                                    <div class="feedback-type-buttons">
-                                        <button type="button" class="feedback-type-btn" data-type="compliment">
-                                            <i class="fas fa-heart"></i>
-                                            <span data-lang="feedbackTypeCompliment">Övgü</span>
-                                        </button>
-                                        <button type="button" class="feedback-type-btn" data-type="complaint">
-                                            <i class="fas fa-exclamation-triangle"></i>
-                                            <span data-lang="feedbackTypeComplaint">Şikayet</span>
-                                        </button>
-                                        <button type="button" class="feedback-type-btn" data-type="suggestion">
-                                            <i class="fas fa-lightbulb"></i>
-                                            <span data-lang="feedbackTypeSuggestion">Öneri</span>
-                                        </button>
-                                        <button type="button" class="feedback-type-btn" data-type="question">
-                                            <i class="fas fa-question-circle"></i>
-                                            <span data-lang="feedbackTypeQuestion">Soru</span>
-                                        </button>
-                                    </div>
-                                    <input type="hidden" id="feedbackType" value="">
-                                </div>
-
-                                <div class="form-group">
-                                    <label data-lang="feedbackSubject">Konu</label>
-                                    <input type="text" id="feedbackSubject" class="form-control" placeholder="Geri bildiriminizin konusu...">
-                                </div>
-
-                                <div class="form-group">
-                                    <label data-lang="feedbackRating">Değerlendirme Puanı</label>
-                                    <div class="rating-stars" id="ratingStars">
-                                        <i class="fas fa-star rating-star" data-rating="1"></i>
-                                        <i class="fas fa-star rating-star" data-rating="2"></i>
-                                        <i class="fas fa-star rating-star" data-rating="3"></i>
-                                        <i class="fas fa-star rating-star" data-rating="4"></i>
-                                        <i class="fas fa-star rating-star" data-rating="5"></i>
-                                    </div>
-                                    <input type="hidden" id="feedbackRating" value="5">
-                                </div>
-
-                                <div class="form-group">
-                                    <label data-lang="feedbackMessage">Mesajınız</label>
-                                    <textarea id="feedbackMessage" class="form-control" placeholder="Geri bildiriminizi detaylıca yazın..."></textarea>
-                                </div>
-
-                                <button type="submit" class="btn-submit-feedback">
-                                    <i class="fas fa-paper-plane"></i>
-                                    <span data-lang="submitFeedback">Geri Bildirim Gönder</span>
-                                </button>
-                            </form>
+                    <!-- Feedback Form -->
+                    <div class="feedback-form-card">
+                        <div class="card-header">
+                            <div class="card-header-icon">
+                                <i class="fas fa-paper-plane"></i>
+                            </div>
+                            <h2 data-lang="submitFeedback">Geri Bildirim Gönder</h2>
                         </div>
 
-                        <!-- Feedback History -->
-                        <div class="feedback-history-card">
-                            <h2><i class="fas fa-history"></i> <span data-lang="feedbackHistory">Geri Bildirim Geçmişi</span></h2>
-                            <div id="feedbackHistoryList">
-                                <div class="skeleton-feedback">
-                                    <div class="skeleton" style="height: 100px; margin-bottom: 15px;"></div>
-                                    <div class="skeleton" style="height: 100px; margin-bottom: 15px;"></div>
+                        <form id="feedbackForm">
+                            <div class="form-group">
+                                <label data-lang="feedbackType">Geri Bildirim Türü</label>
+                                <div class="feedback-type-buttons">
+                                    <button type="button" class="feedback-type-btn" data-type="compliment">
+                                        <i class="fas fa-heart"></i>
+                                        <span data-lang="feedbackTypeCompliment">Övgü</span>
+                                    </button>
+                                    <button type="button" class="feedback-type-btn" data-type="complaint">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <span data-lang="feedbackTypeComplaint">Şikayet</span>
+                                    </button>
+                                    <button type="button" class="feedback-type-btn" data-type="suggestion">
+                                        <i class="fas fa-lightbulb"></i>
+                                        <span data-lang="feedbackTypeSuggestion">Öneri</span>
+                                    </button>
+                                    <button type="button" class="feedback-type-btn" data-type="question">
+                                        <i class="fas fa-question-circle"></i>
+                                        <span data-lang="feedbackTypeQuestion">Soru</span>
+                                    </button>
                                 </div>
+                                <input type="hidden" id="feedbackType" value="">
+                            </div>
+
+                            <div class="form-group">
+                                <label data-lang="feedbackSubject">Konu</label>
+                                <input type="text" id="feedbackSubject" class="form-control" placeholder="Geri bildiriminizin konusu...">
+                            </div>
+
+                            <div class="form-group">
+                                <label data-lang="feedbackRating">Değerlendirme Puanı</label>
+                                <div class="rating-stars" id="ratingStars">
+                                    <i class="fas fa-star rating-star" data-rating="1"></i>
+                                    <i class="fas fa-star rating-star" data-rating="2"></i>
+                                    <i class="fas fa-star rating-star" data-rating="3"></i>
+                                    <i class="fas fa-star rating-star" data-rating="4"></i>
+                                    <i class="fas fa-star rating-star" data-rating="5"></i>
+                                </div>
+                                <input type="hidden" id="feedbackRating" value="5">
+                            </div>
+
+                            <div class="form-group">
+                                <label data-lang="feedbackMessage">Mesajınız</label>
+                                <textarea id="feedbackMessage" class="form-control" placeholder="Geri bildiriminizi detaylıca yazın..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn-submit-feedback">
+                                <i class="fas fa-paper-plane"></i>
+                                <span data-lang="submitFeedback">Geri Bildirim Gönder</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Feedback History -->
+                    <div class="feedback-history-card">
+                        <div class="card-header">
+                            <div class="card-header-icon">
+                                <i class="fas fa-history"></i>
+                            </div>
+                            <h2 data-lang="feedbackHistory">Geri Bildirim Geçmişi</h2>
+                        </div>
+                        <div id="feedbackHistoryList" class="history-list">
+                            <div class="skeleton-feedback">
+                                <div class="skeleton" style="height: 100px; margin-bottom: 15px;"></div>
+                                <div class="skeleton" style="height: 100px; margin-bottom: 15px;"></div>
                             </div>
                         </div>
                     </div>
@@ -439,7 +680,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-    <script src="js/language-manager.js"></script>
+    <script type="module" src="js/language-manager.js"></script>
     <script type="module" src="js/user-session.js"></script>
     <script type="module" src="js/utils/header-manager.js"></script>
     <script type="module" src="js/feedback.js"></script>

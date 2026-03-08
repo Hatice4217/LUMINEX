@@ -74,8 +74,8 @@ document.addEventListener('DOMContentLoaded', function() {
         let tickets = getLuminexTickets();
         if (!tickets || tickets.length === 0) {
             tickets = [
-                { id: 'TK-1042', user: 'Ahmet Yılmaz', userId: 'guest', avatarBg: 'linear-gradient(135deg, #6c5ce7, #a29bfe)', subject: 'Randevu İptali Sorunu', preview: 'Yarınki kardiyoloji randevumu iptal etmeye çalışıyorum fakat sistem hata veriyor.', date: '28 Kas, 10:30', status: 'open', priority: 'high' },
-                { id: 'TK-1041', user: 'Zeynep Kaya', userId: 'guest', avatarBg: 'linear-gradient(135deg, #fd79a8, #e17055)', subject: 'E-Reçete Görüntüleme', preview: 'Son muayenemdeki ilaçlarımı sistemde göremiyorum. Yardımcı olur musunuz?', date: '27 Kas, 16:15', status: 'closed', priority: 'medium' }
+                { id: 'TK-1042', user: 'Ahmet Yilmaz', userId: 'guest', avatarBg: 'linear-gradient(135deg, #6c5ce7, #a29bfe)', subject: 'Appointment Cancellation Issue', preview: 'I am trying to cancel my cardiology appointment for tomorrow but the system is giving an error.', date: '28 Nov, 10:30', status: 'open', priority: 'high' },
+                { id: 'TK-1041', user: 'Zeynep Kaya', userId: 'guest', avatarBg: 'linear-gradient(135deg, #fd79a8, #e17055)', subject: 'E-Prescription Viewing', preview: 'I cannot see my medications from my last examination. Can you help me?', date: '27 Nov, 16:15', status: 'closed', priority: 'medium' }
             ];
             setLuminexTickets(tickets);
         }
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="ticket-body"><span class="ticket-subject">${t.subject}</span><p class="ticket-preview">${t.preview}</p></div>
                     <div class="ticket-footer">
-                        <span class="status-pill status-${t.status}">${t.status === 'open' ? 'Açık' : 'Kapalı'}</span>
+                        <span class="status-pill status-${t.status}">${t.status === 'open' ? window.getTranslation('statusOpen') : window.getTranslation('statusClosed')}</span>
                         <div style="display: flex; gap: 8px;">
                             <button class="btn-footer-action btn-reply" onclick="window.replyTicket('${t.id}')"><i class="fas fa-reply"></i></button>
                             <button class="btn-footer-action btn-delete" onclick="window.deleteTicket('${t.id}')"><i class="fas fa-trash"></i></button>
@@ -143,31 +143,61 @@ document.addEventListener('DOMContentLoaded', function() {
 
             elements.faqAccordion.querySelectorAll('.faq-question').forEach(q => {
                 q.addEventListener('click', () => {
-                    const item = q.parentElement;
+                    const item = q.closest('.faq-item');
                     const isActive = item.classList.contains('active');
+                    // Close all
                     elements.faqAccordion.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+                    // Open clicked if it wasn't active
                     if (!isActive) item.classList.add('active');
                 });
             });
         }
 
-        // Contact Form Subject Dropdown
-        const subjects = [
-            { group: window.getTranslation('categoryAppointment'), options: [window.getTranslation('appointmentEvent'), window.getTranslation('reschedule'), window.getTranslation('bookAppointmentQuick')] },
-            { group: window.getTranslation('categorySystem'), options: [window.getTranslation('login'), window.getTranslation('contentLoadError'), window.getTranslation('profile')] },
-            { group: window.getTranslation('other'), options: [window.getTranslation('genericInfo'), window.getTranslation('corporate')] }
-        ];
+        // Custom Dropdown
+        const customSelectInput = document.getElementById('contactSubject');
+        const customDropdown = document.getElementById('subjectDropdown');
 
-        const subjectInput = document.getElementById('contactSubject');
-        const subjectPanel = document.getElementById('contactSubjectPanel');
+        if (customSelectInput && customDropdown) {
+            customSelectInput.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent bubbling to document
+                const wrapper = customSelectInput.closest('.custom-select-wrapper');
+                const isOpen = wrapper.classList.contains('open');
 
-        if (subjectInput && subjectPanel) {
-            setupCustomDropdown({
-                input: subjectInput,
-                panel: subjectPanel,
-                items: subjects,
-                onSelect: (item) => { subjectInput.value = item.name; },
-                isGrouped: true
+                if (isOpen) {
+                    // Close it
+                    wrapper.classList.remove('open');
+                    customDropdown.classList.remove('visible');
+                } else {
+                    // Open it
+                    wrapper.classList.add('open');
+                    customDropdown.classList.add('visible');
+                }
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!customSelectInput.closest('.custom-select-wrapper').contains(e.target)) {
+                    customSelectInput.closest('.custom-select-wrapper').classList.remove('open');
+                    customDropdown.classList.remove('visible');
+                }
+            });
+
+            // Option click
+            customDropdown.querySelectorAll('.dropdown-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const value = option.dataset.value;
+                    customSelectInput.value = option.textContent.trim();
+                    customSelectInput.dataset.value = value;
+
+                    // Update selected state
+                    customDropdown.querySelectorAll('.dropdown-option').forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+
+                    // Close dropdown
+                    customSelectInput.closest('.custom-select-wrapper').classList.remove('open');
+                    customDropdown.classList.remove('visible');
+                });
             });
         }
 
@@ -180,8 +210,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const subjectInput = document.getElementById('contactSubject');
                 const messageInput = document.getElementById('contactMessage');
 
-                // Basic validation
-                if (!subjectInput.value.trim() || !messageInput.value.trim()) {
+                // Basic validation - check dataset value
+                const subjectValue = subjectInput.dataset.value || subjectInput.value.trim();
+                const messageValue = messageInput.value.trim();
+
+                if (!subjectValue || !messageValue) {
                     displayAlert(window.getTranslation('fillAllFields'), 'error', 'fas fa-exclamation-triangle');
                     return; // Stop form submission
                 }
@@ -210,6 +243,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         confirmButtonColor: 'var(--primary-color)'
                     });
                     elements.contactForm.reset();
+                    // Reset custom select
+                    const subjectInput = document.getElementById('contactSubject');
+                    subjectInput.value = 'Seçiniz...';
+                    subjectInput.dataset.value = '';
+                    const wrapper = subjectInput.closest('.custom-select-wrapper');
+                    wrapper.classList.remove('open');
+                    document.getElementById('subjectDropdown').classList.remove('visible');
+                    document.querySelectorAll('.dropdown-option').forEach(o => o.classList.remove('selected'));
                 } catch (error) {
                     console.error('Error sending message:', error);
                     Swal.fire({
@@ -288,15 +329,15 @@ function setupCustomDropdown(config) {
 }
 
 // Admin window functions
-window.replyTicket = (id) => Swal.fire('Yanıtla', `Talep No: ${id}`, 'info');
+window.replyTicket = (id) => Swal.fire(window.getTranslation('reply'), `${window.getTranslation('ticketNo')}: ${id}`, 'info');
 window.deleteTicket = (id) => {
     Swal.fire({
-        title: 'Emin misiniz?',
-        text: 'Bu talep silinecektir!',
+        title: window.getTranslation('confirmTitle'),
+        text: window.getTranslation('deleteTicketText'),
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ff7675'
     }).then(res => {
-        if(res.isConfirmed) Swal.fire('Silindi!', '', 'success');
+        if(res.isConfirmed) Swal.fire(window.getTranslation('deleted'), '', 'success');
     });
 };

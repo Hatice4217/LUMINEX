@@ -271,90 +271,90 @@ function generateInitialDepartments(hospitals) {
 
 export function getLuminexUsers() {
     const defaultDoctors = [
-        { id: 'drkardiyo1', name: 'Dr. Ayşe Yılmaz', branch: 'Kardiyoloji', tc: '10000000117', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drkardiyo2', name: 'Dr. Zeynep Demir', branch: 'Kardiyoloji', tc: '10000000256', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drkardiyo3', name: 'Dr. Can Kaya', branch: 'Kardiyoloji', tc: '10000000395', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drkardiyo4', name: 'Dr. Emre Aksoy', branch: 'Kardiyoloji', tc: '10000000434', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drdahiliye1', name: 'Dr. Elif Güneş', branch: 'Dahiliye', tc: '10000000573', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drdahiliye2', name: 'Dr. Fatma Çelik', branch: 'Dahiliye', tc: '10000000612', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drdahiliye3', name: 'Dr. Hakan Demir', branch: 'Dahiliye', tc: '10000000751', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drdahiliye4', name: 'Dr. İsmail Kara', branch: 'Dahiliye', tc: '10000000890', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drortopedi1', name: 'Dr. Jale Öztürk', branch: 'Ortopedi', tc: '10000000929', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drortopedi2', name: 'Dr. Mine Can', branch: 'Ortopedi', tc: '12345678960', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drortopedi3', name: 'Dr. Okan Yılmaz', branch: 'Ortopedi', tc: '23456789024', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drortopedi4', name: 'Dr. Polat Tuna', branch: 'Ortopedi', tc: '34567890148', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drgoz1', name: 'Dr. Rabia Güneş', branch: 'Göz Hastalıkları', tc: '45678901262', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drgoz2', name: 'Dr. Sema Erdem', branch: 'Göz Hastalıkları', tc: '56789012386', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drgoz3', name: 'Dr. Tarık Çelik', branch: 'Göz Hastalıkları', tc: '67890123410', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drgoz4', name: 'Dr. Ufuk Yücel', branch: 'Göz Hastalıkları', tc: '78901234534', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drped1', name: 'Dr. Pınar Akın', branch: 'Çocuk Sağlığı ve Hastalıkları', tc: '89012345658', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drped2', name: 'Dr. Gamze Yılmaz', branch: 'Çocuk Sağlığı ve Hastalıkları', tc: '90123456772', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drped3', name: 'Dr. Serkan Can', branch: 'Çocuk Sağlığı ve Hastalıkları', tc: '91234567896', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drped4', name: 'Dr. Tolga Demir', branch: 'Çocuk Sağlığı ve Hastalıkları', tc: '12345678016', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drgenelcer1', name: 'Dr. Hande Güler', branch: 'Genel Cerrahi', tc: '23456789120', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drgenelcer2', name: 'Dr. İpek Kara', branch: 'Genel Cerrahi', tc: '34567890244', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drgenelcer3', name: 'Dr. Kemal Aydın', branch: 'Genel Cerrahi', tc: '45678901368', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drgenelcer4', name: 'Dr. Levent Yılmaz', branch: 'Genel Cerrahi', tc: '56789012482', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drkadin1', name: 'Dr. Meltem Deniz', branch: 'Kadın Hastalıkları ve Doğum', tc: '67890123506', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drkadin2', name: 'Dr. Neşe Aktaş', branch: 'Kadın Hastalıkları ve Doğum', tc: '78901234630', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drkadin3', name: 'Dr. Onur Can', branch: 'Kadın Hastalıkları ve Doğum', tc: '89012345754', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drkadin4', name: 'Dr. Poyraz Efe', branch: 'Kadın Hastalıkları ve Doğum', tc: '90123456878', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drkbb1', name: 'Dr. Rengin Su', branch: 'Kulak Burun Boğaz', tc: '91234567992', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drkbb2', name: 'Dr. Selin Toprak', branch: 'Kulak Burun Boğaz', tc: '13456789034', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drkbb3', name: 'Dr. Tufan Deniz', branch: 'Kulak Burun Boğaz', tc: '24567890148', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drkbb4', name: 'Dr. Uğur Can', branch: 'Kulak Burun Boğaz', tc: '35678901262', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drnoroloji1', name: 'Dr. Vildan Işık', branch: 'Nöroloji', tc: '46789012386', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drnoroloji2', name: 'Dr. Yasemin Toprak', branch: 'Nöroloji', tc: '57890123410', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drnoroloji3', name: 'Dr. Zafer Mert', branch: 'Nöroloji', tc: '68901234534', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drnoroloji4', name: 'Dr. Altan Güneş', branch: 'Nöroloji', tc: '79012345658', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drpsikiyatri1', name: 'Dr. Berna Aksoy', branch: 'Psikiyatri', tc: '80123456772', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drpsikiyatri2', name: 'Dr. Ceyda Deniz', branch: 'Psikiyatri', tc: '91234567896', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drpsikiyatri3', name: 'Dr. Deniz Ege', branch: 'Psikiyatri', tc: '12345678901', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drpsikiyatri4', name: 'Dr. Erdem Fırat', branch: 'Psikiyatri', tc: '23456789025', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drüroloji1', name: 'Dr. Fulya Gök', branch: 'Üroloji', tc: '34567890149', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drüroloji2', name: 'Dr. Gizem Hazar', branch: 'Üroloji', tc: '45678901263', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drüroloji3', name: 'Dr. Haluk Işık', branch: 'Üroloji', tc: '56789012387', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drüroloji4', name: 'Dr. İlker Jale', branch: 'Üroloji', tc: '67890123411', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drftr1', name: 'Dr. Kader Kılıç', branch: 'Fizik Tedavi ve Rehabilitasyon', tc: '78901234535', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drftr2', name: 'Dr. Lale Mavi', branch: 'Fizik Tedavi ve Rehabilitasyon', tc: '89012345659', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drftr3', name: 'Dr. Mert Nazlı', branch: 'Fizik Tedavi ve Rehabilitasyon', tc: '90123456773', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drftr4', name: 'Dr. Necati Ozan', branch: 'Fizik Tedavi ve Rehabilitasyon', tc: '91234567897', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drderma1', name: 'Dr. Özlem Peker', branch: 'Dermatoloji', tc: '13456789012', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drderma2', name: 'Dr. Pelin Rüzgar', branch: 'Dermatoloji', tc: '24567890136', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drderma3', name: 'Dr. Rıza Sarı', branch: 'Dermatoloji', tc: '35678901250', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drderma4', name: 'Dr. Savaş Tekin', branch: 'Dermatoloji', tc: '46789012374', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drgogus1', name: 'Dr. Tuğçe Uysal', branch: 'Göğüs Hastalıkları', tc: '57890123498', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drgogus2', name: 'Dr. Umut Vural', branch: 'Göğüs Hastalıkları', tc: '68901234522', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drgogus3', name: 'Dr. Volkan Yücel', branch: 'Göğüs Hastalıkları', tc: '79012345646', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drgogus4', name: 'Dr. Yaman Zengin', branch: 'Göğüs Hastalıkları', tc: '80123456760', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drenfeksiyon1', name: 'Dr. Zeynep Arslan', branch: 'Enfeksiyon Hastalıkları', tc: '91234567884', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drenfeksiyon2', name: 'Dr. Ayşe Bilgin', branch: 'Enfeksiyon Hastalıkları', tc: '12345678008', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drenfeksiyon3', name: 'Dr. Burak Can', branch: 'Enfeksiyon Hastalıkları', tc: '23456789122', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drenfeksiyon4', name: 'Dr. Cem Demir', branch: 'Enfeksiyon Hastalıkları', tc: '34567890246', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drgastro1', name: 'Dr. Derya Efe', branch: 'Gastroenteroloji', tc: '45678901360', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drgastro2', name: 'Dr. Esra Fırat', branch: 'Gastroenteroloji', tc: '56789012484', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drgastro3', name: 'Dr. Fatih Gök', branch: 'Gastroenteroloji', tc: '67890123508', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drgastro4', name: 'Dr. Gökhan Hazar', branch: 'Gastroenteroloji', tc: '78901234632', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drendo1', name: 'Dr. Hande Işık', branch: 'Endokrinoloji', tc: '89012345756', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drendo2', name: 'Dr. İrem Jale', branch: 'Endokrinoloji', tc: '90123456870', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drendo3', name: 'Dr. Kaan Kılıç', branch: 'Endokrinoloji', tc: '91234567994', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drendo4', name: 'Dr. Levent Mavi', branch: 'Endokrinoloji', tc: '13456789018', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drroma1', name: 'Dr. Meltem Nazlı', branch: 'Romatoloji', tc: '24567890132', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drroma2', name: 'Dr. Neşe Ozan', branch: 'Romatoloji', tc: '35678901256', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drroma3', name: 'Dr. Onur Peker', branch: 'Romatoloji', tc: '46789012370', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drroma4', name: 'Dr. Polat Rüzgar', branch: 'Romatoloji', tc: '57890123494', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drnefro1', name: 'Dr. Rabia Sarı', branch: 'Nefroloji', tc: '68901234518', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drnefro2', name: 'Dr. Sema Tekin', branch: 'Nefroloji', tc: '79012345642', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'drnefro3', name: 'Dr. Tarık Uysal', branch: 'Nefroloji', tc: '80123456766', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'drnefro4', name: 'Dr. Ufuk Vural', branch: 'Nefroloji', tc: '91234567890', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'dronko1', name: 'Dr. Vildan Yücel', branch: 'Onkoloji', tc: '13456789014', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'dronko2', name: 'Dr. Yasemin Zengin', branch: 'Onkoloji', tc: '24567890138', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'dronko3', name: 'Dr. Zafer Akın', branch: 'Onkoloji', tc: '35678901252', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'dronko4', name: 'Dr. Altan Bilgin', branch: 'Onkoloji', tc: '46789012376', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'dranestezi1', name: 'Dr. Berna Can', branch: 'Anesteziyoloji ve Reanimasyon', tc: '57890123490', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'dranestezi2', name: 'Dr. Ceyda Demir', branch: 'Anesteziyoloji ve Reanimasyon', tc: '68901234514', password: 'password123', role: 'doctor', gender: 'female' },
-        { id: 'dranestezi3', name: 'Dr. Deniz Ege', branch: 'Anesteziyoloji ve Reanimasyon', tc: '79012345638', password: 'password123', role: 'doctor', gender: 'male' },
-        { id: 'dranestezi4', name: 'Dr. Erdem Fırat', branch: 'Anesteziyoloji ve Reanimasyon', tc: '80123456762', password: 'password123', role: 'doctor', gender: 'male' }
+        { id: 'drkardiyo1', name: 'Dr. Ayşe Yılmaz', branch: 'Kardiyoloji', experience: 15, hospital: 'LUMINEX Hastanesi', tc: '10000000117', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drkardiyo2', name: 'Dr. Zeynep Demir', branch: 'Kardiyoloji', experience: 12, hospital: 'LUMINEX Hastanesi', tc: '10000000256', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drkardiyo3', name: 'Dr. Can Kaya', branch: 'Kardiyoloji', experience: 18, hospital: 'LUMINEX Hastanesi', tc: '10000000395', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drkardiyo4', name: 'Dr. Emre Aksoy', branch: 'Kardiyoloji', experience: 8, hospital: 'LUMINEX Hastanesi', tc: '10000000434', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drdahiliye1', name: 'Dr. Elif Güneş', branch: 'Dahiliye', experience: 20, hospital: 'LUMINEX Hastanesi', tc: '10000000573', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drdahiliye2', name: 'Dr. Fatma Çelik', branch: 'Dahiliye', experience: 10, hospital: 'LUMINEX Hastanesi', tc: '10000000612', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drdahiliye3', name: 'Dr. Hakan Demir', branch: 'Dahiliye', experience: 22, hospital: 'LUMINEX Hastanesi', tc: '10000000751', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drdahiliye4', name: 'Dr. İsmail Kara', branch: 'Dahiliye', experience: 14, hospital: 'LUMINEX Hastanesi', tc: '10000000890', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drortopedi1', name: 'Dr. Jale Öztürk', branch: 'Ortopedi', experience: 16, hospital: 'LUMINEX Hastanesi', tc: '10000000929', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drortopedi2', name: 'Dr. Mine Can', branch: 'Ortopedi', experience: 9, hospital: 'LUMINEX Hastanesi', tc: '12345678960', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drortopedi3', name: 'Dr. Okan Yılmaz', branch: 'Ortopedi', experience: 19, hospital: 'LUMINEX Hastanesi', tc: '23456789024', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drortopedi4', name: 'Dr. Polat Tuna', branch: 'Ortopedi', experience: 7, hospital: 'LUMINEX Hastanesi', tc: '34567890148', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drgoz1', name: 'Dr. Rabia Güneş', branch: 'Göz Hastalıkları', experience: 13, hospital: 'LUMINEX Hastanesi', tc: '45678901262', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drgoz2', name: 'Dr. Sema Erdem', branch: 'Göz Hastalıkları', experience: 11, hospital: 'LUMINEX Hastanesi', tc: '56789012386', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drgoz3', name: 'Dr. Tarık Çelik', branch: 'Göz Hastalıkları', experience: 17, hospital: 'LUMINEX Hastanesi', tc: '67890123410', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drgoz4', name: 'Dr. Ufuk Yücel', branch: 'Göz Hastalıkları', experience: 6, hospital: 'LUMINEX Hastanesi', tc: '78901234534', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drped1', name: 'Dr. Pınar Akın', branch: 'Çocuk Sağlığı ve Hastalıkları', experience: 14, hospital: 'LUMINEX Hastanesi', tc: '89012345658', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drped2', name: 'Dr. Gamze Yılmaz', branch: 'Çocuk Sağlığı ve Hastalıkları', experience: 8, hospital: 'LUMINEX Hastanesi', tc: '90123456772', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drped3', name: 'Dr. Serkan Can', branch: 'Çocuk Sağlığı ve Hastalıkları', experience: 21, hospital: 'LUMINEX Hastanesi', tc: '91234567896', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drped4', name: 'Dr. Tolga Demir', branch: 'Çocuk Sağlığı ve Hastalıkları', experience: 5, hospital: 'LUMINEX Hastanesi', tc: '12345678016', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drgenelcer1', name: 'Dr. Hande Güler', branch: 'Genel Cerrahi', experience: 18, hospital: 'LUMINEX Hastanesi', tc: '23456789120', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drgenelcer2', name: 'Dr. İpek Kara', branch: 'Genel Cerrahi', experience: 12, hospital: 'LUMINEX Hastanesi', tc: '34567890244', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drgenelcer3', name: 'Dr. Kemal Aydın', branch: 'Genel Cerrahi', experience: 25, hospital: 'LUMINEX Hastanesi', tc: '45678901368', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drgenelcer4', name: 'Dr. Levent Yılmaz', branch: 'Genel Cerrahi', experience: 9, hospital: 'LUMINEX Hastanesi', tc: '56789012482', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drkadin1', name: 'Dr. Meltem Deniz', branch: 'Kadın Hastalıkları ve Doğum', experience: 16, hospital: 'LUMINEX Hastanesi', tc: '67890123506', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drkadin2', name: 'Dr. Neşe Aktaş', branch: 'Kadın Hastalıkları ve Doğum', experience: 10, hospital: 'LUMINEX Hastanesi', tc: '78901234630', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drkadin3', name: 'Dr. Onur Can', branch: 'Kadın Hastalıkları ve Doğum', experience: 20, hospital: 'LUMINEX Hastanesi', tc: '89012345754', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drkadin4', name: 'Dr. Poyraz Efe', branch: 'Kadın Hastalıkları ve Doğum', experience: 7, hospital: 'LUMINEX Hastanesi', tc: '90123456878', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drkbb1', name: 'Dr. Rengin Su', branch: 'Kulak Burun Boğaz', experience: 13, hospital: 'LUMINEX Hastanesi', tc: '91234567992', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drkbb2', name: 'Dr. Selin Toprak', branch: 'Kulak Burun Boğaz', experience: 11, hospital: 'LUMINEX Hastanesi', tc: '13456789034', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drkbb3', name: 'Dr. Tufan Deniz', branch: 'Kulak Burun Boğaz', experience: 19, hospital: 'LUMINEX Hastanesi', tc: '24567890148', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drkbb4', name: 'Dr. Uğur Can', branch: 'Kulak Burun Boğaz', experience: 6, hospital: 'LUMINEX Hastanesi', tc: '35678901262', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drnoroloji1', name: 'Dr. Vildan Işık', branch: 'Nöroloji', experience: 17, hospital: 'LUMINEX Hastanesi', tc: '46789012386', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drnoroloji2', name: 'Dr. Yasemin Toprak', branch: 'Nöroloji', experience: 14, hospital: 'LUMINEX Hastanesi', tc: '57890123410', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drnoroloji3', name: 'Dr. Zafer Mert', branch: 'Nöroloji', experience: 23, hospital: 'LUMINEX Hastanesi', tc: '68901234534', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drnoroloji4', name: 'Dr. Altan Güneş', branch: 'Nöroloji', experience: 8, hospital: 'LUMINEX Hastanesi', tc: '79012345658', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drpsikiyatri1', name: 'Dr. Berna Aksoy', branch: 'Psikiyatri', experience: 15, hospital: 'LUMINEX Hastanesi', tc: '80123456772', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drpsikiyatri2', name: 'Dr. Ceyda Deniz', branch: 'Psikiyatri', experience: 12, hospital: 'LUMINEX Hastanesi', tc: '91234567896', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drpsikiyatri3', name: 'Dr. Deniz Ege', branch: 'Psikiyatri', experience: 18, hospital: 'LUMINEX Hastanesi', tc: '12345678901', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drpsikiyatri4', name: 'Dr. Erdem Fırat', branch: 'Psikiyatri', experience: 9, hospital: 'LUMINEX Hastanesi', tc: '23456789025', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drüroloji1', name: 'Dr. Fulya Gök', branch: 'Üroloji', experience: 14, hospital: 'LUMINEX Hastanesi', tc: '34567890149', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drüroloji2', name: 'Dr. Gizem Hazar', branch: 'Üroloji', experience: 10, hospital: 'LUMINEX Hastanesi', tc: '45678901263', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drüroloji3', name: 'Dr. Haluk Işık', branch: 'Üroloji', experience: 21, hospital: 'LUMINEX Hastanesi', tc: '56789012387', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drüroloji4', name: 'Dr. İlker Jale', branch: 'Üroloji', experience: 7, hospital: 'LUMINEX Hastanesi', tc: '67890123411', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drftr1', name: 'Dr. Kader Kılıç', branch: 'Fizik Tedavi ve Rehabilitasyon', experience: 16, hospital: 'LUMINEX Hastanesi', tc: '78901234535', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drftr2', name: 'Dr. Lale Mavi', branch: 'Fizik Tedavi ve Rehabilitasyon', experience: 11, hospital: 'LUMINEX Hastanesi', tc: '89012345659', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drftr3', name: 'Dr. Mert Nazlı', branch: 'Fizik Tedavi ve Rehabilitasyon', experience: 19, hospital: 'LUMINEX Hastanesi', tc: '90123456773', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drftr4', name: 'Dr. Necati Ozan', branch: 'Fizik Tedavi ve Rehabilitasyon', experience: 8, hospital: 'LUMINEX Hastanesi', tc: '91234567897', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drderma1', name: 'Dr. Özlem Peker', branch: 'Dermatoloji', experience: 13, hospital: 'LUMINEX Hastanesi', tc: '13456789012', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drderma2', name: 'Dr. Pelin Rüzgar', branch: 'Dermatoloji', experience: 9, hospital: 'LUMINEX Hastanesi', tc: '24567890136', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drderma3', name: 'Dr. Rıza Sarı', branch: 'Dermatoloji', experience: 20, hospital: 'LUMINEX Hastanesi', tc: '35678901250', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drderma4', name: 'Dr. Savaş Tekin', branch: 'Dermatoloji', experience: 6, hospital: 'LUMINEX Hastanesi', tc: '46789012374', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drgogus1', name: 'Dr. Tuğçe Uysal', branch: 'Göğüs Hastalıkları', experience: 15, hospital: 'LUMINEX Hastanesi', tc: '57890123498', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drgogus2', name: 'Dr. Umut Vural', branch: 'Göğüs Hastalıkları', experience: 18, hospital: 'LUMINEX Hastanesi', tc: '68901234522', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drgogus3', name: 'Dr. Volkan Yücel', branch: 'Göğüs Hastalıkları', experience: 22, hospital: 'LUMINEX Hastanesi', tc: '79012345646', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drgogus4', name: 'Dr. Yaman Zengin', branch: 'Göğüs Hastalıkları', experience: 10, hospital: 'LUMINEX Hastanesi', tc: '80123456760', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drenfeksiyon1', name: 'Dr. Zeynep Arslan', branch: 'Enfeksiyon Hastalıkları', experience: 12, hospital: 'LUMINEX Hastanesi', tc: '91234567884', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drenfeksiyon2', name: 'Dr. Ayşe Bilgin', branch: 'Enfeksiyon Hastalıkları', experience: 14, hospital: 'LUMINEX Hastanesi', tc: '12345678008', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drenfeksiyon3', name: 'Dr. Burak Can', branch: 'Enfeksiyon Hastalıkları', experience: 17, hospital: 'LUMINEX Hastanesi', tc: '23456789122', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drenfeksiyon4', name: 'Dr. Cem Demir', branch: 'Enfeksiyon Hastalıkları', experience: 9, hospital: 'LUMINEX Hastanesi', tc: '34567890246', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drgastro1', name: 'Dr. Derya Efe', branch: 'Gastroenteroloji', experience: 16, hospital: 'LUMINEX Hastanesi', tc: '45678901360', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drgastro2', name: 'Dr. Esra Fırat', branch: 'Gastroenteroloji', experience: 11, hospital: 'LUMINEX Hastanesi', tc: '56789012484', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drgastro3', name: 'Dr. Fatih Gök', branch: 'Gastroenteroloji', experience: 20, hospital: 'LUMINEX Hastanesi', tc: '67890123508', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drgastro4', name: 'Dr. Gökhan Hazar', branch: 'Gastroenteroloji', experience: 8, hospital: 'LUMINEX Hastanesi', tc: '78901234632', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drendo1', name: 'Dr. Hande Işık', branch: 'Endokrinoloji', experience: 14, hospital: 'LUMINEX Hastanesi', tc: '89012345756', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drendo2', name: 'Dr. İrem Jale', branch: 'Endokrinoloji', experience: 10, hospital: 'LUMINEX Hastanesi', tc: '90123456870', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drendo3', name: 'Dr. Kaan Kılıç', branch: 'Endokrinoloji', experience: 19, hospital: 'LUMINEX Hastanesi', tc: '91234567994', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drendo4', name: 'Dr. Levent Mavi', branch: 'Endokrinoloji', experience: 7, hospital: 'LUMINEX Hastanesi', tc: '13456789018', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drroma1', name: 'Dr. Meltem Nazlı', branch: 'Romatoloji', experience: 15, hospital: 'LUMINEX Hastanesi', tc: '24567890132', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drroma2', name: 'Dr. Neşe Ozan', branch: 'Romatoloji', experience: 13, hospital: 'LUMINEX Hastanesi', tc: '35678901256', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drroma3', name: 'Dr. Onur Peker', branch: 'Romatoloji', experience: 21, hospital: 'LUMINEX Hastanesi', tc: '46789012370', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drroma4', name: 'Dr. Polat Rüzgar', branch: 'Romatoloji', experience: 9, hospital: 'LUMINEX Hastanesi', tc: '57890123494', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drnefro1', name: 'Dr. Rabia Sarı', branch: 'Nefroloji', experience: 16, hospital: 'LUMINEX Hastanesi', tc: '68901234518', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drnefro2', name: 'Dr. Sema Tekin', branch: 'Nefroloji', experience: 12, hospital: 'LUMINEX Hastanesi', tc: '79012345642', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'drnefro3', name: 'Dr. Tarık Uysal', branch: 'Nefroloji', experience: 23, hospital: 'LUMINEX Hastanesi', tc: '80123456766', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'drnefro4', name: 'Dr. Ufuk Vural', branch: 'Nefroloji', experience: 8, hospital: 'LUMINEX Hastanesi', tc: '91234567890', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'dronko1', name: 'Dr. Vildan Yücel', branch: 'Onkoloji', experience: 17, hospital: 'LUMINEX Hastanesi', tc: '13456789014', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'dronko2', name: 'Dr. Yasemin Zengin', branch: 'Onkoloji', experience: 14, hospital: 'LUMINEX Hastanesi', tc: '24567890138', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'dronko3', name: 'Dr. Zafer Akın', branch: 'Onkoloji', experience: 24, hospital: 'LUMINEX Hastanesi', tc: '35678901252', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'dronko4', name: 'Dr. Altan Bilgin', branch: 'Onkoloji', experience: 11, hospital: 'LUMINEX Hastanesi', tc: '46789012376', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'dranestezi1', name: 'Dr. Berna Can', branch: 'Anesteziyoloji ve Reanimasyon', experience: 15, hospital: 'LUMINEX Hastanesi', tc: '57890123490', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'dranestezi2', name: 'Dr. Ceyda Demir', branch: 'Anesteziyoloji ve Reanimasyon', experience: 10, hospital: 'LUMINEX Hastanesi', tc: '68901234514', password: 'password123', role: 'doctor', gender: 'female' },
+        { id: 'dranestezi3', name: 'Dr. Deniz Ege', branch: 'Anesteziyoloji ve Reanimasyon', experience: 18, hospital: 'LUMINEX Hastanesi', tc: '79012345638', password: 'password123', role: 'doctor', gender: 'male' },
+        { id: 'dranestezi4', name: 'Dr. Erdem Fırat', branch: 'Anesteziyoloji ve Reanimasyon', experience: 7, hospital: 'LUMINEX Hastanesi', tc: '80123456762', password: 'password123', role: 'doctor', gender: 'male' }
     ];
 
     const adminUser = { id: 'admin', name: 'Admin User', tc: '10000000124', password: 'mustafa/70', role: 'admin' };
@@ -384,10 +384,24 @@ export function getLuminexUsers() {
 
     // Always ensure default doctors are also in the list if they are missing
     defaultDoctors.forEach(defaultDoctor => {
-        const doctorExists = storedUsers.some(user => user.tc === defaultDoctor.tc);
-        if (!doctorExists) {
+        const existingDoctor = storedUsers.find(user => user.tc === defaultDoctor.tc);
+        if (!existingDoctor) {
             storedUsers.push(defaultDoctor);
             usersModified = true;
+        } else {
+            // Update existing doctors with missing fields
+            let doctorUpdated = false;
+            if (!existingDoctor.experience && defaultDoctor.experience) {
+                existingDoctor.experience = defaultDoctor.experience;
+                doctorUpdated = true;
+            }
+            if (!existingDoctor.hospital && defaultDoctor.hospital) {
+                existingDoctor.hospital = defaultDoctor.hospital;
+                doctorUpdated = true;
+            }
+            if (doctorUpdated) {
+                usersModified = true;
+            }
         }
     });
 
@@ -579,4 +593,29 @@ export function initAllDummyData() {
     getLuminexDepartments(); // Initialize departments
     getLuminexTickets(); // Initialize tickets
     getLuminexNotifications(); // Initialize notifications
+}
+
+// --- Doctor Name Helper Functions ---
+
+/**
+ * Removes any leading "Dr." or "Dr" from a name to avoid duplication
+ * @param {string} name - The doctor's name
+ * @returns {string} - The cleaned name without the "Dr." prefix
+ */
+export function cleanDoctorName(name) {
+    if (!name) return '';
+    // Remove any leading "Dr." or "Dr" to avoid duplication (case insensitive)
+    return name.replace(/^(Dr\.?\s*)+/i, '').trim();
+}
+
+/**
+ * Returns the doctor's display name with a single "Dr." prefix
+ * @param {string} name - The doctor's name (may already include "Dr.")
+ * @returns {string} - The display name with exactly one "Dr." prefix
+ */
+export function getDoctorDisplayName(name) {
+    if (!name) return '';
+    // Clean name first, then add "Dr." prefix
+    const cleanName = cleanDoctorName(name);
+    return `Dr. ${cleanName}`;
 }

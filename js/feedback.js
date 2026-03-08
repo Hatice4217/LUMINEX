@@ -73,7 +73,8 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.feedbackHistoryList.innerHTML = `
                 <div class="empty-feedback-state">
                     <i class="fas fa-comment-dots"></i>
-                    <p>${getSafeTranslation('noFeedbackHistory')}</p>
+                    <h3>Henüz geri bildirim yok</h3>
+                    <p>İlk geri bildiriminizi göndererek başlayın.</p>
                 </div>
             `;
             return;
@@ -109,17 +110,23 @@ document.addEventListener('DOMContentLoaded', function() {
             return `
                 <div class="feedback-item">
                     <div class="feedback-item-header">
-                        <span class="feedback-item-type ${feedback.type}">${typeTranslations[feedback.type] || feedback.type}</span>
-                        <span class="feedback-item-date">${date}</span>
+                        <span class="feedback-type-badge ${feedback.type}">
+                            <i class="fas ${feedback.type === 'compliment' ? 'fa-heart' : feedback.type === 'complaint' ? 'fa-exclamation-triangle' : feedback.type === 'suggestion' ? 'fa-lightbulb' : 'fa-question-circle'}"></i>
+                            ${typeTranslations[feedback.type] || feedback.type}
+                        </span>
+                        <span class="feedback-date">${date}</span>
                     </div>
-                    <div class="feedback-item-content">
+                    <div class="feedback-content">
                         <h4>${feedback.subject}</h4>
                         <p>${feedback.message}</p>
-                        ${feedback.response ? `<p style="color: var(--primary-color); font-style: italic;"><strong>Yanıt:</strong> ${feedback.response}</p>` : ''}
+                        ${feedback.response ? `<p style="color: #059669; font-style: italic; border-left: 3px solid #059669; padding-left: 12px; margin-top: 12px;"><strong>Yanıt:</strong> ${feedback.response}</p>` : ''}
                     </div>
-                    <div class="feedback-item-footer">
-                        <div class="feedback-item-rating">${stars}</div>
-                        <span class="feedback-item-status ${feedback.status}">${statusTranslations[feedback.status] || feedback.status}</span>
+                    <div class="feedback-footer">
+                        <div class="feedback-rating">${stars}</div>
+                        <span class="feedback-status ${feedback.status}">
+                            <i class="fas ${feedback.status === 'pending' ? 'fa-clock' : feedback.status === 'resolved' ? 'fa-check' : 'fa-times'}"></i>
+                            ${statusTranslations[feedback.status] || feedback.status}
+                        </span>
                     </div>
                 </div>
             `;

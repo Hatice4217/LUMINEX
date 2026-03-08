@@ -8,9 +8,9 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dark-mode.css">
     <link rel="stylesheet" href="css/skeleton.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <script>
         try {
@@ -19,40 +19,467 @@
             }
         } catch (e) {}
     </script>
+    <style>
+        /* Modern Appointments Page Styles */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #001F6B 0%, #003B8E 100%);
+            --accent-gradient: linear-gradient(135deg, #78C7C7 0%, #5BA8A8 100%);
+            --success-gradient: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            --warning-gradient: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            --danger-gradient: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --card-shadow: 0 10px 40px rgba(0, 31, 107, 0.08);
+            --hover-shadow: 0 20px 60px rgba(0, 31, 107, 0.15);
+        }
+
+        /* Stats Overview */
+        .appointments-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .appointments-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .appointments-stats { grid-template-columns: 1fr; }
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            border-radius: 20px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0, 31, 107, 0.08);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .stat-card.total::before { background: var(--primary-gradient); }
+        .stat-card.upcoming::before { background: var(--accent-gradient); }
+        .stat-card.completed::before { background: var(--success-gradient); }
+        .stat-card.cancelled::before { background: var(--danger-gradient); }
+
+        .stat-card.total .stat-icon { background: var(--primary-gradient); }
+        .stat-card.upcoming .stat-icon { background: var(--accent-gradient); }
+        .stat-card.completed .stat-icon { background: var(--success-gradient); }
+        .stat-card.cancelled .stat-icon { background: var(--danger-gradient); }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Modern Filter Bar */
+        .filter-bar {
+            background: var(--glass-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            border: 1px solid rgba(0, 31, 107, 0.08);
+        }
+
+        .filter-bar select,
+        .filter-bar input {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px 20px;
+            border: 2px solid rgba(0, 31, 107, 0.1);
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .filter-bar select:focus,
+        .filter-bar input:focus {
+            outline: none;
+            border-color: #78C7C7;
+            box-shadow: 0 0 0 4px rgba(120, 199, 199, 0.1);
+        }
+
+        .filter-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .filter-btn-secondary {
+            background: rgba(0, 31, 107, 0.05);
+            color: #001F6B;
+            border: 1px solid rgba(0, 31, 107, 0.15);
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 31, 107, 0.2);
+        }
+
+        /* Appointments Grid */
+        .appointments-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .appointment-card {
+            background: var(--glass-bg);
+            border-radius: 20px;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 24px;
+            align-items: center;
+            border: 1px solid rgba(0, 31, 107, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .appointment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .appointment-card.upcoming::before { background: var(--accent-gradient); }
+        .appointment-card.completed::before { background: var(--success-gradient); }
+        .appointment-card.cancelled::before { background: var(--danger-gradient); }
+
+        .appointment-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        /* Date Badge */
+        .date-badge {
+            background: var(--primary-gradient);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .date-badge .day {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1;
+        }
+
+        .date-badge .month {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.9);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Appointment Info */
+        .appointment-info h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #001F6B;
+            margin: 0 0 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .appointment-info h3 .status-badge {
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .status-badge.pending { background: rgba(243, 156, 18, 0.15); color: #f39c12; }
+        .status-badge.confirmed { background: rgba(46, 204, 113, 0.15); color: #2ecc71; }
+        .status-badge.completed { background: rgba(52, 152, 219, 0.15); color: #3498db; }
+        .status-badge.cancelled { background: rgba(231, 76, 60, 0.15); color: #e74c3c; }
+
+        .appointment-info .doctor {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .appointment-info .time {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* Action Buttons */
+        .appointment-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .action-btn.calendar { background: rgba(52, 152, 219, 0.1); color: #3498db; }
+        .action-btn.reschedule { background: rgba(243, 156, 18, 0.1); color: #f39c12; }
+        .action-btn.cancel { background: rgba(231, 76, 60, 0.1); color: #e74c3c; }
+        .action-btn.details { background: rgba(52, 152, 219, 0.1); color: #3498db; }
+        .action-btn.review { background: rgba(46, 204, 113, 0.1); color: #2ecc71; }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            background: var(--glass-bg);
+            border-radius: 20px;
+            border: 2px dashed rgba(0, 31, 107, 0.15);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: #001F6B;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        /* Dark Mode */
+        body.theme-dark .stat-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(56, 189, 248, 0.15);
+        }
+
+        body.theme-dark .stat-number {
+            background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        body.theme-dark .stat-label {
+            color: #94a3b8;
+        }
+
+        body.theme-dark .filter-bar,
+        body.theme-dark .appointment-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(56, 189, 248, 0.15);
+        }
+
+        body.theme-dark .filter-bar select,
+        body.theme-dark .filter-bar input {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: rgba(56, 189, 248, 0.2);
+            color: #f8fafc;
+        }
+
+        body.theme-dark .appointment-info h3 {
+            color: #38bdf8;
+        }
+
+        body.theme-dark .date-badge {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .appointment-card {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .date-badge {
+                margin: 0 auto;
+            }
+
+            .appointment-info h3 {
+                justify-content: center;
+            }
+
+            .appointment-info .doctor,
+            .appointment-info .time {
+                justify-content: center;
+            }
+
+            .appointment-actions {
+                justify-content: center;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .appointment-card {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .appointment-card:nth-child(1) { animation-delay: 0.1s; }
+        .appointment-card:nth-child(2) { animation-delay: 0.2s; }
+        .appointment-card:nth-child(3) { animation-delay: 0.3s; }
+        .appointment-card:nth-child(4) { animation-delay: 0.4s; }
+        .appointment-card:nth-child(5) { animation-delay: 0.5s; }
+    </style>
 </head>
 <body lang="tr">
     <div class="dashboard-container">
         <header class="top-bar">
             <div class="logo">
-                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" style="display: flex; align-items: center; gap: 2px; margin-left: -30px;">
-                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); -webkit-mask: url(clean-logo.png) no-repeat center / contain; mask: url(clean-logo.png) no-repeat center / contain; display: inline-block;"></div>
-                    <span style="font-family: 'Exo 2', sans-serif; font-size: 2.5rem; font-weight: 700; color: #001F6B; letter-spacing: 1px; display: flex; align-items: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">LUMINEX</span>
+                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" class="logo-link">
+                    <span class="logo-text">LUMINEX</span>
                 </a>
             </div>
             <div class="user-info">
-                <span id="welcomeMessage"></span>
-                <div class="icons">
-                    <i id="themeToggleButton" class="fas fa-moon"></i>
-                    <div class="notification-wrapper" style="position: relative; display: inline-block;">
-                        <i class="fas fa-bell" style="cursor: pointer;"></i>
-                        <span class="notification-badge" style="display: none; position: absolute; top: -8px; right: -8px; background: #ff4757; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; align-items: center; justify-content: center; font-weight: bold; border: 2px solid var(--white-color);"></span>
-                        <div class="notification-dropdown dropdown" style="position: absolute; top: 100%; right: 0; width: 320px; background: var(--white-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; z-index: 1000; flex-direction: column; overflow: hidden; margin-top: 15px;"></div>
+                <span id="welcomeMessage" class="welcome-text"></span>
+                <div class="top-bar-actions">
+                    <div class="lang-switcher">
+                        <button type="button" class="selected-lang">
+                            <img src="https://flagcdn.com/tr.svg" alt="TR Flag">
+                            <span>Türkçe</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <ul class="lang-options">
+                            <li data-lang="tr"><img src="https://flagcdn.com/tr.svg" alt="TR Flag"> Türkçe</li>
+                            <li data-lang="en"><img src="https://flagcdn.com/gb.svg" alt="GB Flag"> English</li>
+                        </ul>
                     </div>
-                    <i class="fas fa-cog"></i>
-                    <i id="logoutButton" class="fas fa-sign-out-alt"></i>
+                    <button id="themeToggleButton" class="top-bar-btn" title="Tema Değiştir">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="notification-wrapper" style="position: relative !important; display: inline-block !important;">
+                        <button class="top-bar-btn" title="Bildirimler" style="position: relative !important;">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                        <span class="notification-badge" style="
+                            position: absolute !important;
+                            top: -6px !important;
+                            right: -6px !important;
+                            z-index: 100 !important;
+                            background: linear-gradient(135deg, #ff4757, #ff6b7a) !important;
+                            color: white !important;
+                            border-radius: 50% !important;
+                            width: 18px !important;
+                            height: 18px !important;
+                            display: flex !important;
+                            justify-content: center !important;
+                            align-items: center !important;
+                            font-size: 10px !important;
+                            font-weight: bold !important;
+                            border: 2px solid white !important;
+                            pointer-events: none !important;
+                        ">4</span>
+                        <div class="notification-dropdown dropdown"></div>
+                    </div>
+                    <button class="top-bar-btn" onclick="window.location.href='profile-settings.html'" title="Ayarlar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button id="logoutButton" class="top-bar-btn" title="Çıkış Yap">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
                 </div>
             </div>
         </header>
 
         <div class="main-wrapper">
             <aside class="side-menu">
-                <ul id="dynamicSideMenu">
-                    <!-- Dinamik menü öğeleri buraya yüklenecek -->
-                </ul>
-                <!-- Yedek menü -->
+                <ul id="dynamicSideMenu"></ul>
                 <ul id="fallbackSideMenu" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
                     <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Kontrol Paneli</span></a></li>
-                    <li><a href="my-appointments.html"><i class="fas fa-calendar-alt"></i> <span>Randevularım</span></a></li>
+                    <li><a href="my-appointments.html" class="active"><i class="fas fa-calendar-alt"></i> <span>Randevularım</span></a></li>
                     <li><a href="doctors.html"><i class="fas fa-user-md"></i> <span>Doktorlar / Branşlar</span></a></li>
                     <li><a href="prescriptions.html"><i class="fas fa-prescription-bottle-alt"></i> <span>Reçetelerim</span></a></li>
                     <li><a href="health-history.html"><i class="fas fa-notes-medical"></i> <span>Sağlık Geçmişim</span></a></li>
@@ -73,48 +500,53 @@
             <main class="dashboard-content">
                 <h1 data-lang="myAppointmentsSidebar" class="reveal">Randevularım</h1>
 
-                <!-- Filtreler -->
-                <div class="card filter-card collapsed reveal">
-                    <div class="filter-card-header">
-                        <h3><i class="fas fa-filter"></i> <span data-lang="filter">Filtrele</span></h3>
-                        <button id="toggle-filter-body" class="btn-icon"><i class="fas fa-chevron-down"></i></button>
+                <!-- Stats Overview -->
+                <div class="appointments-stats">
+                    <div class="stat-card total">
+                        <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                        <div class="stat-number" id="statTotal">0</div>
+                        <div class="stat-label" data-lang="totalAppointments">Toplam Randevu</div>
                     </div>
-                    <div id="filter-card-body" class="filter-card-body">
-                        <div class="filter-card-content-wrapper">
-                            <div class="filter-form-compact">
-                                <div class="form-group">
-                                    <label data-lang="statusLabel">Durum</label>
-                                    <select id="statusFilter" class="form-control">
-                                        <option value="all" data-lang="all">Tümü</option>
-                                        <option value="upcoming" data-lang="statusUpcoming">Yaklaşan</option>
-                                        <option value="past" data-lang="statusPast">Geçmiş</option>
-                                        <option value="cancelled" data-lang="statusCancelled">İptal Edildi</option>
-                                    </select>
-                                </div>
-                                <div class="form-actions-compact">
-                                    <button id="applyFilters" class="btn btn-primary" data-lang="applyFilters">Filtrele</button>
-                                    <button id="clearFilters" class="btn btn-outline-secondary" data-lang="clear">Temizle</button>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="stat-card upcoming">
+                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                        <div class="stat-number" id="statUpcoming">0</div>
+                        <div class="stat-label" data-lang="upcomingAppointments">Yaklaşan Randevu</div>
+                    </div>
+                    <div class="stat-card completed">
+                        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-number" id="statCompleted">0</div>
+                        <div class="stat-label" data-lang="completedAppointments">Tamamlanan</div>
+                    </div>
+                    <div class="stat-card cancelled">
+                        <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+                        <div class="stat-number" id="statCancelled">0</div>
+                        <div class="stat-label" data-lang="cancelledAppointments">İptal Edilen</div>
                     </div>
                 </div>
 
-                <div id="active-filters-container" class="active-filters-container">
-                    <!-- Active filter pills will be injected here by JS -->
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <select id="statusFilter" class="form-control">
+                        <option value="all" data-lang="all">Tümü</option>
+                        <option value="upcoming" data-lang="statusUpcoming">Yaklaşan</option>
+                        <option value="past" data-lang="statusPast">Geçmiş</option>
+                        <option value="cancelled" data-lang="statusCancelled">İptal Edildi</option>
+                    </select>
+                    <input type="text" id="searchInput" placeholder="Doktor ara...">
+                    <button id="applyFilters" class="filter-btn filter-btn-primary" data-lang="applyFilters">Filtrele</button>
+                    <button id="clearFilters" class="filter-btn filter-btn-secondary" data-lang="clear">Temizle</button>
                 </div>
 
-                <div class="card">
-                    <div id="appointments-list" class="appointment-list">
-                        <!-- Appointments will be loaded here -->
-                    </div>
+                <!-- Appointments List -->
+                <div class="appointments-grid" id="appointments-list">
+                    <!-- Appointments will be loaded here -->
                 </div>
             </main>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-    <script src="js/language-manager.js"></script>
+    <script type="module" src="js/language-manager.js"></script>
     <script type="module" src="js/user-session.js"></script>
     <script type="module" src="js/utils/header-manager.js"></script>
     <script type="module" src="js/my-appointments.js"></script>

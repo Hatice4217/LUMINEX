@@ -382,7 +382,7 @@ window.showTermsModal = function(e) {
                     z-index: 99998 !important;
                 }
 
-                /* SweetAlert Animasyonlarını Yavaşlat - Patma efekti olmadan */
+                /* Slow down SweetAlert animations - without popup effect */
                 .swal2-show {
                     animation-duration: 0.8s !important;
                     animation-timing-function: ease-out !important;
@@ -614,7 +614,7 @@ window.showKvkkModal = function(e) {
                     z-index: 99998 !important;
                 }
 
-                /* SweetAlert Animasyonlarını Yavaşlat - Patma efekti olmadan */
+                /* Slow down SweetAlert animations - without popup effect */
                 .swal2-show {
                     animation-duration: 0.8s !important;
                     animation-timing-function: ease-out !important;

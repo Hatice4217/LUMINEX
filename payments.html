@@ -8,9 +8,9 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dark-mode.css">
     <link rel="stylesheet" href="css/skeleton.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <script>
         try {
@@ -20,11 +20,16 @@
         } catch (e) {}
     </script>
     <style>
-        .payments-container {
-            max-width: 1200px;
-            margin: 0 auto;
+        /* Modern Payments Styles - Similar to Doctors Page */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #001F6B 0%, #003B8E 100%);
+            --accent-gradient: linear-gradient(135deg, #78C7C7 0%, #5BA8A8 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --card-shadow: 0 10px 40px rgba(0, 31, 107, 0.08);
+            --hover-shadow: 0 20px 60px rgba(0, 31, 107, 0.15);
         }
 
+        /* Stats Row */
         .payments-stats-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -33,25 +38,25 @@
         }
 
         .payment-stat-card {
-            background: var(--white-color);
-            border-radius: 16px;
-            padding: 25px;
+            background: var(--glass-bg);
+            border-radius: 20px;
+            padding: 24px;
             display: flex;
             align-items: center;
-            gap: 20px;
-            border: 1px solid var(--border-color);
+            gap: 16px;
+            border: 1px solid rgba(0, 31, 107, 0.08);
             transition: all 0.3s ease;
         }
 
         .payment-stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            box-shadow: var(--hover-shadow);
         }
 
         .payment-stat-icon {
             width: 55px;
             height: 55px;
-            border-radius: 14px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -59,283 +64,505 @@
             flex-shrink: 0;
         }
 
-        .payment-stat-icon.paid {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            color: #28a745;
-        }
-
-        .payment-stat-icon.pending {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
-            color: #ffc107;
-        }
-
-        .payment-stat-icon.refund {
-            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-            color: #dc3545;
-        }
-
         .payment-stat-icon.total {
-            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-            color: #17a2b8;
-        }
-
-        .payment-stat-content h3 {
-            margin: 0;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-color);
-        }
-
-        .payment-stat-content span {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            font-weight: 500;
-        }
-
-        .tabs-container {
-            background: var(--white-color);
-            border-radius: 16px;
-            padding: 8px;
-            margin-bottom: 25px;
-            display: flex;
-            gap: 8px;
-            border: 1px solid var(--border-color);
-            flex-wrap: wrap;
-        }
-
-        .payment-tab {
-            padding: 12px 24px;
-            border-radius: 12px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            color: var(--text-light);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-            justify-content: center;
-            min-width: 150px;
-        }
-
-        .payment-tab:hover {
-            background: var(--input-bg);
-        }
-
-        .payment-tab.active {
-            background: var(--primary-color);
+            background: var(--primary-gradient);
             color: white;
         }
 
-        .payment-tab i {
+        .payment-stat-icon.paid {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .payment-stat-icon.pending {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .payment-stat-icon.refund {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .payment-stat-content h3 {
+            margin: 0 0 4px 0;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #001F6B;
+        }
+
+        .payment-stat-content span {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Search Bar */
+        .search-section {
+            background: var(--glass-bg);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 31, 107, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-wrapper {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
             font-size: 1.1rem;
         }
 
-        .payment-card {
-            background: var(--white-color);
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .search-input {
+            width: 100%;
+            padding: 16px 50px 16px 50px;
+            border: 2px solid rgba(0, 31, 107, 0.1);
+            border-radius: 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
             transition: all 0.3s ease;
-            flex-wrap: wrap;
-            gap: 15px;
+            background: white;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #78C7C7;
+            box-shadow: 0 0 0 4px rgba(120, 199, 199, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: #94a3b8;
+        }
+
+        /* Status Tabs */
+        .status-tabs {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0 20px;
+            margin-bottom: 25px;
+            scrollbar-width: none;
+        }
+
+        .status-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .status-tab {
+            padding: 12px 24px;
+            border: 2px solid rgba(0, 31, 107, 0.1);
+            border-radius: 50px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #64748b;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .status-tab:hover {
+            border-color: #78C7C7;
+            color: #78C7C7;
+        }
+
+        .status-tab.active {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+        }
+
+        .status-tab.all.active {
+            background: var(--accent-gradient);
+        }
+
+        /* Payments Grid */
+        .payments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .payments-grid {
+                grid-template-columns: 1fr;
+            }
+            .payments-stats-row {
+                grid-template-columns: 1fr;
+            }
+            .search-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        /* Payment Card */
+        .payment-card {
+            background: var(--glass-bg);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid rgba(0, 31, 107, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .payment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .payment-card:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transform: translateY(-8px);
+            box-shadow: var(--hover-shadow);
         }
 
-        .payment-card-left {
+        .payment-card:hover::before {
+            opacity: 1;
+        }
+
+        .payment-header {
             display: flex;
-            align-items: center;
-            gap: 20px;
-            flex: 1;
-            min-width: 300px;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 16px;
         }
 
-        .payment-card-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
+        .payment-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
-            background: rgba(var(--primary-color-rgb), 0.1);
-            color: var(--primary-color);
+            color: white;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            background: var(--primary-gradient);
         }
 
-        .payment-card-info h4 {
-            margin: 0 0 5px 0;
-            font-size: 1.1rem;
-            color: var(--text-color);
+        .payment-icon.lab {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
         }
 
-        .payment-card-info p {
-            margin: 0;
-            font-size: 0.85rem;
-            color: var(--text-light);
+        .payment-icon.radiology {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
         }
 
-        .payment-card-right {
+        .payment-icon.refund {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .payment-info h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #001F6B;
+            margin: 0 0 6px 0;
+            line-height: 1.3;
+        }
+
+        .payment-date {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .payment-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(0, 31, 107, 0.08);
+        }
+
+        .payment-meta-item {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .payment-meta-item i {
+            color: #94a3b8;
+            width: 16px;
+            text-align: center;
+        }
+
+        .payment-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .payment-amount {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            color: var(--text-color);
+            color: #001F6B;
         }
 
         .payment-status {
             padding: 6px 16px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
         }
 
         .payment-status.paid {
-            background: #d4edda;
-            color: #28a745;
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
         }
 
         .payment-status.pending {
-            background: #fff3cd;
-            color: #ffc107;
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
         }
 
         .payment-status.cancelled {
-            background: #f8d7da;
-            color: #dc3545;
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
         }
 
         .payment-status.refunded {
-            background: #d1ecf1;
-            color: #17a2b8;
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
         }
 
         .payment-actions {
             display: flex;
             gap: 10px;
+            width: 100%;
         }
 
-        .btn-payment {
-            padding: 8px 16px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            background: var(--white-color);
-            color: var(--text-color);
-            cursor: pointer;
+        .payment-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
             font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.2s;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .btn-payment:hover {
-            background: var(--primary-color);
+        .payment-btn.pay {
+            background: var(--primary-gradient);
             color: white;
-            border-color: var(--primary-color);
         }
 
-        .btn-payment.primary {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
+        .payment-btn.download {
+            background: rgba(0, 31, 107, 0.05);
+            color: #001F6B;
+            border: 1px solid rgba(0, 31, 107, 0.15);
         }
 
-        .btn-payment.primary:hover {
-            background: var(--primary-color-dark);
+        .payment-btn:hover {
+            transform: translateY(-2px);
         }
 
+        /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: var(--text-light);
+            padding: 80px 40px;
+            background: var(--glass-bg);
+            border-radius: 20px;
+            border: 2px dashed rgba(0, 31, 107, 0.15);
         }
 
         .empty-state i {
             font-size: 4rem;
-            opacity: 0.2;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 20px;
         }
 
-        @media (max-width: 768px) {
-            .payments-stats-row {
-                grid-template-columns: 1fr;
-            }
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: #001F6B;
+            margin-bottom: 10px;
+        }
 
-            .payment-card {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+        .empty-state p {
+            color: #64748b;
+            margin-bottom: 20px;
+        }
 
-            .payment-card-left {
-                width: 100%;
-                min-width: auto;
-            }
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 60px 40px;
+        }
 
-            .payment-card-right {
-                width: 100%;
-                justify-content: space-between;
-                flex-wrap: wrap;
-            }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(0, 31, 107, 0.1);
+            border-top-color: #78C7C7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
 
-            .tabs-container {
-                flex-direction: column;
-            }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
 
-            .payment-tab {
-                width: 100%;
+        /* Dark Mode */
+        body.theme-dark .search-section,
+        body.theme-dark .payment-stat-card,
+        body.theme-dark .payment-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(56, 189, 248, 0.15);
+        }
+
+        body.theme-dark .search-input {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: rgba(56, 189, 248, 0.2);
+            color: #f8fafc;
+        }
+
+        body.theme-dark .payment-info h4,
+        body.theme-dark .payment-amount,
+        body.theme-dark .empty-state h3,
+        body.theme-dark .payment-stat-content h3 {
+            color: #38bdf8;
+        }
+
+        body.theme-dark .status-tab {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(56, 189, 248, 0.2);
+            color: #94a3b8;
+        }
+
+        body.theme-dark .payment-btn.download {
+            background: rgba(56, 189, 248, 0.05);
+            border-color: rgba(56, 189, 248, 0.2);
+            color: #38bdf8;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
+
+        .payment-card {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .payment-card:nth-child(1) { animation-delay: 0.1s; }
+        .payment-card:nth-child(2) { animation-delay: 0.15s; }
+        .payment-card:nth-child(3) { animation-delay: 0.2s; }
+        .payment-card:nth-child(4) { animation-delay: 0.25s; }
+        .payment-card:nth-child(5) { animation-delay: 0.3s; }
+        .payment-card:nth-child(6) { animation-delay: 0.35s; }
     </style>
 </head>
 <body lang="tr">
     <div class="dashboard-container">
         <header class="top-bar">
             <div class="logo">
-                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" style="display: flex; align-items: center; gap: 2px; margin-left: -30px;">
-                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); -webkit-mask: url(clean-logo.png) no-repeat center / contain; mask: url(clean-logo.png) no-repeat center / contain; display: inline-block;"></div>
-                    <span style="font-family: 'Exo 2', sans-serif; font-size: 2.5rem; font-weight: 700; color: #001F6B; letter-spacing: 1px;">LUMINEX</span>
+                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" class="logo-link">
+                    <span class="logo-text">LUMINEX</span>
                 </a>
             </div>
             <div class="user-info">
-                <span id="welcomeMessage"></span>
-                <div class="icons">
-                    <i id="themeToggleButton" class="fas fa-moon"></i>
-                    <div class="notification-wrapper" style="position: relative; display: inline-block;">
-                        <i class="fas fa-bell" style="cursor: pointer;"></i>
-                        <span class="notification-badge" style="display: none; position: absolute; top: -8px; right: -8px; background: #ff4757; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; align-items: center; justify-content: center; font-weight: bold; border: 2px solid var(--white-color);"></span>
-                        <div class="notification-dropdown dropdown" style="position: absolute; top: 100%; right: 0; width: 320px; background: var(--white-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; z-index: 1000; flex-direction: column; overflow: hidden; margin-top: 15px;"></div>
+                <span id="welcomeMessage" class="welcome-text"></span>
+                <div class="top-bar-actions">
+                    <div class="lang-switcher">
+                        <button type="button" class="selected-lang">
+                            <img src="https://flagcdn.com/tr.svg" alt="TR Flag">
+                            <span>Türkçe</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <ul class="lang-options">
+                            <li data-lang="tr"><img src="https://flagcdn.com/tr.svg" alt="TR Flag"> Türkçe</li>
+                            <li data-lang="en"><img src="https://flagcdn.com/gb.svg" alt="GB Flag"> English</li>
+                        </ul>
                     </div>
-                    <i class="fas fa-cog"></i>
-                    <i id="logoutButton" class="fas fa-sign-out-alt"></i>
+                    <button id="themeToggleButton" class="top-bar-btn" title="Tema Değiştir">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="notification-wrapper" style="position: relative !important; display: inline-block !important;">
+                        <button class="top-bar-btn" title="Bildirimler" style="position: relative !important;">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                        <span class="notification-badge" style="
+                            position: absolute !important;
+                            top: -6px !important;
+                            right: -6px !important;
+                            z-index: 100 !important;
+                            background: linear-gradient(135deg, #ff4757, #ff6b7a) !important;
+                            color: white !important;
+                            border-radius: 50% !important;
+                            width: 18px !important;
+                            height: 18px !important;
+                            display: flex !important;
+                            justify-content: center !important;
+                            align-items: center !important;
+                            font-size: 10px !important;
+                            font-weight: bold !important;
+                            border: 2px solid white !important;
+                            pointer-events: none !important;
+                        ">4</span>
+                        <div class="notification-dropdown dropdown"></div>
+                    </div>
+                    <button class="top-bar-btn" onclick="window.location.href='profile-settings.html'" title="Ayarlar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button id="logoutButton" class="top-bar-btn" title="Çıkış Yap">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
                 </div>
             </div>
         </header>
 
         <div class="main-wrapper">
             <aside class="side-menu">
-                <ul id="dynamicSideMenu">
-                    <!-- header-manager.js will fill this -->
-                </ul>
-                <!-- Yedek menü -->
+                <ul id="dynamicSideMenu"></ul>
                 <ul id="fallbackSideMenu" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
                     <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Kontrol Paneli</span></a></li>
                     <li><a href="my-appointments.html"><i class="fas fa-calendar-alt"></i> <span>Randevularım</span></a></li>
                     <li><a href="doctors.html"><i class="fas fa-user-md"></i> <span>Doktorlar / Branşlar</span></a></li>
                     <li><a href="prescriptions.html"><i class="fas fa-prescription-bottle-alt"></i> <span>Reçetelerim</span></a></li>
                     <li><a href="health-history.html"><i class="fas fa-notes-medical"></i> <span>Sağlık Geçmişim</span></a></li>
-                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Ödemeler & Faturalar</span></a></li>
+                    <li><a href="payments.html" class="active"><i class="fas fa-credit-card"></i> <span>Ödemeler & Faturalar</span></a></li>
                     <li><a href="family-accounts.html"><i class="fas fa-users"></i> <span>Bağlı Hesaplar</span></a></li>
                     <li><a href="my-reviews.html"><i class="fas fa-star"></i> <span>Değerlendirmelerim</span></a></li>
                     <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> <span>Geri Bildirim</span></a></li>
@@ -352,74 +579,68 @@
             <main class="dashboard-content">
                 <h1 data-lang="paymentsTitle" class="reveal">Ödemeler & Faturalar</h1>
 
-                <div class="payments-container reveal">
-                    <!-- Stats Row -->
-                    <div class="payments-stats-row">
-                        <div class="payment-stat-card">
-                            <div class="payment-stat-icon total">
-                                <i class="fas fa-wallet"></i>
-                            </div>
-                            <div class="payment-stat-content">
-                                <h3 id="totalPayments">₺0</h3>
-                                <span data-lang="totalAmount">Toplam Tutar</span>
-                            </div>
+                <!-- Stats Row -->
+                <div class="payments-stats-row reveal">
+                    <div class="payment-stat-card">
+                        <div class="payment-stat-icon total">
+                            <i class="fas fa-wallet"></i>
                         </div>
-                        <div class="payment-stat-card">
-                            <div class="payment-stat-icon paid">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="payment-stat-content">
-                                <h3 id="paidPayments">0</h3>
-                                <span data-lang="paymentHistory">Ödeme Geçmişi</span>
-                            </div>
-                        </div>
-                        <div class="payment-stat-card">
-                            <div class="payment-stat-icon pending">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="payment-stat-content">
-                                <h3 id="pendingPayments">0</h3>
-                                <span data-lang="pendingBills">Bekleyen Faturalar</span>
-                            </div>
-                        </div>
-                        <div class="payment-stat-card">
-                            <div class="payment-stat-icon refund">
-                                <i class="fas fa-undo"></i>
-                            </div>
-                            <div class="payment-stat-content">
-                                <h3 id="refundCount">0</h3>
-                                <span data-lang="refundRequests">İade Talepleri</span>
-                            </div>
+                        <div class="payment-stat-content">
+                            <h3 id="totalPayments">₺0</h3>
+                            <span data-lang="totalAmount">Toplam Tutar</span>
                         </div>
                     </div>
-
-                    <!-- Tabs -->
-                    <div class="tabs-container">
-                        <button class="payment-tab active" data-tab="all">
-                            <i class="fas fa-list"></i>
-                            <span data-lang="all">Tümü</span>
-                        </button>
-                        <button class="payment-tab" data-tab="paid">
+                    <div class="payment-stat-card">
+                        <div class="payment-stat-icon paid">
                             <i class="fas fa-check-circle"></i>
-                            <span data-lang="paymentStatusPaid">Ödendi</span>
-                        </button>
-                        <button class="payment-tab" data-tab="pending">
-                            <i class="fas fa-clock"></i>
-                            <span data-lang="paymentStatusPending">Bekliyor</span>
-                        </button>
-                        <button class="payment-tab" data-tab="refunded">
-                            <i class="fas fa-undo"></i>
-                            <span data-lang="paymentStatusRefunded">İade</span>
-                        </button>
-                    </div>
-
-                    <!-- Payments List -->
-                    <div id="paymentsList">
-                        <div class="skeleton-payments">
-                            <div class="skeleton" style="height: 80px; margin-bottom: 15px;"></div>
-                            <div class="skeleton" style="height: 80px; margin-bottom: 15px;"></div>
-                            <div class="skeleton" style="height: 80px; margin-bottom: 15px;"></div>
                         </div>
+                        <div class="payment-stat-content">
+                            <h3 id="paidPayments">0</h3>
+                            <span data-lang="paymentHistory">Ödeme Geçmişi</span>
+                        </div>
+                    </div>
+                    <div class="payment-stat-card">
+                        <div class="payment-stat-icon pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="payment-stat-content">
+                            <h3 id="pendingPayments">0</h3>
+                            <span data-lang="pendingBills">Bekleyen Faturalar</span>
+                        </div>
+                    </div>
+                    <div class="payment-stat-card">
+                        <div class="payment-stat-icon refund">
+                            <i class="fas fa-undo"></i>
+                        </div>
+                        <div class="payment-stat-content">
+                            <h3 id="refundCount">0</h3>
+                            <span data-lang="refundRequests">İade Talepleri</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="search-section reveal">
+                    <div class="search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="paymentSearch" class="search-input" placeholder="Fatura veya ödeme ara...">
+                    </div>
+                </div>
+
+                <!-- Status Tabs -->
+                <div class="status-tabs" id="statusTabs">
+                    <button class="status-tab all active" data-status="all" data-lang="all">Tümü</button>
+                    <button class="status-tab" data-status="paid" data-lang="paymentStatusPaid">Ödendi</button>
+                    <button class="status-tab" data-status="pending" data-lang="paymentStatusPending">Bekliyor</button>
+                    <button class="status-tab" data-status="refunded" data-lang="paymentStatusRefunded">İade</button>
+                </div>
+
+                <!-- Payments Grid -->
+                <div class="payments-grid" id="paymentsList">
+                    <!-- Loading state will be shown initially -->
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p data-lang="loading">Yükleniyor...</p>
                     </div>
                 </div>
             </main>
@@ -427,7 +648,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-    <script src="js/language-manager.js"></script>
+    <script type="module" src="js/language-manager.js"></script>
     <script type="module" src="js/user-session.js"></script>
     <script type="module" src="js/utils/header-manager.js"></script>
     <script type="module" src="js/payments.js"></script>

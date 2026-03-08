@@ -4,9 +4,10 @@ import {
     getActiveProfile,
     removeLoggedInUser,
     removeActiveProfile,
-    getSessionStorageItem, 
+    getSessionStorageItem,
     setSessionStorageItem,
-    getLoggedInUser // Added import
+    getLoggedInUser,
+    getDoctorDisplayName // Added import for doctor name handling
 } from './utils/storage-utils.js';
 
 import { setupHeader } from './utils/header-manager.js'; 
@@ -357,7 +358,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             <div class="timeline-date">${dateStr}</div>
                             <div class="timeline-details">
                                 <h4>${branchText}</h4>
-                                <p>Dr. ${app.doctor}</p>
+                                <p>${getDoctorDisplayName(app.doctor)}</p>
                                 <span class="timeline-status">${app.status || statusText}</span>
                             </div>
                         </div>
@@ -375,37 +376,6 @@ document.addEventListener('DOMContentLoaded', function () {
         updateCountdown();
         updateHealthTimeline(); // Call the new function
 
-        // --- Sidebar Toggle Functionality ---
-        const sidebarToggleButton = document.querySelector('.sidebar-toggle-button');
-        console.log('Sidebar toggle button found:', sidebarToggleButton);
-
-        if (sidebarToggleButton) {
-            sidebarToggleButton.addEventListener('click', function(e) {
-                console.log('Toggle button clicked!');
-                e.preventDefault();
-
-                // Body elementine class ekle
-                document.body.classList.toggle('sidebar-is-collapsed');
-
-                // Durumu localStorage'a kaydet
-                const isCollapsed = document.body.classList.contains('sidebar-is-collapsed');
-                console.log('Is collapsed:', isCollapsed);
-                localStorage.setItem('sidebarCollapsed', isCollapsed);
-
-                // Buton metnini güncelle
-                const buttonText = this.querySelector('span');
-                if (buttonText) {
-                    buttonText.textContent = isCollapsed ? 'Menüyü Genişlet' : 'Menüyü Daralt';
-                }
-
-                // Sidebar'ın yeni genişliğini kontrol et
-                const sideMenu = document.querySelector('.side-menu');
-                if (sideMenu) {
-                    console.log('Sidebar width:', sideMenu.offsetWidth);
-                    console.log('Body classes:', document.body.classList.toString());
-                }
-            });
-        }
 
         document.addEventListener('click', function(e) {
             if (e.target && e.target.classList.contains('cancel-appointment-btn')) {

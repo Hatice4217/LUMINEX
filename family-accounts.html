@@ -8,9 +8,9 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dark-mode.css">
     <link rel="stylesheet" href="css/skeleton.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <script>
         try {
@@ -20,48 +20,20 @@
         } catch (e) {}
     </script>
     <style>
-        .family-accounts-container {
-            max-width: 1200px;
-            margin: 0 auto;
+        /* Modern Family Accounts Styles - Similar to Doctors Page */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #001F6B 0%, #003B8E 100%);
+            --accent-gradient: linear-gradient(135deg, #78C7C7 0%, #5BA8A8 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --card-shadow: 0 10px 40px rgba(0, 31, 107, 0.08);
+            --hover-shadow: 0 20px 60px rgba(0, 31, 107, 0.15);
         }
 
-        .accounts-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .accounts-header h1 {
-            margin: 0;
-        }
-
-        .btn-add-family {
-            padding: 12px 24px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-add-family:hover {
-            background: var(--primary-color-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(var(--primary-color-rgb), 0.3);
-        }
-
+        /* Current Account Card */
         .current-account-card {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
-            border-radius: 20px;
-            padding: 30px;
+            background: var(--primary-gradient);
+            border-radius: 24px;
+            padding: 32px;
             margin-bottom: 30px;
             color: white;
             display: flex;
@@ -69,6 +41,7 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 20px;
+            box-shadow: var(--card-shadow);
         }
 
         .current-account-info {
@@ -78,21 +51,21 @@
         }
 
         .current-account-avatar {
-            width: 70px;
-            height: 70px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.8rem;
             font-weight: 700;
-            border: 3px solid rgba(255,255,255,0.3);
+            border: 3px solid rgba(255, 255, 255, 0.3);
         }
 
         .current-account-details h2 {
-            margin: 0 0 5px 0;
-            font-size: 1.3rem;
+            margin: 0 0 6px 0;
+            font-size: 1.4rem;
         }
 
         .current-account-details p {
@@ -102,204 +75,411 @@
         }
 
         .current-account-badge {
-            background: rgba(255,255,255,0.2);
-            padding: 8px 20px;
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 24px;
+            border-radius: 50px;
             font-size: 0.9rem;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
+        /* Search Bar */
+        .search-section {
+            background: var(--glass-bg);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 31, 107, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-wrapper {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 50px 16px 50px;
+            border: 2px solid rgba(0, 31, 107, 0.1);
+            border-radius: 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #78C7C7;
+            box-shadow: 0 0 0 4px rgba(120, 199, 199, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .btn-add-family {
+            padding: 16px 28px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .btn-add-family:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        /* Family Members Grid */
         .family-members-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
         }
 
+        @media (max-width: 768px) {
+            .family-members-grid {
+                grid-template-columns: 1fr;
+            }
+            .search-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .current-account-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* Family Member Card */
         .family-member-card {
-            background: var(--white-color);
+            background: var(--glass-bg);
             border-radius: 20px;
-            padding: 25px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            padding: 24px;
+            border: 1px solid rgba(0, 31, 107, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .family-member-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .family-member-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-            border-color: var(--primary-color);
+            transform: translateY(-8px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .family-member-card:hover::before {
+            opacity: 1;
         }
 
         .family-member-header {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 16px;
+            margin-bottom: 16px;
         }
 
         .family-member-avatar {
-            width: 55px;
-            height: 55px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            background: var(--input-bg);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.4rem;
             font-weight: 700;
-            color: var(--primary-color);
+            color: white;
+            flex-shrink: 0;
+            background: var(--primary-gradient);
         }
 
         .family-member-avatar.child {
-            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
-            color: #d63031;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
         }
 
         .family-member-avatar.elderly {
-            background: linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%);
-            color: #636e72;
+            background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+        }
+
+        .family-member-avatar.female {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
         }
 
         .family-member-info h4 {
-            margin: 0 0 5px 0;
             font-size: 1.1rem;
-            color: var(--text-color);
+            font-weight: 700;
+            color: #001F6B;
+            margin: 0 0 4px 0;
+            line-height: 1.3;
         }
 
-        .family-member-info p {
-            margin: 0;
+        .family-member-date {
             font-size: 0.85rem;
-            color: var(--text-light);
+            color: #64748b;
         }
 
         .family-member-badges {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(0, 31, 107, 0.08);
         }
 
         .family-member-badge {
-            padding: 4px 12px;
-            border-radius: 12px;
+            padding: 6px 14px;
+            border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 600;
         }
 
         .family-member-badge.child {
-            background: #ffeaa7;
-            color: #d63031;
+            background: rgba(251, 191, 36, 0.15);
+            color: #f59e0b;
         }
 
         .family-member-badge.elderly {
-            background: #dfe6e9;
-            color: #636e72;
+            background: rgba(148, 163, 184, 0.15);
+            color: #64748b;
         }
 
         .family-member-badge.relation {
-            background: rgba(var(--primary-color-rgb), 0.1);
-            color: var(--primary-color);
+            background: rgba(120, 199, 199, 0.15);
+            color: #78C7C7;
         }
 
         .family-member-actions {
             display: flex;
             gap: 10px;
-            margin-top: auto;
         }
 
-        .btn-family-action {
+        .family-member-btn {
             flex: 1;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            background: var(--white-color);
-            color: var(--text-color);
-            cursor: pointer;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
             font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.2s;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
         }
 
-        .btn-family-action:hover {
-            background: var(--primary-color);
+        .family-member-btn.switch {
+            background: var(--primary-gradient);
             color: white;
-            border-color: var(--primary-color);
         }
 
-        .btn-family-action.danger:hover {
-            background: #ff4757;
-            border-color: #ff4757;
+        .family-member-btn.remove {
+            background: rgba(239, 68, 68, 0.05);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
         }
 
-        .empty-family-state {
+        .family-member-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Empty State */
+        .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: var(--text-light);
+            padding: 80px 40px;
+            background: var(--glass-bg);
+            border-radius: 20px;
+            border: 2px dashed rgba(0, 31, 107, 0.15);
         }
 
-        .empty-family-state i {
+        .empty-state i {
             font-size: 4rem;
-            opacity: 0.2;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 20px;
         }
 
-        @media (max-width: 768px) {
-            .accounts-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: #001F6B;
+            margin-bottom: 10px;
+        }
 
-            .btn-add-family {
-                width: 100%;
-                justify-content: center;
-            }
+        .empty-state p {
+            color: #64748b;
+            margin-bottom: 20px;
+        }
 
-            .current-account-card {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 60px 40px;
+        }
 
-            .family-members-grid {
-                grid-template-columns: 1fr;
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(0, 31, 107, 0.1);
+            border-top-color: #78C7C7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Dark Mode */
+        body.theme-dark .search-section,
+        body.theme-dark .family-member-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(56, 189, 248, 0.15);
+        }
+
+        body.theme-dark .search-input {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: rgba(56, 189, 248, 0.2);
+            color: #f8fafc;
+        }
+
+        body.theme-dark .family-member-info h4,
+        body.theme-dark .empty-state h3 {
+            color: #38bdf8;
+        }
+
+        body.theme-dark .family-member-btn.remove {
+            background: rgba(239, 68, 68, 0.05);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
+
+        .family-member-card {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .family-member-card:nth-child(1) { animation-delay: 0.1s; }
+        .family-member-card:nth-child(2) { animation-delay: 0.15s; }
+        .family-member-card:nth-child(3) { animation-delay: 0.2s; }
+        .family-member-card:nth-child(4) { animation-delay: 0.25s; }
+        .family-member-card:nth-child(5) { animation-delay: 0.3s; }
+        .family-member-card:nth-child(6) { animation-delay: 0.35s; }
     </style>
 </head>
 <body lang="tr">
     <div class="dashboard-container">
         <header class="top-bar">
             <div class="logo">
-                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" style="display: flex; align-items: center; gap: 2px; margin-left: -30px;">
-                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #004e92 0%, #001F6B 50%, #000428 100%); -webkit-mask: url(clean-logo.png) no-repeat center / contain; mask: url(clean-logo.png) no-repeat center / contain; display: inline-block;"></div>
-                    <span style="font-family: 'Exo 2', sans-serif; font-size: 2.5rem; font-weight: 700; color: #001F6B; letter-spacing: 1px;">LUMINEX</span>
+                <a id="mainLogoLink" href="dashboard.html" title="Kontrol Paneline Dön" class="logo-link">
+                    <span class="logo-text">LUMINEX</span>
                 </a>
             </div>
             <div class="user-info">
-                <span id="welcomeMessage"></span>
-                <div class="icons">
-                    <i id="themeToggleButton" class="fas fa-moon"></i>
-                    <div class="notification-wrapper" style="position: relative; display: inline-block;">
-                        <i class="fas fa-bell" style="cursor: pointer;"></i>
-                        <span class="notification-badge" style="display: none; position: absolute; top: -8px; right: -8px; background: #ff4757; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; align-items: center; justify-content: center; font-weight: bold; border: 2px solid var(--white-color);"></span>
-                        <div class="notification-dropdown dropdown" style="position: absolute; top: 100%; right: 0; width: 320px; background: var(--white-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; z-index: 1000; flex-direction: column; overflow: hidden; margin-top: 15px;"></div>
+                <span id="welcomeMessage" class="welcome-text"></span>
+                <div class="top-bar-actions">
+                    <div class="lang-switcher">
+                        <button type="button" class="selected-lang">
+                            <img src="https://flagcdn.com/tr.svg" alt="TR Flag">
+                            <span>Türkçe</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <ul class="lang-options">
+                            <li data-lang="tr"><img src="https://flagcdn.com/tr.svg" alt="TR Flag"> Türkçe</li>
+                            <li data-lang="en"><img src="https://flagcdn.com/gb.svg" alt="GB Flag"> English</li>
+                        </ul>
                     </div>
-                    <i class="fas fa-cog"></i>
-                    <i id="logoutButton" class="fas fa-sign-out-alt"></i>
+                    <button id="themeToggleButton" class="top-bar-btn" title="Tema Değiştir">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="notification-wrapper" style="position: relative !important; display: inline-block !important;">
+                        <button class="top-bar-btn" title="Bildirimler" style="position: relative !important;">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                        <span class="notification-badge" style="
+                            position: absolute !important;
+                            top: -6px !important;
+                            right: -6px !important;
+                            z-index: 100 !important;
+                            background: linear-gradient(135deg, #ff4757, #ff6b7a) !important;
+                            color: white !important;
+                            border-radius: 50% !important;
+                            width: 18px !important;
+                            height: 18px !important;
+                            display: flex !important;
+                            justify-content: center !important;
+                            align-items: center !important;
+                            font-size: 10px !important;
+                            font-weight: bold !important;
+                            border: 2px solid white !important;
+                            pointer-events: none !important;
+                        ">4</span>
+                        <div class="notification-dropdown dropdown"></div>
+                    </div>
+                    <button class="top-bar-btn" onclick="window.location.href='profile-settings.html'" title="Ayarlar">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button id="logoutButton" class="top-bar-btn" title="Çıkış Yap">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
                 </div>
             </div>
         </header>
 
         <div class="main-wrapper">
             <aside class="side-menu">
-                <ul id="dynamicSideMenu">
-                    <!-- header-manager.js will fill this -->
-                </ul>
-                <!-- Yedek menü -->
+                <ul id="dynamicSideMenu"></ul>
                 <ul id="fallbackSideMenu" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
                     <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Kontrol Paneli</span></a></li>
                     <li><a href="my-appointments.html"><i class="fas fa-calendar-alt"></i> <span>Randevularım</span></a></li>
@@ -307,7 +487,7 @@
                     <li><a href="prescriptions.html"><i class="fas fa-prescription-bottle-alt"></i> <span>Reçetelerim</span></a></li>
                     <li><a href="health-history.html"><i class="fas fa-notes-medical"></i> <span>Sağlık Geçmişim</span></a></li>
                     <li><a href="payments.html"><i class="fas fa-credit-card"></i> <span>Ödemeler & Faturalar</span></a></li>
-                    <li><a href="family-accounts.html"><i class="fas fa-users"></i> <span>Bağlı Hesaplar</span></a></li>
+                    <li><a href="family-accounts.html" class="active"><i class="fas fa-users"></i> <span>Bağlı Hesaplar</span></a></li>
                     <li><a href="my-reviews.html"><i class="fas fa-star"></i> <span>Değerlendirmelerim</span></a></li>
                     <li><a href="feedback.html"><i class="fas fa-comment-dots"></i> <span>Geri Bildirim</span></a></li>
                     <li><a href="contact.html"><i class="fas fa-headset"></i> <span>İletişim / Destek</span></a></li>
@@ -321,37 +501,41 @@
             </aside>
 
             <main class="dashboard-content">
-                <div class="accounts-header reveal">
-                    <h1 data-lang="familyAccountsTitle">Bağlı Hesaplar (Ailem)</h1>
-                    <button class="btn-add-family" onclick="window.showAddFamilyMemberModal()">
+                <h1 data-lang="familyAccountsTitle" class="reveal">Bağlı Hesaplar</h1>
+
+                <!-- Current Account -->
+                <div class="current-account-card reveal">
+                    <div class="current-account-info">
+                        <div class="current-account-avatar" id="currentAccountAvatar">?</div>
+                        <div class="current-account-details">
+                            <h2 id="currentAccountName">Yükleniyor...</h2>
+                            <p id="currentAccountEmail">email@example.com</p>
+                        </div>
+                    </div>
+                    <div class="current-account-badge">
+                        <i class="fas fa-check-circle"></i>
+                        <span data-lang="mainAccount">Ana Hesap</span>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="search-section reveal">
+                    <div class="search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="familySearch" class="search-input" placeholder="Aile üyesi ara...">
+                    </div>
+                    <button class="btn-add-family" id="addFamilyMemberBtn">
                         <i class="fas fa-user-plus"></i>
                         <span data-lang="addFamilyMember">Aile Üyesi Ekle</span>
                     </button>
                 </div>
 
-                <div class="family-accounts-container reveal">
-                    <!-- Current Account -->
-                    <div class="current-account-card">
-                        <div class="current-account-info">
-                            <div class="current-account-avatar" id="currentAccountAvatar">?</div>
-                            <div class="current-account-details">
-                                <h2 id="currentAccountName">Yükleniyor...</h2>
-                                <p id="currentAccountEmail">email@example.com</p>
-                            </div>
-                        </div>
-                        <div class="current-account-badge">
-                            <i class="fas fa-check-circle"></i>
-                            <span data-lang="myReviewsSidebar">Ana Hesap</span>
-                        </div>
-                    </div>
-
-                    <!-- Family Members -->
-                    <h3 style="margin-bottom: 20px; color: var(--text-color);" data-lang="familyMembers">Aile Üyeleri</h3>
-                    <div id="familyMembersList" class="family-members-grid">
-                        <div class="skeleton-family-members">
-                            <div class="skeleton" style="height: 150px; margin-bottom: 15px;"></div>
-                            <div class="skeleton" style="height: 150px; margin-bottom: 15px;"></div>
-                        </div>
+                <!-- Family Members Grid -->
+                <div class="family-members-grid" id="familyMembersList">
+                    <!-- Loading state will be shown initially -->
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p data-lang="loading">Yükleniyor...</p>
                     </div>
                 </div>
             </main>
@@ -359,7 +543,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-    <script src="js/language-manager.js"></script>
+    <script type="module" src="js/language-manager.js"></script>
     <script type="module" src="js/user-session.js"></script>
     <script type="module" src="js/utils/header-manager.js"></script>
     <script type="module" src="js/family-accounts.js"></script>

@@ -10,10 +10,13 @@ document.addEventListener('DOMContentLoaded', function() {
         pendingPayments: document.getElementById('pendingPayments'),
         refundCount: document.getElementById('refundCount'),
         paymentsList: document.getElementById('paymentsList'),
-        tabs: document.querySelectorAll('.payment-tab')
+        statusTabs: document.getElementById('statusTabs'),
+        searchInput: document.getElementById('paymentSearch')
     };
 
-    let currentTab = 'all';
+    let allPayments = [];
+    let selectedStatus = 'all';
+    let searchTerm = '';
 
     function getSafeTranslation(key) {
         return window.getTranslation ? window.getTranslation(key) : key;
@@ -112,51 +115,21 @@ document.addEventListener('DOMContentLoaded', function() {
         return dummyPayments;
     }
 
-    function renderPayments() {
-        let payments = getLocalStorageItem('luminexPayments') || [];
+    function renderPaymentCards(payments) {
+        if (!elements.paymentsList) return;
 
-        // If no payments exist, generate dummy data
-        if (payments.length === 0) {
-            payments = generateDummyPayments();
-            setLocalStorageItem('luminexPayments', payments);
-        }
+        elements.paymentsList.innerHTML = '';
 
-        const activeProfile = getActiveProfile();
-        const loggedInUser = getLoggedInUser();
-        const userTc = activeProfile ? activeProfile.tc : (loggedInUser ? loggedInUser.tc : null);
-
-        // Filter payments for current user
-        const userPayments = userTc ? payments.filter(p => p.userId === userTc) : payments;
-
-        // Filter by tab
-        let filteredPayments = userPayments;
-        if (currentTab !== 'all') {
-            filteredPayments = userPayments.filter(p => p.status === currentTab);
-        }
-
-        // Update stats
-        const totalAmount = userPayments
-            .filter(p => p.status === 'paid')
-            .reduce((sum, p) => sum + p.amount, 0);
-        const paidCount = userPayments.filter(p => p.status === 'paid').length;
-        const pendingCount = userPayments.filter(p => p.status === 'pending').length;
-        const refundCount = userPayments.filter(p => p.status === 'refunded').length;
-
-        elements.totalPayments.textContent = formatCurrency(totalAmount);
-        elements.paidPayments.textContent = paidCount;
-        elements.pendingPayments.textContent = pendingCount;
-        elements.refundCount.textContent = refundCount;
-
-        // Render list
-        if (filteredPayments.length === 0) {
-            const emptyMessage = currentTab === 'all'
+        if (!payments || payments.length === 0) {
+            const emptyMessage = selectedStatus === 'all'
                 ? getSafeTranslation('noPaymentsFound')
                 : getSafeTranslation('noPendingBills');
 
             elements.paymentsList.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-receipt"></i>
-                    <p>${emptyMessage}</p>
+                    <h3>${emptyMessage}</h3>
+                    <p>${getSafeTranslation('noPaymentsDesc') || 'Henüz ödeme kaydınız bulunmuyor.'}</p>
                 </div>
             `;
             return;
@@ -165,8 +138,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentLang = localStorage.getItem('language') || 'tr';
         const dateLocale = currentLang === 'tr' ? 'tr-TR' : 'en-GB';
 
-        elements.paymentsList.innerHTML = filteredPayments.sort((a, b) => new Date(b.date) - new Date(a.date)).map(payment => {
-            const paymentDate = new Date(payment.date).toLocaleDateString(dateLocale, {
+        payments.forEach(payment => {
+            const card = document.createElement('div');
+            card.className = 'payment-card';
+            card.dataset.id = payment.id;
+
+            const formattedDate = new Date(payment.date).toLocaleDateString(dateLocale, {
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric',
@@ -179,92 +156,178 @@ document.addEventListener('DOMContentLoaded', function() {
                             payment.type === 'radiology' ? 'fa-x-ray' :
                             payment.type === 'refund' ? 'fa-undo' : 'fa-file-invoice';
 
+            const iconClass = payment.type === 'lab_test' ? 'lab' :
+                            payment.type === 'radiology' ? 'radiology' :
+                            payment.type === 'refund' ? 'refund' : '';
+
             let actionsHtml = '';
 
             if (payment.status === 'paid' && payment.invoiceNumber) {
-                actionsHtml += `<button class="btn-payment" onclick="window.downloadInvoice('${payment.id}')">
+                actionsHtml += `<button class="payment-btn download" data-action="download" data-id="${payment.id}">
                     <i class="fas fa-download"></i> ${getSafeTranslation('downloadInvoice')}
                 </button>`;
             }
 
             if (payment.status === 'pending') {
-                actionsHtml += `<button class="btn-payment primary" onclick="window.payNow('${payment.id}')">
+                actionsHtml += `<button class="payment-btn pay" data-action="pay" data-id="${payment.id}">
                     <i class="fas fa-credit-card"></i> ${getSafeTranslation('payNow')}
                 </button>`;
             }
 
-            return `
-                <div class="payment-card">
-                    <div class="payment-card-left">
-                        <div class="payment-card-icon">
-                            <i class="fas ${typeIcon}"></i>
-                        </div>
-                        <div class="payment-card-info">
-                            <h4>${payment.title}</h4>
-                            <p><i class="fas fa-calendar-alt"></i> ${paymentDate}</p>
-                            ${payment.paymentMethod ? `<p><i class="fas fa-credit-card"></i> ${getPaymentMethodTranslation(payment.paymentMethod)}</p>` : ''}
-                            ${payment.invoiceNumber ? `<p><i class="fas fa-file-invoice"></i> ${payment.invoiceNumber}</p>` : ''}
-                        </div>
+            card.innerHTML = `
+                <div class="payment-header">
+                    <div class="payment-icon ${iconClass}">
+                        <i class="fas ${typeIcon}"></i>
                     </div>
-                    <div class="payment-card-right">
-                        <span class="payment-amount">${formatCurrency(payment.amount)}</span>
-                        <span class="payment-status ${payment.status}">${getStatusTranslation(payment.status)}</span>
-                        ${actionsHtml ? `<div class="payment-actions">${actionsHtml}</div>` : ''}
+                    <div class="payment-info">
+                        <h4>${payment.title}</h4>
+                        <span class="payment-date">${formattedDate}</span>
                     </div>
+                </div>
+                <div class="payment-meta">
+                    ${payment.paymentMethod ? `<div class="payment-meta-item">
+                        <i class="fas fa-credit-card"></i>
+                        <span>${getPaymentMethodTranslation(payment.paymentMethod)}</span>
+                    </div>` : ''}
+                    ${payment.invoiceNumber ? `<div class="payment-meta-item">
+                        <i class="fas fa-file-invoice"></i>
+                        <span>${payment.invoiceNumber}</span>
+                    </div>` : ''}
+                </div>
+                <div class="payment-footer">
+                    <span class="payment-amount">${formatCurrency(payment.amount)}</span>
+                    <span class="payment-status ${payment.status}">${getStatusTranslation(payment.status)}</span>
+                    ${actionsHtml ? `<div class="payment-actions">${actionsHtml}</div>` : ''}
                 </div>
             `;
-        }).join('');
 
-        // Re-init reveal animations
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('active');
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+            elements.paymentsList.appendChild(card);
+        });
     }
 
-    // Tab click handlers
-    elements.tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            elements.tabs.forEach(t => t.classList.remove('active'));
+    function filterAndSearchPayments() {
+        const activeProfile = getActiveProfile();
+        const loggedInUser = getLoggedInUser();
+        const userTc = activeProfile ? activeProfile.tc : (loggedInUser ? loggedInUser.tc : null);
+
+        let filtered = [...allPayments];
+
+        // Filter by user
+        if (userTc) {
+            filtered = filtered.filter(p => p.userId === userTc);
+        }
+
+        // Filter by status
+        if (selectedStatus !== 'all') {
+            filtered = filtered.filter(p => p.status === selectedStatus);
+        }
+
+        // Search
+        if (searchTerm) {
+            const searchLower = searchTerm.toLowerCase();
+            filtered = filtered.filter(p =>
+                (p.title && p.title.toLowerCase().includes(searchLower)) ||
+                (p.invoiceNumber && p.invoiceNumber.toLowerCase().includes(searchLower))
+            );
+        }
+
+        // Update stats
+        const userPayments = userTc ? allPayments.filter(p => p.userId === userTc) : allPayments;
+        const totalAmount = userPayments
+            .filter(p => p.status === 'paid')
+            .reduce((sum, p) => sum + p.amount, 0);
+        const paidCount = userPayments.filter(p => p.status === 'paid').length;
+        const pendingCount = userPayments.filter(p => p.status === 'pending').length;
+        const refundCount = userPayments.filter(p => p.status === 'refunded').length;
+
+        elements.totalPayments.textContent = formatCurrency(totalAmount);
+        elements.paidPayments.textContent = paidCount;
+        elements.pendingPayments.textContent = pendingCount;
+        elements.refundCount.textContent = refundCount;
+
+        // Sort by date descending
+        filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        renderPaymentCards(filtered);
+    }
+
+    function loadPayments() {
+        let payments = getLocalStorageItem('luminexPayments') || [];
+
+        // If no payments exist, generate dummy data
+        if (payments.length === 0) {
+            payments = generateDummyPayments();
+            setLocalStorageItem('luminexPayments', payments);
+        }
+
+        allPayments = payments;
+        filterAndSearchPayments();
+    }
+
+    // Status tabs click events
+    if (elements.statusTabs) {
+        elements.statusTabs.addEventListener('click', (e) => {
+            const tab = e.target.closest('.status-tab');
+            if (!tab) return;
+
+            document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
-            currentTab = tab.dataset.tab;
-            renderPayments();
-        });
-    });
 
-    // Global functions
-    window.downloadInvoice = (paymentId) => {
-        Swal.fire({
-            title: getSafeTranslation('downloadInvoice'),
-            text: 'Fatura indiriliyor...',
-            icon: 'info',
-            timer: 2000,
-            showConfirmButton: false
+            selectedStatus = tab.dataset.status;
+            filterAndSearchPayments();
         });
-    };
+    }
 
-    window.payNow = (paymentId) => {
-        Swal.fire({
-            title: getSafeTranslation('payNow'),
-            html: `
-                <div style="text-align: left;">
-                    <p>Ödeme yapmak için aşağıdaki bilgileri kullanabilirsiniz:</p>
-                    <div style="background: var(--input-bg); padding: 15px; border-radius: 10px; margin-top: 15px;">
-                        <p><strong>Banka:</strong> Garanti BBVA</p>
-                        <p><strong>IBAN:</strong> TR12 3456 7890 1234 5678 9012 34</p>
-                        <p><strong>Hesap Sahibi:</strong> LUMINEX Sağlık Hizmetleri A.Ş.</p>
-                    </div>
-                </div>
-            `,
-            icon: 'info',
-            confirmButtonText: 'Tamam'
+    // Search input event
+    if (elements.searchInput) {
+        elements.searchInput.addEventListener('input', (e) => {
+            searchTerm = e.target.value;
+            filterAndSearchPayments();
         });
-    };
+    }
 
-    // Initial render
-    renderPayments();
+    // Payment card button click events
+    if (elements.paymentsList) {
+        elements.paymentsList.addEventListener('click', (e) => {
+            const button = e.target.closest('.payment-btn');
+            if (!button) return;
+
+            const action = button.dataset.action;
+            const paymentId = button.dataset.id;
+            const payment = allPayments.find(p => p.id === paymentId);
+
+            if (!payment) return;
+
+            if (action === 'download') {
+                Swal.fire({
+                    title: getSafeTranslation('downloadInvoice'),
+                    text: getSafeTranslation('downloadingInvoice'),
+                    icon: 'info',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } else if (action === 'pay') {
+                Swal.fire({
+                    title: getSafeTranslation('payNow'),
+                    html: `
+                        <div style="text-align: left;">
+                            <p>${getSafeTranslation('payNowInfo')}</p>
+                            <div style="background: var(--input-bg); padding: 15px; border-radius: 10px; margin-top: 15px;">
+                                <p><strong>${getSafeTranslation('bankName')}:</strong> Garanti BBVA</p>
+                                <p><strong>${getSafeTranslation('bankIBAN')}:</strong> TR12 3456 7890 1234 5678 9012 34</p>
+                                <p><strong>${getSafeTranslation('companyOwner')}:</strong> LUMINEX Sağlık Hizmetleri A.Ş.</p>
+                            </div>
+                        </div>
+                    `,
+                    icon: 'info',
+                    confirmButtonText: getSafeTranslation('confirmPay')
+                });
+            }
+        });
+    }
+
+    // Initial load
+    loadPayments();
 
     // Reveal animations
     const revealObserver = new IntersectionObserver((entries) => {

@@ -1,5 +1,5 @@
 import { setupHeader } from './utils/header-manager.js';
-import { getActiveProfile, getLocalStorageItem, setLocalStorageItem } from './utils/storage-utils.js';
+import { getActiveProfile, getLocalStorageItem, setLocalStorageItem, getDoctorDisplayName } from './utils/storage-utils.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     setupHeader();
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             Swal.fire({
-                title: `Dr. ${getDoctorName(message.doctorId)}`,
+                title: `${getDoctorDisplayName(getDoctorName(message.doctorId))}`,
                 subheader: message.subject,
                 html: `
                     <div style="text-align: left;">
