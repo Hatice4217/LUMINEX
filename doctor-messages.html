@@ -96,12 +96,27 @@
 
             <!-- Doctor Messages Content -->
             <main class="dashboard-content">
-                <h1>Doktor Mesajları</h1>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <h1 style="margin: 0;">Doktor Mesajları</h1>
+                </div>
                 
-                <div class="card">
-                    <h2>Gelen Kutusu</h2>
-                    <div id="doctorMessagesList" class="doctor-messages-list">
-                        <!-- Doctor messages will be loaded here -->
+                <div class="card" style="background: transparent; box-shadow: none; border: none; padding: 0;">
+                    <!-- Search and Filter Toolbar -->
+                    <div class="message-toolbar">
+                        <div class="search-container">
+                            <i class="fas fa-search" style="color: #94a3b8;"></i>
+                            <input type="text" id="messageSearchInput" placeholder="Mesajlarda ara...">
+                        </div>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" id="unreadFilter"> Sadece Okunmamışları Göster
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" id="archivedFilter"> Arşivlenmiş Mesajlar
+                        </label>
+                    </div>
+
+                    <div id="doctorMessagesList" class="doctor-messages-grid">
+                        <!-- Messages will be loaded here -->
                     </div>
                 </div>
             </main>

@@ -1194,7 +1194,25 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    const selection = { provinceId: null, districtId: null, hospitalId: null, branchId: null, doctorId: null, date: null, time: null, patientTc: activeProfile.tc, patientName: activeProfile.name }; // Default to active profile
+    // FIX: Helper to get profile name robustly
+    const getProfileName = (p) => {
+        if (!p) return '';
+        if (p.name && p.name !== 'undefined') return p.name;
+        if (p.firstName && p.lastName) return `${p.firstName} ${p.lastName}`;
+        if (p.fullName) return p.fullName;
+        return '';
+    };
+
+    // Determine correct patient name with fallbacks
+    let initialPatientName = getProfileName(activeProfile);
+    
+    // Fallback: If active profile name is missing/invalid, and it matches logged in user (parent), use logged in user details
+    if ((!initialPatientName || initialPatientName === 'undefined') && activeProfile.tc === loggedInUser.tc) {
+        initialPatientName = getProfileName(loggedInUser);
+    }
+
+    const selection = { provinceId: null, districtId: null, hospitalId: null, branchId: null, doctorId: null, date: null, time: null, patientTc: activeProfile.tc, patientName: initialPatientName }; // Default to active profile
+    
     const formElements = {
         province: { input: document.getElementById('provinceInput'), panel: document.getElementById('provinceOptionsPanel') },
         district: { input: document.getElementById('districtInput'), panel: document.getElementById('districtOptionsPanel') },
@@ -1240,13 +1258,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
         input.addEventListener('focus', () => {
             console.log(`Focus on ${input.id}. Making panel visible.`);
+            
+            // Diğer açık panelleri kapat ve z-index'lerini sıfırla
+            document.querySelectorAll('.custom-options-panel').forEach(p => {
+                if (p !== panel) {
+                    p.classList.remove('visible');
+                    const w = p.closest('.custom-select-wrapper');
+                    if (w) w.style.zIndex = '';
+                }
+            });
+
             panel.classList.add('visible');
+            input.closest('.custom-select-wrapper').style.zIndex = '1001'; // Öne getir
             filterPanel(panel, '');
         });
 
         input.addEventListener('input', () => {
             console.log(`Input in ${input.id}. Making panel visible and filtering.`);
             panel.classList.add('visible');
+            input.closest('.custom-select-wrapper').style.zIndex = '1001'; // Öne getir
             filterPanel(panel, input.value);
             if (input.value === '') {
                 onSelect(null);
@@ -1258,6 +1288,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const item = { id: e.target.dataset.id, name: e.target.textContent };
                 input.value = item.name;
                 panel.classList.remove('visible');
+                input.closest('.custom-select-wrapper').style.zIndex = ''; // z-index'i sıfırla
                 onSelect(item);
             }
         });
@@ -1319,6 +1350,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const notSelected = getSafeTranslation('notSelected');
         const notEntered = getSafeTranslation('notEntered');
 
+        // Prevent language manager from overwriting dynamic values by removing data-lang attribute
+        // This ensures that once we set a value (like Patient Name), it sticks.
+        if (formElements.summary.doctor) formElements.summary.doctor.removeAttribute('data-lang');
+        if (formElements.summary.date) formElements.summary.date.removeAttribute('data-lang');
+        if (formElements.summary.time) formElements.summary.time.removeAttribute('data-lang');
+        if (formElements.summary.patient) formElements.summary.patient.removeAttribute('data-lang');
+        if (formElements.summary.healthInfo) formElements.summary.healthInfo.removeAttribute('data-lang');
+
         formElements.summary.doctor.textContent = formElements.doctor.input.value || notSelected;
         formElements.summary.date.textContent = selection.date || notSelected;
         formElements.summary.time.textContent = selection.time || notSelected;
@@ -1345,7 +1384,10 @@ document.addEventListener('DOMContentLoaded', function() {
             formElements.patientSelectionGroup.style.display = 'block'; // Show the dropdown
             
             const myselfText = getSafeTranslation('myself') || 'Kendim';
-            let optionsHtml = `<option value="${parentUserData.tc}" data-name="${parentUserData.name}">${myselfText} (${parentUserData.name})</option>`; // Use tc and name
+            // FIX: Ensure parent name is resolved
+            const parentName = getProfileName(parentUserData);
+            
+            let optionsHtml = `<option value="${parentUserData.tc}" data-name="${parentName}">${myselfText} (${parentName})</option>`; // Use tc and name
             parentUserData.children.forEach(child => {
                 optionsHtml += `<option value="${child.tc}" data-name="${child.name}">${child.name}</option>`; // Use tc and name
             });
@@ -1559,7 +1601,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('click', (e) => {
         if (e.target && !e.target.closest('.custom-select-wrapper')) {
             document.querySelectorAll('.custom-options-panel').forEach(panel => {
-                if(panel) panel.classList.remove('visible');
+                if(panel) {
+                    panel.classList.remove('visible');
+                    const w = panel.closest('.custom-select-wrapper');
+                    if (w) w.style.zIndex = '';
+                }
             });
         }
     });

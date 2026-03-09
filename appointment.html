@@ -19,6 +19,217 @@
       } catch (e) {}
     </script>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        /* --- NEW APPOINTMENT PAGE LAYOUT STYLES --- */
+        
+        /* 1. Two-Column Layout */
+        .appointment-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px; /* Left fluid, Right fixed */
+            gap: 30px;
+            align-items: start;
+        }
+
+        @media (max-width: 992px) {
+            .appointment-layout {
+                grid-template-columns: 1fr; /* Stack on smaller screens */
+            }
+        }
+
+        /* 2. Card UI for Form Sections */
+        .form-section-card {
+            background: var(--white-color);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-section-card:hover {
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+        }
+
+        .form-section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* 3. Sticky Summary Card */
+        .sticky-summary-card {
+            background: var(--white-color);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+            position: sticky;
+            top: 100px; /* Adjust based on header height */
+            z-index: 10;
+        }
+
+        /* 4. Pill-shaped Time Slots */
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 12px;
+        }
+
+        .time-slot {
+            border-radius: 50px !important; /* Pill shape */
+            border: 1px solid var(--primary-color) !important;
+            background: var(--white-color);
+            color: var(--primary-color) !important;
+            padding: 10px 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .time-slot:hover {
+            background-color: rgba(0, 31, 107, 0.05) !important; /* Very light blue */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .time-slot.selected {
+            background: var(--primary-color) !important;
+            color: white !important;
+            box-shadow: 0 5px 15px rgba(0, 31, 107, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* 5. Input Styling Enhancements */
+        .form-control {
+            padding: 14px 18px !important; /* Increased padding */
+            border-radius: 12px !important;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color) !important;
+            box-shadow: 0 0 0 4px rgba(0, 31, 107, 0.1) !important; /* Navy glow */
+        }
+
+        /* Summary Items */
+        .summary-item {
+            margin-bottom: 18px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 12px;
+        }
+        .summary-item:last-child { border-bottom: none; }
+        
+        .summary-icon {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-top: 2px;
+            background: rgba(0, 31, 107, 0.05);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .summary-content strong {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .summary-content span {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .btn-confirm {
+            width: 100%;
+            padding: 18px;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-top: 25px;
+            background: linear-gradient(135deg, #001F6B 0%, #003B8E 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 10px 25px rgba(0, 31, 107, 0.25);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-confirm:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 31, 107, 0.35);
+        }
+
+        .btn-confirm:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Dark Mode Overrides */
+        body.theme-dark .form-section-card,
+        body.theme-dark .sticky-summary-card {
+            background: #1e293b;
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.theme-dark .time-slot {
+            background: transparent;
+            border-color: #38bdf8 !important;
+            color: #38bdf8 !important;
+        }
+
+        body.theme-dark .time-slot:hover {
+            background: rgba(56, 189, 248, 0.1) !important;
+        }
+
+        body.theme-dark .time-slot.selected {
+            background: #38bdf8 !important;
+            color: #0f172a !important;
+        }
+
+        body.theme-dark .form-control:focus {
+            border-color: #38bdf8 !important;
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15) !important;
+        }
+        
+        body.theme-dark .btn-confirm {
+            background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+            color: #0f172a;
+            box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3);
+        }
+        
+        body.theme-dark .summary-icon {
+            background: rgba(56, 189, 248, 0.1);
+            color: #38bdf8;
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-container">
@@ -100,10 +311,11 @@
             <main class="dashboard-content">
                 <h1 data-lang="appointmentTitle">Randevu Al</h1>
                 
-                <div class="card form-container">
-                    <form id="appointmentForm">
-                        <div class="form-section-clean">
-                            <h2 class="form-section-title" data-lang="locationInfo">Konum Bilgileri</h2>
+                <form id="appointmentForm" class="appointment-layout">
+                    <!-- Left Column: Form Sections -->
+                    <div class="appointment-form-column">
+                        <div class="form-section-card">
+                            <h2 class="form-section-title" data-lang="locationInfo"><i class="fas fa-map-marker-alt"></i> Konum Bilgileri</h2>
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="provinceInput" data-lang="provinceSelection">İl Seçimi</label>
@@ -129,8 +341,8 @@
                             </div>
                         </div>
 
-                        <div class="form-section-clean">
-                            <h2 class="form-section-title" data-lang="appointmentDetails">Randevu Detayları</h2>
+                        <div class="form-section-card">
+                            <h2 class="form-section-title" data-lang="appointmentDetails"><i class="fas fa-info-circle"></i> Randevu Detayları</h2>
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="branchInput" data-lang="branchSelection">Branş Seçimi</label>
@@ -162,38 +374,55 @@
                             </div>
                         </div>
 
-                        <div class="form-section-clean">
-                            <h2 class="form-section-title" data-lang="availableHours">Müsait Saatler</h2>
+                        <div class="form-section-card">
+                            <h2 class="form-section-title" data-lang="availableHours"><i class="fas fa-clock"></i> Müsait Saatler</h2>
                              <div id="timeSlots" class="time-slots">
                                 <p class="time-slot-placeholder" data-lang="selectDateFirst">Lütfen tarih seçimi yapınız.</p>
                             </div>
                         </div>
                         
-                        <div class="form-section-clean">
-                            <h2 class="form-section-title" data-lang="importantHealthInfo">Önemli Sağlık Bilgisi</h2>
+                        <div class="form-section-card">
+                            <h2 class="form-section-title" data-lang="importantHealthInfo"><i class="fas fa-notes-medical"></i> Önemli Sağlık Bilgisi</h2>
                             <div class="form-group">
                                 <div class="input-wrapper">
                                     <textarea id="healthInfo" class="form-control" rows="4" placeholder="Önemli sağlık bilgilerinizi buraya yazabilirsiniz..." data-lang-placeholder="enterHealthInfoPlaceholder"></textarea>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="summary-and-button-wrapper">
-                            <div class="appointment-summary">
-                                <h3><i class="fas fa-clipboard-list"></i> <span data-lang="appointmentSummary">Randevu Özeti</span></h3>
-                                <div class="summary-grid">
-                                    <p><i class="fas fa-user"></i> <strong data-lang="patientLabel">Hasta:</strong> <span id="summaryPatient" data-lang="notSelected">Seçilmedi</span></p>
-                                    <p><i class="fas fa-user-md"></i> <strong data-lang="doctorLabel">Doktor:</strong> <span id="summaryDoctor" data-lang="notSelected">Seçilmedi</span></p>
-                                    <p><i class="fas fa-calendar-alt"></i> <strong data-lang="dateLabel">Tarih:</strong> <span id="summaryDate" data-lang="notSelected">Seçilmedi</span></p>
-                                    <p><i class="fas fa-clock"></i> <strong data-lang="timeLabel">Saat:</strong> <span id="summaryTime" data-lang="notSelected">Seçilmedi</span></p>
-                                    <p><i class="fas fa-notes-medical"></i> <strong data-lang="healthInfo">Sağlık Bilgisi:</strong> <span id="summaryHealthInfo" data-lang="notEntered">Girilmedi</span></p>
-                                </div>
+                    <!-- Right Column: Sticky Summary -->
+                    <div class="appointment-summary-column">
+                        <div class="sticky-summary-card">
+                            <h3 class="form-section-title" style="margin-bottom: 20px; font-size: 1.2rem;"><i class="fas fa-clipboard-check"></i> <span data-lang="appointmentSummary">Randevu Özeti</span></h3>
+                            
+                            <div class="summary-item">
+                                <div class="summary-icon"><i class="fas fa-user"></i></div>
+                                <div class="summary-content"><strong data-lang="patientLabel">Hasta</strong> <span id="summaryPatient" data-lang="notSelected">Seçilmedi</span></div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-icon"><i class="fas fa-user-md"></i></div>
+                                <div class="summary-content"><strong data-lang="doctorLabel">Doktor</strong> <span id="summaryDoctor" data-lang="notSelected">Seçilmedi</span></div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-icon"><i class="fas fa-calendar-alt"></i></div>
+                                <div class="summary-content"><strong data-lang="dateLabel">Tarih</strong> <span id="summaryDate" data-lang="notSelected">Seçilmedi</span></div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-icon"><i class="fas fa-clock"></i></div>
+                                <div class="summary-content"><strong data-lang="timeLabel">Saat</strong> <span id="summaryTime" data-lang="notSelected">Seçilmedi</span></div>
+                            </div>
+                            <div class="summary-item" style="border-bottom: none;">
+                                <div class="summary-icon"><i class="fas fa-notes-medical"></i></div>
+                                <div class="summary-content"><strong data-lang="healthInfo">Sağlık Bilgisi</strong> <span id="summaryHealthInfo" data-lang="notEntered">Girilmedi</span></div>
                             </div>
 
-                            <button type="submit" class="btn btn-primary" disabled data-lang="confirmAppointment">Randevuyu Onayla</button>
+                            <button type="submit" class="btn-confirm" disabled data-lang="confirmAppointment">
+                                <i class="fas fa-check-circle"></i> Randevuyu Onayla
+                            </button>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </main>
         </div>
     </div>

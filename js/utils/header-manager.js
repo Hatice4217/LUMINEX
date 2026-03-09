@@ -157,11 +157,13 @@ function setupSidebarToggler() {
 
     if (localStorage.getItem(storageKey) === 'true') {
         document.documentElement.classList.add('sidebar-is-collapsed');
+        document.body.classList.add('sidebar-is-collapsed');
     }
 
     if (toggleButton) {
         toggleButton.addEventListener('click', () => {
-            const isCollapsed = document.documentElement.classList.toggle('sidebar-is-collapsed');
+            const isCollapsed = document.body.classList.toggle('sidebar-is-collapsed');
+            document.documentElement.classList.toggle('sidebar-is-collapsed', isCollapsed);
             localStorage.setItem(storageKey, isCollapsed);
         });
     }

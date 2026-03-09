@@ -106,17 +106,21 @@ document.addEventListener('DOMContentLoaded', async function() {
             // Determine if any parameter is out of range
             const hasOutOfRange = result.results && result.results.some(res => isOutOfRange(res.value, res.reference || res.range));
 
+            // Add status class for left border
+            resultItem.className = `test-result-item ${hasOutOfRange ? 'status-warning' : 'status-normal'}`;
+
             // Determine status class
             let statusClass = 'badge-warning'; // Default to pending/warning
             const status = result.status || 'Sonuç Bekleniyor';
+            const isCompleted = ['Sonuç Çıktı', 'Raporlandı', 'Tamamlandı'].includes(status);
             
-            if (status === 'Sonuç Çıktı' || status === 'Raporlandı' || status === 'Tamamlandı') {
+            if (isCompleted) {
                 statusClass = 'badge-success';
             } else if (status === 'İptal Edildi') {
                 statusClass = 'badge-danger';
             }
 
-            const outOfRangeLabel = hasOutOfRange ? `<span style="color: #dc3545; font-size: 0.8rem; font-weight: 600; margin-left: 10px;">${getSafeTranslation('outOfRangeValuesPresent')}</span>` : '';
+            const outOfRangeLabel = hasOutOfRange ? `<span class="badge-warning-custom"><i class="fas fa-exclamation-triangle"></i> ${getSafeTranslation('outOfRangeValuesPresent')}</span>` : '';
 
             resultItem.innerHTML = `
                 <div class="test-icon ${hasOutOfRange ? 'text-danger' : ''}">
@@ -128,8 +132,12 @@ document.addEventListener('DOMContentLoaded', async function() {
                     <p><span class="badge ${statusClass}">${status}</span></p>
                 </div>
                 <div class="test-actions">
-                    <button class="btn btn-sm btn-info" data-action="view-details" data-id="${result.id}" ${result.status !== 'Sonuç Çıktı' ? 'disabled' : ''}>${getSafeTranslation('viewDetails')}</button>
-                    <button class="btn btn-sm btn-primary" data-action="download-pdf" data-id="${result.id}" ${result.status !== 'Sonuç Çıktı' ? 'disabled' : ''}>${getSafeTranslation('downloadPdf')}</button>
+                    <button class="btn btn-sm btn-outline-primary" data-action="view-details" data-id="${result.id}" ${!isCompleted ? 'disabled' : ''}>
+                        <i class="fas fa-eye"></i> ${getSafeTranslation('viewDetails')}
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary" data-action="download-pdf" data-id="${result.id}" ${!isCompleted ? 'disabled' : ''}>
+                        <i class="fas fa-file-pdf"></i> ${getSafeTranslation('downloadPdf')}
+                    </button>
                 </div>
             `;
             elements.testResultsListContainer.appendChild(resultItem);
@@ -254,13 +262,39 @@ document.addEventListener('DOMContentLoaded', async function() {
                 const currentLang = localStorage.getItem('language') || 'tr';
                 const dateLocale = currentLang === 'tr' ? 'tr-TR' : 'en-GB';
 
+                // Check for out of range values to determine header style
+                const hasOutOfRange = result.results && result.results.some(res => isOutOfRange(res.value, res.reference || res.range));
+                
+                // Badge configuration
+                const badgeClass = hasOutOfRange ? 'badge-danger-pill' : 'badge-success-pill';
+                const badgeIcon = hasOutOfRange ? 'fa-exclamation-triangle' : 'fa-check-circle';
+                const badgeText = hasOutOfRange ? getSafeTranslation('outOfRangeWarning') : getSafeTranslation('inRangeInfo');
+
                 let resultsHtml = `
                     <div class="modern-results-container">
-                        <div class="modern-results-header">
-                            <h2>${result.testName || result.name}</h2>
-                            <p><strong>${getSafeTranslation('dateLabel')}:</strong> ${new Date(result.resultDate).toLocaleDateString(dateLocale, { day: '2-digit', month: 'long', year: 'numeric' })} | <strong>${getSafeTranslation('doctorLabel')}:</strong> ${result.doctorName}</p>
+                        <div class="modern-results-header-clean">
+                            <div class="header-top-row">
+                                <h2 class="result-title">${result.testName || result.name}</h2>
+                                <div class="${badgeClass}">
+                                    <i class="fas ${badgeIcon}"></i>
+                                    <span>${badgeText}</span>
+                                </div>
+                            </div>
+                            <div class="info-bar">
+                                <div class="info-item">
+                                    <i class="far fa-calendar-alt"></i>
+                                    <span>${getSafeTranslation('dateLabel')}:</span>
+                                    <strong>${new Date(result.resultDate).toLocaleDateString(dateLocale, { day: '2-digit', month: 'long', year: 'numeric' })}</strong>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-user-md"></i>
+                                    <span>${getSafeTranslation('doctorLabel')}:</span>
+                                    <strong>${result.doctorName}</strong>
+                                </div>
+                            </div>
                         </div>
                         <div class="modern-results-body">
+                            <div class="result-list-container">
                 `;
 
                 if (result.results.length > 0 && result.results[0].parameter === 'Bulgular') {
@@ -276,30 +310,39 @@ document.addEventListener('DOMContentLoaded', async function() {
                     result.results.forEach(res => {
                         const refRange = res.reference || res.range || '';
                         const outOfRange = isOutOfRange(res.value, refRange);
+                        const valueClass = outOfRange ? 'value-danger' : 'value-normal';
                         
                         resultsHtml += `
-                            <div class="result-parameter-card ${outOfRange ? 'out-of-range' : ''}">
-                                <div class="parameter-info">
-                                    <span class="parameter-name">${res.parameter}</span>
-                                    <span class="parameter-range">${getSafeTranslation('referenceLabel')}: ${refRange} ${res.unit || ''}</span>
-                                </div>
-                                <div class="parameter-value">
-                                    <span class="value">${res.value}</span>
-                                    <span class="unit">${res.unit || ''}</span>
-                                    ${outOfRange ? `<i class="fas fa-exclamation-triangle range-indicator" title="${getSafeTranslation('outOfRangeWarning')}"></i>` : `<i class="fas fa-check-circle range-indicator" title="${getSafeTranslation('inRangeInfo')}"></i>`}
+                            <div class="result-row-clean">
+                                <div class="parameter-name-clean">${res.parameter}</div>
+                                <div class="parameter-result-clean">
+                                    <div class="value-clean ${valueClass}">
+                                        ${res.value} <span style="font-size: 0.9rem; font-weight: normal; color: #777;">${res.unit || ''}</span>
+                                    </div>
+                                    <div class="reference-range-clean">${getSafeTranslation('referenceLabel')}: ${refRange}</div>
                                 </div>
                             </div>
                         `;
                     });
                 }
 
-                resultsHtml += '</div></div>';
+                resultsHtml += `
+                            </div>
+                        </div>
+                        <div class="modern-results-footer">
+                            <button class="btn btn-outline-secondary" onclick="window.print()">
+                                <i class="fas fa-print"></i> ${getSafeTranslation('print') || 'Yazdır'}
+                            </button>
+                            <button class="btn btn-secondary" onclick="Swal.close()">${getSafeTranslation('close')}</button>
+                        </div>
+                    </div>
+                `;
 
                 Swal.fire({
                     html: resultsHtml,
                     showCloseButton: true,
                     showConfirmButton: false,
-                    width: '800px',
+                    width: '650px',
                     customClass: {
                         popup: 'modern-swal-popup',
                         htmlContainer: 'modern-swal-container'
