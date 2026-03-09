@@ -79,13 +79,15 @@ body.theme-dark .custom-options-panel,
 body.theme-dark .profile-section,
 body.theme-dark .profile-sidebar,
 body.theme-dark .profile-main,
+body.theme-dark .stat-card,
 body.theme-dark .stat-card {
     background: #1e293b !important; /* Slate 800 */
     border: 1px solid rgba(255, 255, 255, 0.08) !important; /* İnce border */
-    color: var(--text-color);
+    color: var(--text-color) !important; /* Koyu modda açık renk metin */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2),
                 inset 0 1px 0 rgba(255, 255, 255, 0.05) !important; /* İç ışıltı */
 }
+
 
 body.theme-dark .quick-access-item {
     background: #1e293b !important;

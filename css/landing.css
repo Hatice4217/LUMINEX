@@ -173,6 +173,7 @@ body.theme-light .background-animation::before {
     width: 100%;
     z-index: 9999; /* Yükseltildi - her zaman en üstte */
     backdrop-filter: blur(12px);
+    overflow: visible !important; /* Dropdown'ların kesilmesini önler */
     background: rgba(0, 4, 40, 0.6);
     transition: all 0.5s ease, background-color 0.6s ease;
 }
@@ -184,6 +185,7 @@ body.theme-light .background-animation::before {
     width: 100%;
     max-width: 1500px;
     margin: 0 auto;
+    overflow: visible !important;
     padding: 0 2.5rem;
 }
 

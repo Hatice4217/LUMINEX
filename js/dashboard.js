@@ -7,7 +7,8 @@ import {
     getSessionStorageItem,
     setSessionStorageItem,
     getLoggedInUser,
-    getDoctorDisplayName // Added import for doctor name handling
+    getDoctorDisplayName,
+    getLuminexUsers
 } from './utils/storage-utils.js';
 
 import { setupHeader } from './utils/header-manager.js'; 
@@ -139,6 +140,53 @@ document.addEventListener('DOMContentLoaded', function () {
         if (loadingSpinner) {
             loadingSpinner.style.display = 'none';
         }
+
+        // --- PREMIUM: Kişiselleştirilmiş Karşılama ---
+        function updateWelcomeMessage() {
+            const h1 = document.querySelector('.dashboard-content h1');
+            if (h1) {
+                const hour = new Date().getHours();
+                let greeting = 'İyi Günler';
+                let emoji = '👋';
+
+                if (hour >= 5 && hour < 12) {
+                    greeting = 'Günaydın';
+                    emoji = '☀️';
+                } else if (hour >= 17 || hour < 5) {
+                    greeting = 'İyi Akşamlar';
+                    emoji = '🌙';
+                }
+
+                const activeProfile = getActiveProfile();
+                const loggedInUser = getLoggedInUser();
+                
+                let rawName = 'Misafir';
+
+                // Yardımcı fonksiyon: Kullanıcı nesnesinden en uygun ismi çek
+                const getName = (u) => {
+                    if (!u) return null;
+                    const name = u.name || u.fullName || (u.firstName ? `${u.firstName} ${u.lastName || ''}`.trim() : null);
+                    return (name && name !== 'undefined' && name !== 'Kullanıcı') ? name : null;
+                };
+
+                // Önce aktif profili, yoksa giriş yapan ana kullanıcıyı kontrol et
+                rawName = getName(activeProfile) || getName(loggedInUser);
+                    
+                // Eğer hala bulunamadıysa (placeholder ise) ana kullanıcı listesinden T.C. ile sorgula
+                if (!rawName) {
+                    const userTc = (activeProfile?.tc || activeProfile?.tcKimlik) || (loggedInUser?.tc || loggedInUser?.tcNo || loggedInUser?.tcKimlik);
+                    if (userTc) {
+                        const allUsers = getLuminexUsers();
+                        const fullUser = allUsers.find(u => (u.tc || u.tcNo || u.tcKimlik) === userTc);
+                        rawName = getName(fullUser) || 'Kullanıcı';
+                    }
+                }
+
+                const name = rawName.split(' ')[0];
+
+                h1.innerHTML = `${greeting}, ${name} ${emoji} <div style="font-size: 1rem; color: #6c757d; font-weight: 400; margin-top: 5px;">Bugün sağlığınız için neler yapabiliriz?</div>`;
+            }
+        }
     
         function startHealthTipsCarousel() {
             const healthTipElement = document.getElementById('health-tip');
@@ -158,7 +206,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 healthTipElement.style.opacity = '0';
                 setTimeout(() => {
                     const translatedText = window.getTranslation ? window.getTranslation(currentTip.text) : currentTip.text;
-                    healthTipElement.textContent = translatedText;
+                    
+                    // PREMIUM: İkon Ekleme
+                    let icon = '';
+                    if (currentTip.type === 'health' || currentTip.text.includes('su') || currentTip.text.includes('water')) icon = ' 💧';
+                    else if (currentTip.text.includes('yürüyüş') || currentTip.text.includes('walk')) icon = ' 🏃‍♀️';
+                    else if (currentTip.text.includes('uyku') || currentTip.text.includes('sleep')) icon = ' 😴';
+
+                    healthTipElement.innerHTML = translatedText + icon;
                     healthTipElement.style.opacity = '1';
                     currentTipIndex = (currentTipIndex + 1) % healthTips.length;
                 }, 500);
@@ -229,6 +284,10 @@ document.addEventListener('DOMContentLoaded', function () {
             // Hide old widget if exists (cleanup)
             const oldWidget = document.getElementById('appointmentCountdown');
             if(oldWidget) oldWidget.style.display = 'none';
+            
+            // PREMIUM: Header'daki eski kırmızı yazıyı kaldır
+            const headerCountdown = document.getElementById('header-countdown-text');
+            if (headerCountdown) headerCountdown.remove();
 
             const allAppointments = getLuminexAppointments();
             const userAppointments = allAppointments.filter(app => app.patientTc === activeProfile.tc && app.status !== 'İptal Edildi' && app.status !== 'Tamamlandı');
@@ -244,51 +303,56 @@ document.addEventListener('DOMContentLoaded', function () {
                 .filter(app => app.dateTime > now)
                 .sort((a, b) => a.dateTime - b.dateTime);
 
-            const welcomeMsgSpan = document.getElementById('welcomeMessage'); // Target the header span
-
-            if (upcoming.length > 0 && welcomeMsgSpan) {
-                const nextApp = upcoming[0];
-                
-                // Create or get countdown span in header
-                let headerCountdown = document.getElementById('header-countdown-text');
-                if (!headerCountdown) {
-                    headerCountdown = document.createElement('span');
-                    headerCountdown.id = 'header-countdown-text';
-                    headerCountdown.style.cssText = "font-size: 0.85rem; color: #e74c3c; font-weight: 600; margin-left: 15px; white-space: nowrap;";
-                    welcomeMsgSpan.parentNode.insertBefore(headerCountdown, welcomeMsgSpan.nextSibling);
+            // PREMIUM: Yeni Banner Alanı Oluştur
+            let banner = document.getElementById('appointment-banner');
+            if (!banner) {
+                banner = document.createElement('div');
+                banner.id = 'appointment-banner';
+                banner.className = 'appointment-banner';
+                // H1 başlığının hemen altına ekle
+                const h1 = document.querySelector('.dashboard-content h1');
+                if (h1 && h1.parentNode) {
+                    h1.parentNode.insertBefore(banner, h1.nextSibling);
                 }
+            }
 
-                const updateTimer = () => {
-                    const currentTime = new Date();
-                    const diff = nextApp.dateTime - currentTime;
+            if (upcoming.length > 0) {
+                const nextApp = upcoming[0];
+                const diff = nextApp.dateTime - now;
+                
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-                    if (diff <= 0) {
-                        headerCountdown.style.display = 'none'; 
-                        return;
-                    }
+                const currentLang = localStorage.getItem('language') || 'tr';
+                const dateLocale = currentLang === 'tr' ? 'tr-TR' : 'en-GB';
+                const dateStr = new Date(nextApp.date).toLocaleDateString(dateLocale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-                    let timeText = "";
-                    if(days > 0) timeText += `${days} ${window.getTranslation('countdownDays')} `;
-                    if(hours > 0 || days > 0) timeText += `${hours} ${window.getTranslation('countdownHours')} `;
-                    timeText += `${minutes} ${window.getTranslation('countdownMinsRemaining')}`;
-
-                    const headerText = window.getTranslation('countdownHeaderPrefix');
-                    headerCountdown.innerHTML = `<i class="fas fa-calendar-check" style="margin-right:5px;"></i> ${headerText} ${timeText}`;
-                    headerCountdown.style.display = 'inline';
-                    const currentLang = localStorage.getItem('language') || 'tr';
-                    const dateLocale = currentLang === 'tr' ? 'tr-TR' : 'en-GB';
-                    headerCountdown.title = `Sıradaki Randevu: ${new Date(nextApp.date).toLocaleDateString(dateLocale)} ${nextApp.time}`;
-                };
-
-                updateTimer(); // Run immediately
-                setInterval(updateTimer, 60000); // Update every minute is enough for header
+                banner.innerHTML = `
+                    <div class="banner-content">
+                        <div class="banner-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="banner-info">
+                            <h4>Sıradaki Randevunuz</h4>
+                            <p><strong>${getDoctorDisplayName(nextApp.doctor)}</strong> - ${nextApp.branch}</p>
+                            <p class="banner-date"><i class="far fa-clock"></i> ${dateStr} - ${nextApp.time}</p>
+                        </div>
+                        <div class="banner-timer">
+                            <div class="timer-box"><span class="timer-val">${days}</span><span class="timer-label">Gün</span></div>
+                            <div class="timer-box"><span class="timer-val">${hours}</span><span class="timer-label">Sa</span></div>
+                            <div class="timer-box"><span class="timer-val">${minutes}</span><span class="timer-label">Dk</span></div>
+                        </div>
+                        <button class="btn-banner-action" onclick="window.location.href='my-appointments.html'">
+                            Detaylar <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                `;
+                banner.style.display = 'block';
+                
+                // Timer'ı güncellemek için basit bir reload yerine sadece UI update yapılabilir ama şimdilik statik kalsın
             } else {
-                const existing = document.getElementById('header-countdown-text');
-                if(existing) existing.style.display = 'none';
+                if(banner) banner.style.display = 'none';
             }
         }
     
@@ -369,15 +433,65 @@ document.addEventListener('DOMContentLoaded', function () {
             timelineContainer.innerHTML = html;
         }
 
+        // PREMIUM: Izgara Düzeni (Grid Layout)
+        function restructureDashboardLayout() {
+            const content = document.querySelector('.dashboard-content');
+            if (!content || document.querySelector('.dashboard-grid-bottom')) return;
+
+            // Kartları bul
+            const statsEl = document.getElementById('completedAppointments');
+            const statsCard = statsEl ? statsEl.closest('.card') : null;
+            
+            const timelineEl = document.getElementById('healthTimelineList');
+            const timelineCard = timelineEl ? timelineEl.closest('.card') : null;
+            
+            const announcementsCard = document.querySelector('.announcements-card');
+
+            if (statsCard && timelineCard && announcementsCard) {
+                const grid = document.createElement('div');
+                grid.className = 'dashboard-grid-bottom';
+                
+                const left = document.createElement('div');
+                left.className = 'dashboard-left-col';
+                
+                const right = document.createElement('div');
+                right.className = 'dashboard-right-col';
+                
+                // Kartları taşı
+                left.appendChild(statsCard);
+                left.appendChild(timelineCard);
+                right.appendChild(announcementsCard);
+                
+                grid.appendChild(left);
+                grid.appendChild(right);
+                
+                content.appendChild(grid);
+            }
+        }
+
+        updateWelcomeMessage();
         startHealthTipsCarousel();
         setupQuickAccessCards();
         // loadAppointments();
         updateStatistics();
         updateCountdown();
         updateHealthTimeline(); // Call the new function
+        restructureDashboardLayout();
 
 
         document.addEventListener('click', function(e) {
+            // --- PREMIUM: Bildirim Paneli Aç/Kapat ---
+            const notifBtn = e.target.closest('.notification-wrapper button');
+            if (notifBtn) {
+                const dropdown = notifBtn.closest('.notification-wrapper').querySelector('.notification-dropdown');
+                if (dropdown) {
+                    dropdown.classList.toggle('show');
+                }
+            } else if (!e.target.closest('.notification-dropdown')) {
+                const openDropdown = document.querySelector('.notification-dropdown.show');
+                if (openDropdown) openDropdown.classList.remove('show');
+            }
+
             if (e.target && e.target.classList.contains('cancel-appointment-btn')) {
                 const appointmentId = e.target.getAttribute('data-id');
                 Swal.fire({

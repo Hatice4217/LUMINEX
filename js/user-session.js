@@ -209,9 +209,16 @@ window.Luminex = {};
         const activeProfile = getActiveProfile();
         if (!activeProfile) {
             console.log("No active profile found. Setting to logged-in user.");
+            
+            // Daha kapsamlı isim tespiti
+            const name = loggedInUser.name || loggedInUser.fullName || 
+                         (loggedInUser.firstName ? `${loggedInUser.firstName} ${loggedInUser.lastName || ''}`.trim() : 'Kullanıcı');
+            
+            const tc = loggedInUser.tc || loggedInUser.tcNo || loggedInUser.tcKimlik;
+            
             const initialProfile = {
-                tc: loggedInUser.tc,
-                name: loggedInUser.name,
+                tc: tc,
+                name: name,
                 isChild: false // The parent account is not a child
             };
             setActiveProfile(initialProfile);

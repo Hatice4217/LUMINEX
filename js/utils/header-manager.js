@@ -253,6 +253,7 @@ export function applyAdminTheme(theme) {
 function getUserName(user) {
     if (!user) return null;
     if (user.name) return user.name;
+    if (user.fullName) return user.fullName;
     if (user.firstName && user.lastName) return `${user.firstName} ${user.lastName}`;
     if (user.firstName) return user.firstName;
     return null;
