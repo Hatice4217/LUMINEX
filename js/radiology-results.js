@@ -45,7 +45,8 @@ document.addEventListener('DOMContentLoaded', function() {
         results.forEach(result => {
             const resultItem = document.createElement('div');
             resultItem.classList.add('test-result-item');
-            const statusClass = result.status === 'Raporlandı' ? 'badge-success' : 'badge-warning';
+            const isReady = ['Raporlandı', 'Tamamlandı', 'Sonuç Çıktı'].includes(result.status);
+            const statusClass = isReady ? 'badge-success' : 'badge-warning';
             const displayDate = new Date(result.date).toLocaleDateString(dateLocale, { year: 'numeric', month: 'long', day: 'numeric' });
             resultItem.innerHTML = `
                 <div class="test-icon"><i class="fas fa-x-ray"></i></div>
@@ -55,8 +56,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p><span class="badge ${statusClass}">${result.status || getSafeTranslation('waiting')}</span></p>
                 </div>
                 <div class="test-actions">
-                    <button class="btn btn-sm btn-info" data-action="view-details" data-id="${result.id}" ${result.status !== 'Raporlandı' ? 'disabled' : ''}>${getSafeTranslation('viewReport')}</button>
-                    <button class="btn btn-sm btn-primary" data-action="view-images" data-id="${result.id}" ${result.status !== 'Raporlandı' ? 'disabled' : ''}>${getSafeTranslation('openImages')}</button>
+                    <button class="btn btn-sm btn-info" data-action="view-details" data-id="${result.id}" ${!isReady ? 'disabled' : ''}>${getSafeTranslation('viewReport')}</button>
+                    <button class="btn btn-sm btn-primary" data-action="view-images" data-id="${result.id}" ${!isReady ? 'disabled' : ''}>${getSafeTranslation('openImages')}</button>
                 </div>
             `;
             elements.radiologyResultsListContainer.appendChild(resultItem);
@@ -90,22 +91,63 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentLang = localStorage.getItem('language') || 'tr';
         const dateLocale = currentLang === 'tr' ? 'tr-TR' : 'en-GB';
 
+        // Badge logic
+        const isReported = ['Raporlandı', 'Tamamlandı', 'Sonuç Çıktı'].includes(result.status);
+        const badgeStyle = isReported 
+            ? 'background-color: #28a745; color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;' 
+            : 'background-color: #ffc107; color: #333; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;';
+        const badgeIcon = isReported ? 'fa-check-circle' : 'fa-clock';
+        const badgeText = result.status || getSafeTranslation('waiting');
+
         const fullHtml = `
-            <div class="modern-results-container">
-                <div class="modern-results-header">
-                    <h2>${result.type}</h2>
-                    <p><strong>${getSafeTranslation('dateLabel')}:</strong> ${new Date(result.date).toLocaleDateString(dateLocale, { day: '2-digit', month: 'long', year: 'numeric' })} | <strong>${getSafeTranslation('doctorLabel')}:</strong> ${result.doctorName}</p>
-                </div>
-                <div class="modern-results-body">
-                    <div class="result-report-card">
-                        <h4>${getSafeTranslation('technique')}</h4>
-                        <p>${result.details.technique || getSafeTranslation('noInfo')}</p>
-                        <h4>${getSafeTranslation('findings')}</h4>
-                        <p>${result.details.findings || getSafeTranslation('noInfo')}</p>
-                        <hr>
-                        <h4>${getSafeTranslation('resultComment')}</h4>
-                        <p><strong>${result.details.impression || getSafeTranslation('noInfo')}</strong></p>
+            <div class="modern-results-container" style="font-family: 'Poppins', sans-serif; text-align: left;">
+                <div class="modern-results-header-clean" style="padding-bottom: 15px;">
+                    <div class="header-top-row" style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 20px;">
+                        <h2 class="result-title" style="margin: 0; font-size: 1.6rem; color: #001F6B; font-weight: 700;">${result.type}</h2>
+                        <div style="${badgeStyle}">
+                            <i class="fas ${badgeIcon}"></i>
+                            <span>${badgeText}</span>
+                        </div>
                     </div>
+                    
+                    <div class="info-bar" style="background-color: #f8f9fa; padding: 15px; border-radius: 10px; display: flex; gap: 25px; align-items: center; border: 1px solid #e9ecef;">
+                        <div class="info-item" style="display: flex; align-items: center; gap: 8px; color: #495057;">
+                            <i class="far fa-calendar-alt" style="color: #001F6B;"></i>
+                            <span style="font-size: 0.9rem; font-weight: 500;">${getSafeTranslation('dateLabel')}:</span>
+                            <strong style="color: #212529;">${new Date(result.date).toLocaleDateString(dateLocale, { day: '2-digit', month: 'long', year: 'numeric' })}</strong>
+                        </div>
+                        <div class="info-item" style="display: flex; align-items: center; gap: 8px; color: #495057;">
+                            <i class="fas fa-user-md" style="color: #001F6B;"></i>
+                            <span style="font-size: 0.9rem; font-weight: 500;">${getSafeTranslation('doctorLabel')}:</span>
+                            <strong style="color: #212529;">${result.doctorName}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modern-results-body" style="padding: 10px 0;">
+                    <div class="result-report-card" style="background: #fff; padding: 20px; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: #001F6B; margin-bottom: 8px; font-size: 1.1rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 5px; display: inline-block;">${getSafeTranslation('technique')}</h4>
+                            <p style="color: #333; line-height: 1.6;">${(result.details && result.details.technique) || getSafeTranslation('noInfo')}</p>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: #001F6B; margin-bottom: 8px; font-size: 1.1rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 5px; display: inline-block;">${getSafeTranslation('findings')}</h4>
+                            <p style="color: #333; line-height: 1.6;">${(result.details && result.details.findings) || getSafeTranslation('noInfo')}</p>
+                        </div>
+                        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #001F6B;">
+                            <h4 style="color: #001F6B; margin-bottom: 8px; font-size: 1.1rem;">${getSafeTranslation('resultComment')}</h4>
+                            <p style="color: #212529; font-weight: 600; line-height: 1.6; margin: 0;">${(result.details && result.details.impression) || getSafeTranslation('noInfo')}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modern-results-footer" style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee;">
+                    <button class="btn" onclick="Swal.close()" style="background-color: #6c757d; color: #fff; border: 1px solid #6c757d; padding: 12px 24px; border-radius: 8px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
+                        ${getSafeTranslation('close')}
+                    </button>
+                    <button class="btn" onclick="window.print()" style="background-color: #001F6B; color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0, 31, 107, 0.2);">
+                        <i class="fas fa-print"></i> ${getSafeTranslation('print') || 'Yazdır'}
+                    </button>
                 </div>
             </div>
         `;
@@ -113,8 +155,27 @@ document.addEventListener('DOMContentLoaded', function() {
             html: fullHtml,
             showCloseButton: true,
             showConfirmButton: false,
-            width: '800px',
-            customClass: { popup: 'modern-swal-popup', htmlContainer: 'modern-swal-container' }
+            width: '750px',
+            padding: '0',
+            customClass: { popup: 'modern-swal-popup', htmlContainer: 'modern-swal-container' },
+            didOpen: () => {
+                // Add hover effects for buttons via JS since inline styles don't support pseudo-classes easily
+                const btns = Swal.getHtmlContainer().querySelectorAll('.btn');
+                btns.forEach(btn => {
+                    btn.addEventListener('mouseenter', () => {
+                        btn.style.transform = 'translateY(-2px)';
+                        if(btn.innerText.includes(getSafeTranslation('print'))) {
+                            btn.style.boxShadow = '0 6px 16px rgba(0, 31, 107, 0.3)';
+                        }
+                    });
+                    btn.addEventListener('mouseleave', () => {
+                        btn.style.transform = 'translateY(0)';
+                        if(btn.innerText.includes(getSafeTranslation('print'))) {
+                            btn.style.boxShadow = '0 4px 12px rgba(0, 31, 107, 0.2)';
+                        }
+                    });
+                });
+            }
         });
     }
 
@@ -303,6 +364,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (elements.applyFiltersBtn) elements.applyFiltersBtn.addEventListener('click', loadRadiologyResults);
     if (elements.clearFiltersBtn) {
+        elements.clearFiltersBtn.style.color = '#fff';
         elements.clearFiltersBtn.addEventListener('click', () => {
             elements.startDateInput.value = '';
             elements.endDateInput.value = '';
@@ -314,14 +376,31 @@ document.addEventListener('DOMContentLoaded', function() {
     if (elements.radiologyResultsListContainer) {
         elements.radiologyResultsListContainer.addEventListener('click', (event) => {
             const button = event.target.closest('button[data-action]');
-            if (!button || button.disabled) return;
-            const resultId = button.dataset.id;
-            const result = getLuminexRadiologyResults().find(r => r.id === resultId);
-            if (!result) return;
+            if (!button) return;
+            
+            // Butonun form içinde olma ihtimaline karşı sayfa yenilenmesini önle
+            event.preventDefault();
 
-            if (button.dataset.action === 'view-details') {
+            const action = button.getAttribute('data-action');
+            const resultId = button.getAttribute('data-id');
+            
+            console.log('Tıklama:', action, 'ID:', resultId, 'Disabled:', button.disabled);
+
+            if (button.disabled) {
+                console.warn('Buton devre dışı (disabled). İşlem yapılmıyor.');
+                return;
+            }
+
+            const result = getLuminexRadiologyResults().find(r => String(r.id) === String(resultId));
+            
+            if (!result) {
+                console.error('Sonuç verisi bulunamadı! ID:', resultId);
+                return;
+            }
+
+            if (action === 'view-details') {
                 showRadiologyReport(result);
-            } else if (button.dataset.action === 'view-images') {
+            } else if (action === 'view-images') {
                 showRadiologyImage(result);
             }
         });

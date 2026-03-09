@@ -18,15 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function populateReport() {
         const reportId = getQueryParam('id');
         
-        // 1. Get User Data (Try active profile, then logged in user)
-        let user = getActiveProfile() || getLoggedInUser();
-        
-        // Fallback for demo if no user
-        if (!user) {
-            user = { name: 'Misafir Hasta', tc: '11111111111', birthDate: '1990-01-01', gender: 'unknown' };
-        }
-
-        // 2. Get Test Data
+        // 1. Get Test Data FIRST
         const allResults = getLuminexTestResults();
         let resultData = allResults.find(r => r.id === reportId);
 
@@ -38,8 +30,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 testName: 'Genel Biyokimya Paneli',
                 resultDate: new Date().toISOString(),
                 doctorName: 'Dr. Demo Doktoru',
-                results: []
+                results: [],
+                patientTc: '11111111111'
             };
+        }
+
+        // 2. Determine Target Patient TC
+        let targetTc = resultData.patientTc;
+        if (!targetTc) {
+            const activeProfile = getActiveProfile();
+            if (activeProfile) targetTc = activeProfile.tc || activeProfile.tcKimlik;
+        }
+        if (!targetTc) {
+             const loggedInUser = getLoggedInUser();
+             if (loggedInUser) targetTc = loggedInUser.tc || loggedInUser.tcKimlik || loggedInUser.tcNo;
+        }
+
+        // 3. Find User Data
+        const allUsers = getLuminexUsers();
+        // Try to find in all users list first (most complete data)
+        let fullUser = allUsers.find(u => (u.tc || u.tcKimlik || u.tcNo) === targetTc);
+
+        // If not found in list, try active/logged in objects directly
+        if (!fullUser) {
+            const active = getActiveProfile();
+            const loggedIn = getLoggedInUser();
+            
+            if (active && ((active.tc || active.tcKimlik) === targetTc)) {
+                fullUser = active;
+            } else if (loggedIn && ((loggedIn.tc || loggedIn.tcKimlik || loggedIn.tcNo) === targetTc)) {
+                fullUser = loggedIn;
+            }
+        }
+
+        // Default fallback
+        if (!fullUser) {
+            fullUser = { name: 'Misafir Hasta', tc: targetTc, birthDate: '1990-01-01', gender: 'unknown' };
         }
 
         // --- FILL HTML FIELDS ---
@@ -55,18 +81,26 @@ document.addEventListener('DOMContentLoaded', function() {
         setText('printTime', now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}));
 
         // Patient Info
-        const fullUser = getLuminexUsers().find(u => u.tc === user.tc) || user;
-        setText('patientName', fullUser.name);
-        setText('patientTc', fullUser.tc);
+        let patientName = fullUser.name || fullUser.fullName;
+        if (!patientName && fullUser.firstName) {
+            patientName = `${fullUser.firstName} ${fullUser.lastName || ''}`.trim();
+        }
+
+        setText('patientName', patientName);
+        setText('patientTc', fullUser.tc || fullUser.tcKimlik || fullUser.tcNo);
         
         // Age & Gender
         let ageStr = '--';
-        if (fullUser.birthDate) {
-            const birthDate = new Date(fullUser.birthDate);
-            const age = new Date().getFullYear() - birthDate.getFullYear();
-            ageStr = age + ' Yaş';
+        const birthDateVal = fullUser.birthDate || fullUser.dateOfBirth;
+        if (birthDateVal) {
+            const birthDate = new Date(birthDateVal);
+            if (!isNaN(birthDate.getTime())) {
+                const age = new Date().getFullYear() - birthDate.getFullYear();
+                ageStr = age + ' Yaş';
+            }
         }
-        const genderStr = (fullUser.gender === 'male' ? 'Erkek' : (fullUser.gender === 'female' ? 'Kadın' : ''));
+        const genderVal = (fullUser.gender || '').toLowerCase();
+        const genderStr = (genderVal === 'male' || genderVal === 'erkek') ? 'Erkek' : (genderVal === 'female' || genderVal === 'kadın' || genderVal === 'kadin') ? 'Kadın' : '';
         setText('patientAgeGender', `${ageStr} / ${genderStr}`);
 
         // Protocol & Request
@@ -106,8 +140,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     row.innerHTML = `
                         <td>${res.parameter}</td>
                         <td style="font-weight:600;">${res.value}</td>
-                        <td>${res.unit || '-'}
-                        <td>${res.range || '-'}
+                        <td>${res.unit || '-'}</td>
+                        <td>${res.reference || res.range || '-'}</td>
                     `;
                     tbody.appendChild(row);
                 });

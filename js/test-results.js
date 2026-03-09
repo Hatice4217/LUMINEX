@@ -220,6 +220,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     if (elements.clearFiltersBtn) {
+        elements.clearFiltersBtn.style.color = '#fff';
         elements.clearFiltersBtn.addEventListener('click', () => {
             elements.startDateInput.value = '';
             elements.endDateInput.value = '';
@@ -266,43 +267,48 @@ document.addEventListener('DOMContentLoaded', async function() {
                 const hasOutOfRange = result.results && result.results.some(res => isOutOfRange(res.value, res.reference || res.range));
                 
                 // Badge configuration
-                const badgeClass = hasOutOfRange ? 'badge-danger-pill' : 'badge-success-pill';
+                const badgeStyle = hasOutOfRange 
+                    ? 'background-color: #dc3545; color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;' 
+                    : 'background-color: #28a745; color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;';
+                
                 const badgeIcon = hasOutOfRange ? 'fa-exclamation-triangle' : 'fa-check-circle';
                 const badgeText = hasOutOfRange ? getSafeTranslation('outOfRangeWarning') : getSafeTranslation('inRangeInfo');
 
                 let resultsHtml = `
-                    <div class="modern-results-container">
-                        <div class="modern-results-header-clean">
-                            <div class="header-top-row">
-                                <h2 class="result-title">${result.testName || result.name}</h2>
-                                <div class="${badgeClass}">
+                    <div class="modern-results-container" style="font-family: 'Poppins', sans-serif; text-align: left;">
+                        <div class="modern-results-header-clean" style="padding-bottom: 15px;">
+                            <div class="header-top-row" style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 20px;">
+                                <h2 class="result-title" style="margin: 0; font-size: 1.6rem; color: #001F6B; font-weight: 700;">${result.testName || result.name}</h2>
+                                <div style="${badgeStyle}">
                                     <i class="fas ${badgeIcon}"></i>
                                     <span>${badgeText}</span>
                                 </div>
                             </div>
-                            <div class="info-bar">
-                                <div class="info-item">
-                                    <i class="far fa-calendar-alt"></i>
-                                    <span>${getSafeTranslation('dateLabel')}:</span>
-                                    <strong>${new Date(result.resultDate).toLocaleDateString(dateLocale, { day: '2-digit', month: 'long', year: 'numeric' })}</strong>
+                            
+                            <div class="info-bar" style="background-color: #f8f9fa; padding: 15px; border-radius: 10px; display: flex; gap: 25px; align-items: center; border: 1px solid #e9ecef;">
+                                <div class="info-item" style="display: flex; align-items: center; gap: 8px; color: #495057;">
+                                    <i class="far fa-calendar-alt" style="color: #001F6B;"></i>
+                                    <span style="font-size: 0.9rem; font-weight: 500;">${getSafeTranslation('dateLabel')}:</span>
+                                    <strong style="color: #212529;">${new Date(result.resultDate).toLocaleDateString(dateLocale, { day: '2-digit', month: 'long', year: 'numeric' })}</strong>
                                 </div>
-                                <div class="info-item">
-                                    <i class="fas fa-user-md"></i>
-                                    <span>${getSafeTranslation('doctorLabel')}:</span>
-                                    <strong>${result.doctorName}</strong>
+                                <div class="info-item" style="display: flex; align-items: center; gap: 8px; color: #495057;">
+                                    <i class="fas fa-user-md" style="color: #001F6B;"></i>
+                                    <span style="font-size: 0.9rem; font-weight: 500;">${getSafeTranslation('doctorLabel')}:</span>
+                                    <strong style="color: #212529;">${result.doctorName}</strong>
                                 </div>
                             </div>
                         </div>
-                        <div class="modern-results-body">
+                        
+                        <div class="modern-results-body" style="padding: 10px 0;">
                             <div class="result-list-container">
                 `;
 
                 if (result.results.length > 0 && result.results[0].parameter === 'Bulgular') {
                     // Radyoloji gibi metin tabanlı sonuçlar için özel görünüm
                     resultsHtml += `
-                        <div class="result-report-card">
-                            <h4>${result.results[0].parameter}</h4>
-                            <p>${result.results[0].value}</p>
+                        <div class="result-report-card" style="background: #fff; padding: 15px; border: 1px solid #eee; border-radius: 8px;">
+                            <h4 style="color: #001F6B; margin-bottom: 10px;">${result.results[0].parameter}</h4>
+                            <p style="color: #333; line-height: 1.6;">${result.results[0].value}</p>
                         </div>
                     `;
                 } else {
@@ -310,16 +316,22 @@ document.addEventListener('DOMContentLoaded', async function() {
                     result.results.forEach(res => {
                         const refRange = res.reference || res.range || '';
                         const outOfRange = isOutOfRange(res.value, refRange);
-                        const valueClass = outOfRange ? 'value-danger' : 'value-normal';
+                        
+                        // Styles for result value
+                        const valueStyle = outOfRange 
+                            ? 'font-size: 1.5rem; font-weight: 800; color: #dc3545;' 
+                            : 'font-size: 1.5rem; font-weight: 700; color: #2c3e50;';
                         
                         resultsHtml += `
-                            <div class="result-row-clean">
-                                <div class="parameter-name-clean">${res.parameter}</div>
-                                <div class="parameter-result-clean">
-                                    <div class="value-clean ${valueClass}">
-                                        ${res.value} <span style="font-size: 0.9rem; font-weight: normal; color: #777;">${res.unit || ''}</span>
+                            <div class="result-row-premium" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 10px; border-bottom: 1px solid #f1f1f1;">
+                                <div class="result-info-left">
+                                    <div class="parameter-name" style="font-weight: 600; color: #333; font-size: 1.1rem; margin-bottom: 4px;">${res.parameter}</div>
+                                    <div class="reference-range" style="font-size: 0.85rem; color: #adb5bd;">${getSafeTranslation('referenceLabel')}: ${refRange}</div>
+                                </div>
+                                <div class="result-value-right" style="text-align: right;">
+                                    <div class="value-display" style="${valueStyle}">
+                                        ${res.value} <span style="font-size: 1rem; font-weight: 500; color: #888; margin-left: 4px;">${res.unit || ''}</span>
                                     </div>
-                                    <div class="reference-range-clean">${getSafeTranslation('referenceLabel')}: ${refRange}</div>
                                 </div>
                             </div>
                         `;
@@ -329,11 +341,13 @@ document.addEventListener('DOMContentLoaded', async function() {
                 resultsHtml += `
                             </div>
                         </div>
-                        <div class="modern-results-footer">
-                            <button class="btn btn-outline-secondary" onclick="window.print()">
+                        <div class="modern-results-footer" style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee;">
+                            <button class="btn" onclick="Swal.close()" style="background-color: #6c757d; color: #fff; border: 1px solid #6c757d; padding: 12px 24px; border-radius: 8px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
+                                ${getSafeTranslation('close')}
+                            </button>
+                            <button class="btn" onclick="window.print()" style="background-color: #001F6B; color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0, 31, 107, 0.2);">
                                 <i class="fas fa-print"></i> ${getSafeTranslation('print') || 'Yazdır'}
                             </button>
-                            <button class="btn btn-secondary" onclick="Swal.close()">${getSafeTranslation('close')}</button>
                         </div>
                     </div>
                 `;
@@ -342,10 +356,29 @@ document.addEventListener('DOMContentLoaded', async function() {
                     html: resultsHtml,
                     showCloseButton: true,
                     showConfirmButton: false,
-                    width: '650px',
+                    width: '750px',
+                    padding: '0',
                     customClass: {
                         popup: 'modern-swal-popup',
                         htmlContainer: 'modern-swal-container'
+                    },
+                    didOpen: () => {
+                        // Add hover effects for buttons via JS since inline styles don't support pseudo-classes easily
+                        const btns = Swal.getHtmlContainer().querySelectorAll('.btn');
+                        btns.forEach(btn => {
+                            btn.addEventListener('mouseenter', () => {
+                                btn.style.transform = 'translateY(-2px)';
+                                if(btn.innerText.includes(getSafeTranslation('print'))) {
+                                    btn.style.boxShadow = '0 6px 16px rgba(0, 31, 107, 0.3)';
+                                }
+                            });
+                            btn.addEventListener('mouseleave', () => {
+                                btn.style.transform = 'translateY(0)';
+                                if(btn.innerText.includes(getSafeTranslation('print'))) {
+                                    btn.style.boxShadow = '0 4px 12px rgba(0, 31, 107, 0.2)';
+                                }
+                            });
+                        });
                     }
                 });
             } else if (action === 'download-pdf') {
